@@ -271,3 +271,14 @@ def test_label():
     assert Location("Austin", "TX", "US").label() == "Austin, TX, US"
     assert Location(remote=True).label() == "Remote"
     assert Location(raw="2 Locations").label() == "2 Locations"
+
+
+@pytest.mark.parametrize("text,expected", [
+    ("Toronto, Ontario, Canada", True), ("Toronto", True), ("Calgary, Alberta", True),
+    ("Drummondville, Quebec", True), ("Remote - Canada", True), ("Montréal", True),
+    ("AB - Campinas", False), ("Aalborg", False), ("London", False), ("Richmond, VA", False),
+    ("New York, NY", False), ("Waterloo", False),
+])
+def test_clearly_canadian(text, expected):
+    from jobradar.locations import clearly_canadian
+    assert clearly_canadian(text) is expected
