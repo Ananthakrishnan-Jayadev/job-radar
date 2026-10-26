@@ -603,6 +603,15 @@ def test_smartrecruiters_detail_description(settings):
     assert [r.url.path.rsplit("/", 1)[-1] for r in sources.requests] == ["postings", "744000138709868"]
 
 
+def test_details_only_for_jobs_in_canada(settings):
+    api = "https://api.smartrecruiters.com/v1/companies/acme/postings"
+    page = {"totalFound": 2, "content": [{**sr_posting(1), "name": "Developer"},
+                                         {**sr_posting(2, country="us"), "name": "Developer"}]}
+    sources = FakeSources({("GET", api): page, ("GET", f"{api}/"): {"jobAd": {"sections": {}}}})
+    fetch(settings, sources, board("smartrecruiters", "acme", canadian=False))
+    assert [r.url.path.rsplit("/", 1)[-1] for r in sources.requests] == ["postings", "1"]
+
+
 def test_details_skip_known_jobs_and_respect_the_cap(settings):
     settings.details_per_board = 2
     page = {"totalFound": 4, "content": [{**sr_posting(i), "name": f"Developer {i}"} for i in range(4)]}
