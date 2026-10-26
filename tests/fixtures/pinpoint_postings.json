@@ -1,0 +1,401 @@
+{
+ "_request": {
+  "url": "https://crawfordtech.pinpointhq.com/postings.json (+ alcumus.pinpointhq.com)",
+  "note": "Recorded 2026-10-26; trimmed: 3 Crawford + 5 Alcumus postings, long HTML cut"
+ },
+ "response": {
+  "data": [
+   {
+    "id": "563335",
+    "benefits": "<div><!--block-->&nbsp;BENEFITS:</div><ul><li><!--block-->Be part of a growing company and team.&nbsp;</li><li><!--block-->Competitive salary (Commensurate with experience and position and eligible commission)&nbsp;</li><li><!--block-->Excellent benefits<ul><li><!--block-->Medical</li><li><!--block-</div>",
+    "benefits_header": "What is in it for you?",
+    "compensation": "$85,000 - $140,000 / year",
+    "compensation_minimum": 85000.0,
+    "compensation_maximum": 140000.0,
+    "compensation_currency": "USD",
+    "compensation_frequency": "year",
+    "compensation_visible": true,
+    "deadline_at": "2026-10-27T23:59:59-06:00",
+    "description": "<div><!--block-->The <strong>Applications Support Manager</strong> is a senior leadership role reporting to the President, accountable for the processing schedule for all our jobs, and uptime of our SaaS systems. This is a new position designed to lead a dedicated team of technical support experts t</div>",
+    "employment_type": "full_time",
+    "employment_type_text": "Full Time",
+    "key_responsibilities": "<div><!--block--><strong>Position Responsibilities&nbsp;</strong></div><ul><li><!--block-->Manage a team of production technical support specialists</li><li><!--block-->Responsible for creating and maintaining production and QA workflows</li><li><!--block-->Responsible for onboarding new application</div>",
+    "key_responsibilities_header": "MAJOR DUTIES AND RESPONSIBILITIES",
+    "reporting_to": null,
+    "skills_knowledge_expertise": "<div><!--block-->SKILLS:</div><div><!--block--><strong>Required:</strong></div><ul><li><!--block-->Demonstrated experience building and scaling governance frameworks and operational standards.&nbsp;</li><li><!--block-->Strong analytical capabilities with experience defining and tracking KPIs.</li><l</div>",
+    "skills_knowledge_expertise_header": "SKILLS, EXPERIENCE & EDUCATION",
+    "title": " Applications Support Manager \u2013 Full-time \u2013 Work from Home in the US ",
+    "url": "https://crawfordtech.pinpointhq.com/en/postings/ab12dffa-e344-4712-bb1c-ada60c885018",
+    "path": "/en/postings/ab12dffa-e344-4712-bb1c-ada60c885018",
+    "workplace_type": "remote",
+    "workplace_type_text": "Fully remote",
+    "job": {
+     "id": "566166",
+     "requisition_id": "0123",
+     "department": {
+      "id": "24358",
+      "name": "Professional Services"
+     },
+     "division": null,
+     "structure_custom_group_one": {
+      "id": "3245",
+      "name": "Crawford Technologies",
+      "title": "Business Unit"
+     }
+    },
+    "location": {
+     "id": "14274",
+     "city": "",
+     "name": "Remote U.S.",
+     "postal_code": "",
+     "province": "",
+     "street_address": ""
+    }
+   },
+   {
+    "id": "604999",
+    "benefits": "<div><!--block-->PREFERRED WORK EXPERIENCE</div><ul><li><!--block-->Work experience in an area requiring attention to detail.</li><li><!--block-->Experience using Microsoft Office products.</li><li><!--block-->Previous experience with desktop publishing is a plus.</li><li><!--block-->Previous experi</div>",
+    "benefits_header": "WORK EXPERIENCE & EDUCATION & BENEFITS",
+    "compensation": "$18.00 - $20.00 / hour",
+    "compensation_minimum": 18.0,
+    "compensation_maximum": 20.0,
+    "compensation_currency": "USD",
+    "compensation_frequency": "hour",
+    "compensation_visible": true,
+    "deadline_at": "2026-11-05T23:59:59-07:00",
+    "description": "<div><!--block-->Are you detail-oriented, tech-savvy, and passionate about making information accessible to everyone? Join our Document Accessibility Services (DAS) team as an Accessibility Transcription Specialist, where your work directly impacts the lives of people with disabilities. You\u2019ll be pa</div>",
+    "employment_type": "full_time",
+    "employment_type_text": "Full Time",
+    "key_responsibilities": "<ul><li><!--block-->Transcribe documents into accessible formats such as Large Print, Audio, eText, and Braille using designated software.</li><li><!--block-->Ensure all transcriptions meet client Service Level Agreements (SLAs) and quality requirements.</li><li><!--block-->Collaborate with team mem</div>",
+    "key_responsibilities_header": "MAJOR DUTIES AND RESPONSIBILITIES",
+    "reporting_to": "",
+    "skills_knowledge_expertise": "<ul><li><!--block-->Proficient in using accessibility software and tools (training will be provided).</li><li><!--block-->Detail-oriented with a keen eye for accuracy.</li><li><!--block-->Ability to manage timelines and work efficiently in a fast-paced environment.</li><li><!--block-->Strong communi</div>",
+    "skills_knowledge_expertise_header": "SKILLS",
+    "title": "Data Entry - Alternate Format Transcriber",
+    "url": "https://crawfordtech.pinpointhq.com/en/postings/5a12740b-eb66-4927-b97b-6a1fd7cd7bb1",
+    "path": "/en/postings/5a12740b-eb66-4927-b97b-6a1fd7cd7bb1",
+    "workplace_type": "onsite",
+    "workplace_type_text": "Onsite",
+    "job": {
+     "id": "604328",
+     "requisition_id": "0129",
+     "department": {
+      "id": "24357",
+      "name": "Accessibility - Production"
+     },
+     "division": null,
+     "structure_custom_group_one": {
+      "id": "3245",
+      "name": "Crawford Technologies",
+      "title": "Business Unit"
+     }
+    },
+    "location": {
+     "id": "11819",
+     "city": "Potsdam",
+     "name": "Potsdam, New York",
+     "postal_code": "13676",
+     "province": "NY",
+     "street_address": "22 Depot Street"
+    }
+   },
+   {
+    "id": "606977",
+    "benefits": "<div><!--block-->PAY:<br>$125,000 - $150,000 base pay plus commission. $250,000 to $300,000 OTE.<br><br>&nbsp;<br><br>BENEFITS:</div><ul><li><!--block-->Be part of a growing company and team.&nbsp;</li><li><!--block-->Competitive salary (Commensurate with experience and position and eligible commiss</div>",
+    "benefits_header": " What is in it for you?",
+    "compensation": "$120,000 - $135,000 / year",
+    "compensation_minimum": 120000.0,
+    "compensation_maximum": 135000.0,
+    "compensation_currency": "USD",
+    "compensation_frequency": "year",
+    "compensation_visible": true,
+    "deadline_at": "2026-10-27T23:59:59-06:00",
+    "description": "<div><!--block-->Reporting to the SVP of Enterprise Sales \u2013 Americas, this position is responsible for producing revenue through the sale of software products and services to new and existing customers. Drive technology solution selling across our business offerings. Manage business territory with f</div>",
+    "employment_type": "full_time",
+    "employment_type_text": "Full Time",
+    "key_responsibilities": "<div><!--block-->Demonstrated sales ability with track record of sales success managing territories and pipelines while consistently meeting objectives in selling the Enterprise Communications Processing, Content Services, Customer Communications product sets specifically to Print Service Providers.</div>",
+    "key_responsibilities_header": "POSITION REQUIREMENTS",
+    "reporting_to": null,
+    "skills_knowledge_expertise": "<div><!--block-->EXPERIENCE<br><br></div><div><!--block-->\u2022&nbsp; &nbsp; Minimum of 10 years\u2019 experience in a similar position within Enterprise Software marketplace that includes print service providers and Fortune 100 companies.<br><br></div><div><!--block-->EDUCATION<br><br></div><div><!--block--</div>",
+    "skills_knowledge_expertise_header": "EXPERIENCE & EDUCATION",
+    "title": "Field Sales Account Executive",
+    "url": "https://crawfordtech.pinpointhq.com/en/postings/97c196b0-2674-4069-81c4-61828ce32f0b",
+    "path": "/en/postings/97c196b0-2674-4069-81c4-61828ce32f0b",
+    "workplace_type": "remote",
+    "workplace_type_text": "Fully remote",
+    "job": {
+     "id": "606141",
+     "requisition_id": "0130",
+     "department": {
+      "id": "24361",
+      "name": "Sales-Enterprise"
+     },
+     "division": null,
+     "structure_custom_group_one": {
+      "id": "3245",
+      "name": "Crawford Technologies",
+      "title": "Business Unit"
+     }
+    },
+    "location": {
+     "id": "14274",
+     "city": "",
+     "name": "Remote U.S.",
+     "postal_code": "",
+     "province": "",
+     "street_address": ""
+    }
+   },
+   {
+    "id": "577403",
+    "benefits": "<div><!--block-->We want you to be able to do your best work here. We emphasize providing many ways to support our team to do their best work, and believe that if you look after your people, they look after everything else!<strong>&nbsp;<br></strong><br></div><div><!--block--><strong>Personal Health</div>",
+    "benefits_header": "What you\u2019ll get in return:  ",
+    "compensation": "CA$100,000 - CA$140,000 / year",
+    "compensation_minimum": 100000.0,
+    "compensation_maximum": 140000.0,
+    "compensation_currency": "CAD",
+    "compensation_frequency": "year",
+    "compensation_visible": true,
+    "deadline_at": null,
+    "description": "<div><!--block-->Veriforce is a leader in contractor compliance and supply chain risk management, helping the world's most safety-conscious organizations protect their workers, their reputation, and their operations. As Account Executive, you will own a defined geographic territory and drive new bus</div>",
+    "employment_type": "permanent",
+    "employment_type_text": "Permanent",
+    "key_responsibilities": "<div><!--block--><strong>1. Build Pipeline &amp; Prospect Relentlessly</strong><br>\u2022 Build and maintain a healthy pipeline of qualified opportunities with strong coverage against quota<br>\u2022 Execute outbound and account-based prospecting strategies in close partnership with BDRs<br>\u2022 Prioritize and s</div>",
+    "key_responsibilities_header": "What that means day-to-day: ",
+    "reporting_to": "VP, Sales & Onboarding",
+    "skills_knowledge_expertise": "<div><!--block-->\u2022 3+ years of full-cycle B2B sales experience, with a proven record of exceeding new-business quota<br>\u2022 Experience selling into industrial sectors \u2014 Oil &amp; Gas, Mining, Utilities, or Manufacturing required<br>\u2022 Command of a structured sales methodology (MEDDIC, BANT, Challenger,</div>",
+    "skills_knowledge_expertise_header": "What you\u2019ll need to be successful: ",
+    "title": "Account Executive",
+    "url": "https://alcumus.pinpointhq.com/en/postings/2e0ed6a3-8f37-48db-af50-39ce3c8465d9",
+    "path": "/en/postings/2e0ed6a3-8f37-48db-af50-39ce3c8465d9",
+    "workplace_type": "hybrid",
+    "workplace_type_text": "Hybrid",
+    "job": {
+     "id": "579104",
+     "requisition_id": "R269, R267",
+     "department": {
+      "id": "17460",
+      "name": "Sales"
+     },
+     "division": {
+      "id": "406",
+      "name": "Veriforce Canada"
+     },
+     "structure_custom_group_one": {
+      "id": "2086",
+      "name": "Canada",
+      "title": "Business Unit"
+     }
+    },
+    "location": {
+     "id": "5276",
+     "city": "Toronto",
+     "name": "Greater Toronto Area, Canada",
+     "postal_code": "",
+     "province": "Ontario",
+     "street_address": ""
+    }
+   },
+   {
+    "id": "514540",
+    "benefits": "<div><!--block-->Veriforce has a <strong>hybrid workplace policy</strong>. We want you to be able to do your best work here. We emphasize providing many ways to support our team to do their best work, and believe that if you look after your people, they look after everything else!<strong>&nbsp;<br><</div>",
+    "benefits_header": "What you\u2019ll get in return:  ",
+    "compensation": null,
+    "compensation_minimum": null,
+    "compensation_maximum": null,
+    "compensation_currency": null,
+    "compensation_frequency": null,
+    "compensation_visible": false,
+    "deadline_at": null,
+    "description": "<div><!--block--><strong>Creating safer workplaces while expanding your commercial impact.&nbsp; <br><br>We want to create a better working world by building a global network of responsible buyers and suppliers.&nbsp; Veriforce takes the pain out of compliance for over 50,000 organisations globally,</div>",
+    "employment_type": "permanent",
+    "employment_type_text": "Permanent",
+    "key_responsibilities": "<ul><li><!--block-->Develop and maintain strong, long-lasting relationships with a portfolio of key clients, ensuring satisfaction, loyalty, and account retention.</li><li><!--block-->Act as a trusted advisor to clients, providing strategic insights to guide business decisions, product development, </div>",
+    "key_responsibilities_header": "What that means day-to-day: ",
+    "reporting_to": "Director, Customer Success",
+    "skills_knowledge_expertise": "<ul><li><!--block-->2\u20135 years of proven experience in customer relationship management or customer service in a B2B environment</li><li><!--block-->Excellent communication skills and the ability to build long-term relationships with clients at various organizational levels</li><li><!--block-->Strong</div>",
+    "skills_knowledge_expertise_header": "What you\u2019ll need to be successful: ",
+    "title": "Customer Success Manager (CSM)",
+    "url": "https://alcumus.pinpointhq.com/en/postings/957d1e16-86cb-4d0f-a27c-3dc0921d0125",
+    "path": "/en/postings/957d1e16-86cb-4d0f-a27c-3dc0921d0125",
+    "workplace_type": "hybrid",
+    "workplace_type_text": "Hybrid",
+    "job": {
+     "id": "520984",
+     "requisition_id": "R235",
+     "department": {
+      "id": "17460",
+      "name": "Sales"
+     },
+     "division": {
+      "id": "406",
+      "name": "Veriforce Canada"
+     },
+     "structure_custom_group_one": {
+      "id": "2086",
+      "name": "Canada",
+      "title": "Business Unit"
+     }
+    },
+    "location": {
+     "id": "52108",
+     "city": "Calgary",
+     "name": "Calgary, Canada",
+     "postal_code": "T3E 6L1",
+     "province": "Alberta",
+     "street_address": "4838 Richard Rd SW Suite 250"
+    }
+   },
+   {
+    "id": "573575",
+    "benefits": "<div><!--block-->We have a <strong>hybrid workplace policy</strong>. We want you to be able to do your best work here. We emphasize providing many ways to support our team to do their best work, and believe that if you look after your people, they look after everything else!<strong>&nbsp;<br></stron</div>",
+    "benefits_header": "What you\u2019ll get in return:  ",
+    "compensation": null,
+    "compensation_minimum": null,
+    "compensation_maximum": null,
+    "compensation_currency": null,
+    "compensation_frequency": null,
+    "compensation_visible": false,
+    "deadline_at": null,
+    "description": "<div><!--block-->Program Delivery &amp; Governance is the delivery and operations capability for Veriforce's Product and Technology organization. The function owns strategic program delivery across the business, delivery health and reporting, planning discipline, governance standards, and executive </div>",
+    "employment_type": "permanent",
+    "employment_type_text": "Permanent",
+    "key_responsibilities": "<div><!--block--><strong>What you'll do</strong><br><br><strong>Project and program delivery</strong><br>The Senior Project Manager carries more complex, higher-stakes delivery work than the Project Manager. You manage projects independently and take on the workstreams within larger programs that re</div>",
+    "key_responsibilities_header": "What that means day-to-day: ",
+    "reporting_to": "Group Director, Enterprise Delivery & Governance",
+    "skills_knowledge_expertise": "<div><!--block--><strong>What we're looking for<br></strong><br>Delivery capability<br><br>\u2022 6+ years of progressive experience in project delivery or program support, with demonstrated growth in scope, complexity, and accountability<br>\u2022 PMP or equivalent certification (e.g., PRINCE2 Practitioner, </div>",
+    "skills_knowledge_expertise_header": "What you\u2019ll need to be successful: ",
+    "title": "Senior Project Manager - GTM",
+    "url": "https://alcumus.pinpointhq.com/en/postings/59cadef7-b3cd-47df-9c4c-aa31a077e663",
+    "path": "/en/postings/59cadef7-b3cd-47df-9c4c-aa31a077e663",
+    "workplace_type": "remote",
+    "workplace_type_text": "Fully remote",
+    "job": {
+     "id": "575567",
+     "requisition_id": "",
+     "department": {
+      "id": "8048",
+      "name": "Product"
+     },
+     "division": {
+      "id": "14243",
+      "name": "Veriforce Global Product Division"
+     },
+     "structure_custom_group_one": {
+      "id": "775",
+      "name": "Product",
+      "title": "Business Unit"
+     }
+    },
+    "location": {
+     "id": "5277",
+     "city": "",
+     "name": "Remote, Canada",
+     "postal_code": "",
+     "province": "",
+     "street_address": ""
+    }
+   },
+   {
+    "id": "576858",
+    "benefits": "<div><!--block-->Nous voulons que vous puissiez donner le meilleur de vous-m\u00eame. Nous mettons l'accent sur les moyens de soutenir notre \u00e9quipe pour qu'elle donne le meilleur d'elle-m\u00eame. Voici quelques-uns des avantages que nous offrons :<br>&nbsp;<br><strong>Sant\u00e9 et bien-\u00eatre personnel / Avantages</div>",
+    "benefits_header": "Ce que vous obtiendrez en retour:  ",
+    "compensation": null,
+    "compensation_minimum": null,
+    "compensation_maximum": null,
+    "compensation_currency": null,
+    "compensation_frequency": null,
+    "compensation_visible": false,
+    "deadline_at": null,
+    "description": "<div><!--block-->Le titulaire du poste de d\u00e9veloppeur logiciel interm\u00e9diaire travaille en \u00e9troite collaboration avec une \u00e9quipe de d\u00e9veloppeurs logiciels ainsi qu\u2019avec des fournisseurs tiers afin de cr\u00e9er des applications logicielles de grande qualit\u00e9 dans un environnement Agile. Il doit \u00e9galement s</div>",
+    "employment_type": "permanent",
+    "employment_type_text": "Permanent",
+    "key_responsibilities": "<ul><li><!--block-->Faire partie int\u00e9grante de l\u2019\u00e9quipe de d\u00e9veloppement et contribuer activement au d\u00e9veloppement d\u2019outils, de services et de plateformes.</li><li><!--block-->Collaborer \u00e9troitement avec les fournisseurs tiers et agir comme personne-ressource pour le partage des connaissances sur le</div>",
+    "key_responsibilities_header": "Qu'est-ce que cela signifie au jour le jour: ",
+    "reporting_to": "Software Engineering Manager",
+    "skills_knowledge_expertise": "<ul><li><!--block-->Node.js/Express</li><li><!--block-->React</li><li><!--block-->HTML/CSS</li><li><!--block-->Java, notamment Spring/Hibernate, C# ou Ruby on Rails</li><li><!--block-->Scripts Bash/Shell</li></ul><div><!--block--><br><strong>Exp\u00e9rience approfondie avec certaines des plateformes de d</div>",
+    "skills_knowledge_expertise_header": "Ce dont vous aurez besoin pour r\u00e9ussir:",
+    "title": "D\u00e9veloppeur logiciel interm\u00e9diaire",
+    "url": "https://alcumus.pinpointhq.com/en/postings/97d525c4-8433-481f-8dbb-0fb707c3b58f",
+    "path": "/en/postings/97d525c4-8433-481f-8dbb-0fb707c3b58f",
+    "workplace_type": "hybrid",
+    "workplace_type_text": "Hybrid",
+    "job": {
+     "id": "578638",
+     "requisition_id": "R459",
+     "department": {
+      "id": "69772",
+      "name": "Technology"
+     },
+     "division": {
+      "id": "409",
+      "name": "Veriforce Global Technology Division"
+     },
+     "structure_custom_group_one": {
+      "id": "5338",
+      "name": "Technology",
+      "title": "Business Unit"
+     }
+    },
+    "location": {
+     "id": "9675",
+     "city": "Shawinigan",
+     "name": "Shawinigan, Quebec",
+     "postal_code": "",
+     "province": "",
+     "street_address": ""
+    }
+   },
+   {
+    "id": "432682",
+    "benefits": "<div><!--block-->We have a <strong>hybrid workplace policy, </strong>where you will work from the office 3 days per week. <br><br>We want you to be able to do your best work here. We emphasize providing many ways to support our team to do their best work and below are some of the perks and benefits </div>",
+    "benefits_header": "What you'll get in return",
+    "compensation": null,
+    "compensation_minimum": null,
+    "compensation_maximum": null,
+    "compensation_currency": null,
+    "compensation_frequency": null,
+    "compensation_visible": false,
+    "deadline_at": null,
+    "description": "<div><!--block--><strong>Building innovative solutions; enabling safer workplaces for everyone.<br><br>&nbsp;We\u2019ll create a safer working world, building software to support a global network of responsible buyers, suppliers and partners.<br><br>&nbsp;We take the pain out of compliance for over 50,00</div>",
+    "employment_type": "permanent",
+    "employment_type_text": "Permanent",
+    "key_responsibilities": "<ul><li><!--block-->Contacting our customers to support them compile all the relevant data to allow them to go through our desk-based assessments of health and safety management systems and core safety documentation.</li><li><!--block-->Complete an audit on a customer\u2019s information to ensure our sta</div>",
+    "key_responsibilities_header": "What that means day to day",
+    "reporting_to": "Technical Team Manager",
+    "skills_knowledge_expertise": "<div><!--block-->As a Health &amp; Safety Auditor at SafeContractor, you'll have a strong understanding of UK health and safety legislation and best practice. This experience may come from a dedicated health and safety role or from working in industries where health and safety and compliance are cri</div>",
+    "skills_knowledge_expertise_header": "What you\u2019ll need to be successful",
+    "title": "Health and Safety Auditor ",
+    "url": "https://alcumus.pinpointhq.com/en/postings/f79b6f67-456a-44d1-8eeb-1f4b9567d048",
+    "path": "/en/postings/f79b6f67-456a-44d1-8eeb-1f4b9567d048",
+    "workplace_type": "hybrid",
+    "workplace_type_text": "Hybrid",
+    "job": {
+     "id": "442178",
+     "requisition_id": "R6 R7 ",
+     "department": {
+      "id": "8044",
+      "name": "Operations"
+     },
+     "division": {
+      "id": "405",
+      "name": "UK SafeContractor Division"
+     },
+     "structure_custom_group_one": {
+      "id": "2057",
+      "name": "SafeContractor",
+      "title": "Business Unit"
+     }
+    },
+    "location": {
+     "id": "4554",
+     "city": "Cardiff",
+     "name": "Cardiff, UK",
+     "postal_code": null,
+     "province": "Wales",
+     "street_address": null
+    }
+   }
+  ]
+ }
+}

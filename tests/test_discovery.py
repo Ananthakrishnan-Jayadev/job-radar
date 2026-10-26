@@ -146,6 +146,10 @@ def test_suggestion_accept(conn):
     ("https://xello.applytojob.com/", "jazzhr", "xello"),
     ("https://ats.rippling.com/en-GB/netwrix-corporation/jobs", "rippling", "netwrix-corporation"),
     ("https://jobs.ashbyhq.com/Rose%20Rocket", "ashby", "Rose Rocket"),
+    ("https://crawfordtech.pinpointhq.com/", "pinpoint", "crawfordtech"),
+    ("https://commonsku.na.teamtailor.com/jobs", "teamtailor", "https://commonsku.na.teamtailor.com"),
+    ("https://ecopiatech.applytojobs.ca/", "humi", "ecopiatech"),
+    ("https://hypercare.humi.ca/job-board", "humi", "hypercare"),
     ("https://apertera.applytojob.com/apply", "jazzhr", "apertera"),
 ])
 def test_from_url(url, system, slug):

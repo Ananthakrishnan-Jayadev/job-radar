@@ -13,12 +13,15 @@ from . import (
     bamboohr,
     breezy,
     greenhouse,
+    humi,
     jazzhr,
     lever,
+    pinpoint,
     recruitee,
     rippling,
     smartrecruiters,
     successfactors,
+    teamtailor,
     workable,
     workday,
 )
@@ -37,6 +40,9 @@ CONNECTORS = {
     "workday": workday.fetch,
     "successfactors": successfactors.fetch,
     "jazzhr": jazzhr.fetch,
+    "pinpoint": pinpoint.fetch,
+    "teamtailor": teamtailor.fetch,
+    "humi": humi.fetch,
 }
 
 __all__ = ["CONNECTORS", "FetchContext", "FetchResult"]

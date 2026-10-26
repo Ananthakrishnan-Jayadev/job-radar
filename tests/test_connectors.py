@@ -435,3 +435,72 @@ def test_jazzhr_locations(settings):
 def test_jazzhr_unknown_company(settings):
     with pytest.raises(NotFound):
         fetch(settings, FakeSources(), board("jazzhr", "nobody"))
+
+
+# --- Pinpoint, Teamtailor, Humi ----------------------------------------------------------
+
+def place(job):
+    loc = job.locations[0]
+    return (loc.city, loc.province, loc.country, loc.remote)
+
+
+def test_pinpoint_fixture(settings):
+    sources = FakeSources({("GET", "https://crawfordtech.pinpointhq.com/postings.json"): fixture_json("pinpoint_postings.json")})
+    result = fetch(settings, sources, board("pinpoint", "crawfordtech"))
+    assert result.total == 8
+    jobs = {j.title: j for j in result.jobs}
+    support = next(j for t, j in jobs.items() if t.startswith("Applications Support Manager"))
+    assert support.salary_text == "US$85,000 – 140,000 / year" and support.currency == "USD"
+    assert support.workplace == "remote" and place(support)[2] == "US"  # "Remote U.S."
+    assert support.description and "<" not in support.description
+    canadian = {place(j) for j in result.jobs if j.locations[0].in_canada}
+    assert ("Toronto", "ON", "CA", False) in canadian  # "Greater Toronto Area, Canada"
+    assert ("Calgary", "AB", "CA", False) in canadian
+    assert ("Shawinigan", "QC", "CA", False) in canadian
+    assert any(p[:3] == (None, None, "CA") and p[3] for p in canadian)  # "Remote, Canada"
+    assert not any(j.locations[0].in_canada for j in result.jobs if "Cardiff" in j.locations[0].raw)
+    assert all(j.department for j in result.jobs)
+
+
+def test_teamtailor_fixture(settings):
+    site = "https://commonsku.na.teamtailor.com"
+    sources = FakeSources({("GET", f"{site}/jobs.rss"): httpx.Response(
+        200, text=(FIXTURES / "teamtailor_commonsku.rss").read_text())})
+    result = fetch(settings, sources, board("teamtailor", site))
+    assert result.total == 6
+    data = next(j for j in result.jobs if j.title == "Staff Data Engineer")
+    assert data.url.startswith(f"{site}/jobs/")
+    assert data.workplace == "remote"
+    assert re.match(r"\d{4}-\d{2}-\d{2}$", data.posted_at)
+    assert (data.locations[0].city, data.locations[0].province, data.locations[0].country) == ("Toronto", "ON", "CA")
+    assert data.department
+    manager = next(j for j in result.jobs if j.title == "Engineering Manager, Data")
+    assert manager.posted_at == "2026-10-20"
+
+
+def test_humi_fixture(settings):
+    sources = FakeSources({("GET", "https://hypercare.applytojobs.ca/"): httpx.Response(
+        200, text=(FIXTURES / "humi_hypercare.html").read_text())})
+    result = fetch(settings, sources, board("humi", "hypercare"))
+    jobs = {j.title: j for j in result.jobs}
+    assert set(jobs) == {"Future Internship Opportunities - Marketing, Business Operations, Customer Success",
+                         "Future Opportunities - Engineering Team"}
+    intern = jobs["Future Internship Opportunities - Marketing, Business Operations, Customer Success"]
+    assert intern.url == "https://hypercare.applytojobs.ca/internships/18555"
+    assert intern.external_id == "18555"
+    assert (intern.workplace, intern.employment_type, intern.posted_at) == ("remote", "internship", "2022-12-22")
+    assert place(intern) == ("Toronto", "ON", "CA", True)
+    assert jobs["Future Opportunities - Engineering Team"].workplace == "unknown"  # no badge
+
+
+def test_humi_single_job_with_hybrid_badge(settings):
+    sources = FakeSources({("GET", "https://ecopiatech.applytojobs.ca/"): httpx.Response(
+        200, text=(FIXTURES / "humi_ecopia.html").read_text())})
+    job = fetch(settings, sources, board("humi", "ecopiatech")).jobs[0]
+    assert (job.workplace, job.posted_at, place(job)[:3]) == ("hybrid", "2026-09-09", ("Toronto", "ON", "CA"))
+
+
+def test_humi_page_changed(settings):
+    sources = FakeSources({("GET", "https://acme.applytojobs.ca/"): httpx.Response(200, text="<html>nothing</html>")})
+    with pytest.raises(FetchError, match="doesn't look like a Humi"):
+        fetch(settings, sources, board("humi", "acme"))
