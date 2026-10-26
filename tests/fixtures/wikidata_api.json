@@ -1,0 +1,2533 @@
+{
+ "_request": {
+  "url": "https://www.wikidata.org/w/api.php?action=wbsearchentities / wbgetentities",
+  "note": "Recorded 2026-10-26, trimmed."
+ },
+ "response": {
+  "search": {
+   "TD Bank": {
+    "searchinfo": {
+     "search": "TD Bank"
+    },
+    "search": [
+     {
+      "id": "Q1194832",
+      "title": "Q1194832",
+      "pageid": 1138679,
+      "concepturi": "http://www.wikidata.org/entity/Q1194832",
+      "repository": "wikidata",
+      "url": "//www.wikidata.org/wiki/Q1194832",
+      "display": {
+       "label": {
+        "value": "Toronto-Dominion Bank",
+        "language": "en"
+       },
+       "description": {
+        "value": "banking and financial services corporation",
+        "language": "en"
+       }
+      },
+      "label": "Toronto-Dominion Bank",
+      "description": "banking and financial services corporation",
+      "match": {
+       "type": "alias",
+       "language": "en",
+       "text": "TD Bank Group"
+      },
+      "aliases": [
+       "TD Bank Group"
+      ]
+     },
+     {
+      "id": "Q432105",
+      "title": "Q432105",
+      "pageid": 407594,
+      "concepturi": "http://www.wikidata.org/entity/Q432105",
+      "repository": "wikidata",
+      "url": "//www.wikidata.org/wiki/Q432105",
+      "display": {
+       "label": {
+        "value": "TD Garden",
+        "language": "en"
+       },
+       "description": {
+        "value": "multi-purpose arena in Boston, Massachusetts, United States",
+        "language": "en"
+       }
+      },
+      "label": "TD Garden",
+      "description": "multi-purpose arena in Boston, Massachusetts, United States",
+      "match": {
+       "type": "alias",
+       "language": "en",
+       "text": "TD Banknorth Garden"
+      },
+      "aliases": [
+       "TD Banknorth Garden"
+      ]
+     },
+     {
+      "id": "Q7669891",
+      "title": "Q7669891",
+      "pageid": 7594159,
+      "concepturi": "http://www.wikidata.org/entity/Q7669891",
+      "repository": "wikidata",
+      "url": "//www.wikidata.org/wiki/Q7669891",
+      "display": {
+       "label": {
+        "value": "TD Bank",
+        "language": "en"
+       },
+       "description": {
+        "value": "American bank with branches along the East Coast of the United States",
+        "language": "en"
+       }
+      },
+      "label": "TD Bank",
+      "description": "American bank with branches along the East Coast of the United States",
+      "match": {
+       "type": "label",
+       "language": "en",
+       "text": "TD Bank"
+      }
+     },
+     {
+      "id": "Q1080670",
+      "title": "Q1080670",
+      "pageid": 1028782,
+      "concepturi": "http://www.wikidata.org/entity/Q1080670",
+      "repository": "wikidata",
+      "url": "//www.wikidata.org/wiki/Q1080670",
+      "display": {
+       "label": {
+        "value": "TD Canada Trust",
+        "language": "en"
+       },
+       "description": {
+        "value": "Canadian commercial banking company",
+        "language": "en"
+       }
+      },
+      "label": "TD Canada Trust",
+      "description": "Canadian commercial banking company",
+      "match": {
+       "type": "alias",
+       "language": "en",
+       "text": "TD Bank"
+      },
+      "aliases": [
+       "TD Bank"
+      ]
+     },
+     {
+      "id": "Q18148483",
+      "title": "Q18148483",
+      "pageid": 19681208,
+      "concepturi": "http://www.wikidata.org/entity/Q18148483",
+      "repository": "wikidata",
+      "url": "//www.wikidata.org/wiki/Q18148483",
+      "display": {
+       "label": {
+        "value": "First National Bank",
+        "language": "en"
+       },
+       "description": {
+        "value": "historic bank building in Greenville, South Carolina, U.S.A.",
+        "language": "en"
+       }
+      },
+      "label": "First National Bank",
+      "description": "historic bank building in Greenville, South Carolina, U.S.A.",
+      "match": {
+       "type": "alias",
+       "language": "en",
+       "text": "TD Bank"
+      },
+      "aliases": [
+       "TD Bank"
+      ]
+     }
+    ],
+    "search-continue": 5,
+    "success": 1
+   },
+   "Shopify": {
+    "searchinfo": {
+     "search": "Shopify"
+    },
+    "search": [
+     {
+      "id": "Q7501150",
+      "title": "Q7501150",
+      "pageid": 7414193,
+      "concepturi": "http://www.wikidata.org/entity/Q7501150",
+      "repository": "wikidata",
+      "url": "//www.wikidata.org/wiki/Q7501150",
+      "display": {
+       "label": {
+        "value": "Shopify",
+        "language": "en"
+       },
+       "description": {
+        "value": "Canadian e-commerce company",
+        "language": "en"
+       }
+      },
+      "label": "Shopify",
+      "description": "Canadian e-commerce company",
+      "match": {
+       "type": "label",
+       "language": "en",
+       "text": "Shopify"
+      }
+     },
+     {
+      "id": "Q141100259",
+      "title": "Q141100259",
+      "pageid": 134550546,
+      "concepturi": "http://www.wikidata.org/entity/Q141100259",
+      "repository": "wikidata",
+      "url": "//www.wikidata.org/wiki/Q141100259",
+      "display": {
+       "label": {
+        "value": "Shopify",
+        "language": "mul"
+       },
+       "description": {
+        "value": "commerce platform operated by Shopify Inc.",
+        "language": "en"
+       }
+      },
+      "label": "Shopify",
+      "description": "commerce platform operated by Shopify Inc.",
+      "match": {
+       "type": "label",
+       "language": "mul",
+       "text": "Shopify"
+      }
+     },
+     {
+      "id": "Q105620580",
+      "title": "Q105620580",
+      "pageid": 100985096,
+      "concepturi": "http://www.wikidata.org/entity/Q105620580",
+      "repository": "wikidata",
+      "url": "//www.wikidata.org/wiki/Q105620580",
+      "display": {
+       "label": {
+        "value": "Shopify Rebellion",
+        "language": "en"
+       },
+       "description": {
+        "value": "Esports team",
+        "language": "en"
+       }
+      },
+      "label": "Shopify Rebellion",
+      "description": "Esports team",
+      "match": {
+       "type": "label",
+       "language": "en",
+       "text": "Shopify Rebellion"
+      }
+     },
+     {
+      "id": "Q107384438",
+      "title": "Q107384438",
+      "pageid": 102663389,
+      "concepturi": "http://www.wikidata.org/entity/Q107384438",
+      "repository": "wikidata",
+      "url": "//www.wikidata.org/wiki/Q107384438",
+      "display": {
+       "label": {
+        "value": "shopifyapi",
+        "language": "en"
+       },
+       "description": {
+        "value": "Python library",
+        "language": "en"
+       }
+      },
+      "label": "shopifyapi",
+      "description": "Python library",
+      "match": {
+       "type": "label",
+       "language": "en",
+       "text": "shopifyapi"
+      }
+     },
+     {
+      "id": "Q137270105",
+      "title": "Q137270105",
+      "pageid": 130951580,
+      "concepturi": "http://www.wikidata.org/entity/Q137270105",
+      "repository": "wikidata",
+      "url": "//www.wikidata.org/wiki/Q137270105",
+      "display": {
+       "label": {
+        "value": "Shopify Success: Creating a Thriving Online Store",
+        "language": "en"
+       },
+       "description": {
+        "value": "book by Atharva Inamdar",
+        "language": "en"
+       }
+      },
+      "label": "Shopify Success: Creating a Thriving Online Store",
+      "description": "book by Atharva Inamdar",
+      "match": {
+       "type": "label",
+       "language": "en",
+       "text": "Shopify Success: Creating a Thriving Online Store"
+      }
+     }
+    ],
+    "success": 1
+   },
+   "Hopper": {
+    "searchinfo": {
+     "search": "Hopper"
+    },
+    "search": [
+     {
+      "id": "Q21501617",
+      "title": "Q21501617",
+      "pageid": 23546460,
+      "concepturi": "http://www.wikidata.org/entity/Q21501617",
+      "repository": "wikidata",
+      "url": "//www.wikidata.org/wiki/Q21501617",
+      "display": {
+       "label": {
+        "value": "Hopper",
+        "language": "en"
+       },
+       "description": {
+        "value": "family name",
+        "language": "en"
+       }
+      },
+      "label": "Hopper",
+      "description": "family name",
+      "match": {
+       "type": "label",
+       "language": "en",
+       "text": "Hopper"
+      }
+     },
+     {
+      "id": "Q19863275",
+      "title": "Q19863275",
+      "pageid": 21491728,
+      "concepturi": "http://www.wikidata.org/entity/Q19863275",
+      "repository": "wikidata",
+      "url": "//www.wikidata.org/wiki/Q19863275",
+      "display": {
+       "label": {
+        "value": "Hopper",
+        "language": "en"
+       },
+       "description": {
+        "value": "1982 computer game",
+        "language": "en"
+       }
+      },
+      "label": "Hopper",
+      "description": "1982 computer game",
+      "match": {
+       "type": "label",
+       "language": "en",
+       "text": "Hopper"
+      }
+     },
+     {
+      "id": "Q50316275",
+      "title": "Q50316275",
+      "pageid": 51303195,
+      "concepturi": "http://www.wikidata.org/entity/Q50316275",
+      "repository": "wikidata",
+      "url": "//www.wikidata.org/wiki/Q50316275",
+      "display": {
+       "label": {
+        "value": "Hopper",
+        "language": "en"
+       },
+       "description": {
+        "value": "given name",
+        "language": "en"
+       }
+      },
+      "label": "Hopper",
+      "description": "given name",
+      "match": {
+       "type": "label",
+       "language": "en",
+       "text": "Hopper"
+      }
+     },
+     {
+      "id": "Q85767253",
+      "title": "Q85767253",
+      "pageid": 85042893,
+      "concepturi": "http://www.wikidata.org/entity/Q85767253",
+      "repository": "wikidata",
+      "url": "//www.wikidata.org/wiki/Q85767253",
+      "display": {
+       "label": {
+        "value": "Hopper",
+        "language": "en"
+       },
+       "description": {
+        "value": "GPU microarchitecture designed by Nvidia",
+        "language": "en"
+       }
+      },
+      "label": "Hopper",
+      "description": "GPU microarchitecture designed by Nvidia",
+      "match": {
+       "type": "label",
+       "language": "en",
+       "text": "Hopper"
+      }
+     },
+     {
+      "id": "Q2082700",
+      "title": "Q2082700",
+      "pageid": 2009695,
+      "concepturi": "http://www.wikidata.org/entity/Q2082700",
+      "repository": "wikidata",
+      "url": "//www.wikidata.org/wiki/Q2082700",
+      "display": {
+       "label": {
+        "value": "Stephen Hopper",
+        "language": "en"
+       },
+       "description": {
+        "value": "Australian botanist (born 1951)",
+        "language": "en"
+       }
+      },
+      "label": "Stephen Hopper",
+      "description": "Australian botanist (born 1951)",
+      "match": {
+       "type": "alias",
+       "language": "en",
+       "text": "Hopper"
+      },
+      "aliases": [
+       "Hopper"
+      ]
+     }
+    ],
+    "search-continue": 5,
+    "success": 1
+   }
+  },
+  "entities": {
+   "entities": {
+    "Q1194832": {
+     "id": "Q1194832",
+     "labels": {
+      "en": {
+       "language": "en",
+       "value": "Toronto-Dominion Bank"
+      }
+     },
+     "descriptions": {
+      "en": {
+       "language": "en",
+       "value": "banking and financial services corporation"
+      }
+     },
+     "claims": {
+      "P31": [
+       {
+        "mainsnak": {
+         "snaktype": "value",
+         "property": "P31",
+         "hash": "326e3d41d1e9c34715e880be6e1c6a1e822e4317",
+         "datavalue": {
+          "value": {
+           "entity-type": "item",
+           "numeric-id": 4830453,
+           "id": "Q4830453"
+          },
+          "type": "wikibase-entityid"
+         },
+         "datatype": "wikibase-item"
+        },
+        "type": "statement",
+        "id": "Q1194832$490D57DC-5F11-4444-BE18-213930BA0FAE",
+        "rank": "normal"
+       },
+       {
+        "mainsnak": {
+         "snaktype": "value",
+         "property": "P31",
+         "hash": "e3f989690a80432cae3d62d39712965512d428ca",
+         "datavalue": {
+          "value": {
+           "entity-type": "item",
+           "numeric-id": 730038,
+           "id": "Q730038"
+          },
+          "type": "wikibase-entityid"
+         },
+         "datatype": "wikibase-item"
+        },
+        "type": "statement",
+        "id": "Q1194832$096B6244-5409-4115-90DA-903366748057",
+        "rank": "normal",
+        "references": [
+         {
+          "hash": "74d1b096ed715c28419f84d93e2957ea4697899a",
+          "snaks": {
+           "P143": [
+            {
+             "snaktype": "value",
+             "property": "P143",
+             "hash": "d38375ffe6fe142663ff55cd783aa4df4301d83d",
+             "datavalue": {
+              "value": {
+               "entity-type": "item",
+               "numeric-id": 48183,
+               "id": "Q48183"
+              },
+              "type": "wikibase-entityid"
+             },
+             "datatype": "wikibase-item"
+            }
+           ],
+           "P813": [
+            {
+             "snaktype": "value",
+             "property": "P813",
+             "hash": "8768a46b67ddc6e449068356a7a8c89f5839baea",
+             "datavalue": {
+              "value": {
+               "time": "+2018-09-16T00:00:00Z",
+               "timezone": 0,
+               "before": 0,
+               "after": 0,
+               "precision": 11,
+               "calendarmodel": "http://www.wikidata.org/entity/Q1985727"
+              },
+              "type": "time"
+             },
+             "datatype": "time"
+            }
+           ]
+          },
+          "snaks-order": [
+           "P143",
+           "P813"
+          ]
+         }
+        ]
+       },
+       {
+        "mainsnak": {
+         "snaktype": "value",
+         "property": "P31",
+         "hash": "af3410ae4f813c757b304403dd1af5becc963ebe",
+         "datavalue": {
+          "value": {
+           "entity-type": "item",
+           "numeric-id": 891723,
+           "id": "Q891723"
+          },
+          "type": "wikibase-entityid"
+         },
+         "datatype": "wikibase-item"
+        },
+        "type": "statement",
+        "id": "Q1194832$e26f124b-4c53-5b76-1e75-18971fb69bd5",
+        "rank": "normal",
+        "references": [
+         {
+          "hash": "96445edd0c74078756fba6f66de4b4cf46064af1",
+          "snaks": {
+           "P4656": [
+            {
+             "snaktype": "value",
+             "property": "P4656",
+             "hash": "1d0aeb900a1b92550e42fc2d0bde0c2d0e936c46",
+             "datavalue": {
+              "value": "https://en.wikipedia.org/wiki/Category:Companies_listed_on_the_New_York_Stock_Exchange",
+              "type": "string"
+             },
+             "datatype": "url"
+            }
+           ],
+           "P813": [
+            {
+             "snaktype": "value",
+             "property": "P813",
+             "hash": "ec11100215a5926044c30f24900adbf61070d424",
+             "datavalue": {
+              "value": {
+               "time": "+2023-02-21T00:00:00Z",
+               "timezone": 0,
+               "before": 0,
+               "after": 0,
+               "precision": 11,
+               "calendarmodel": "http://www.wikidata.org/entity/Q1985727"
+              },
+              "type": "time"
+             },
+             "datatype": "time"
+            }
+           ]
+          },
+          "snaks-order": [
+           "P4656",
+           "P813"
+          ]
+         }
+        ]
+       },
+       {
+        "mainsnak": {
+         "snaktype": "value",
+         "property": "P31",
+         "hash": "6cb6a4205767ea98d196f7886598fc0e510b8fe8",
+         "datavalue": {
+          "value": {
+           "entity-type": "item",
+           "numeric-id": 22687,
+           "id": "Q22687"
+          },
+          "type": "wikibase-entityid"
+         },
+         "datatype": "wikibase-item"
+        },
+        "type": "statement",
+        "id": "Q1194832$BC839BAD-5060-4A5F-9867-78719079C484",
+        "rank": "normal",
+        "references": [
+         {
+          "hash": "108a389e5e2b0a0674ad457bd61e53a833c413e1",
+          "snaks": {
+           "P854": [
+            {
+             "snaktype": "value",
+             "property": "P854",
+             "hash": "fcb93db6f3a619a9e81efc93b30613c41234bddc",
+             "datavalue": {
+              "value": "https://www.unepfi.org/net-zero-banking/members/",
+              "type": "string"
+             },
+             "datatype": "url"
+            }
+           ],
+           "P813": [
+            {
+             "snaktype": "value",
+             "property": "P813",
+             "hash": "ef7e186b9c210c90d9beb8488830da37e26a38eb",
+             "datavalue": {
+              "value": {
+               "time": "+2024-08-23T00:00:00Z",
+               "timezone": 0,
+               "before": 0,
+               "after": 0,
+               "precision": 11,
+               "calendarmodel": "http://www.wikidata.org/entity/Q1985727"
+              },
+              "type": "time"
+             },
+             "datatype": "time"
+            }
+           ]
+          },
+          "snaks-order": [
+           "P854",
+           "P813"
+          ]
+         }
+        ]
+       },
+       {
+        "mainsnak": {
+         "snaktype": "value",
+         "property": "P31",
+         "hash": "c9364abc66d9ddebefab46df5bf06d28dae39030",
+         "datavalue": {
+          "value": {
+           "entity-type": "item",
+           "numeric-id": 141145821,
+           "id": "Q141145821"
+          },
+          "type": "wikibase-entityid"
+         },
+         "datatype": "wikibase-item"
+        },
+        "type": "statement",
+        "qualifiers": {
+         "P585": [
+          {
+           "snaktype": "value",
+           "property": "P585",
+           "hash": "c55bb22b4b7f48077a25b955226a362751c1fee2",
+           "datavalue": {
+            "value": {
+             "time": "+2025-11-27T00:00:00Z",
+             "timezone": 0,
+             "before": 0,
+             "after": 0,
+             "precision": 11,
+             "calendarmodel": "http://www.wikidata.org/entity/Q1985727"
+            },
+            "type": "time"
+           },
+           "datatype": "time"
+          }
+         ],
+         "P1013": [
+          {
+           "snaktype": "value",
+           "property": "P1013",
+           "hash": "0cb850c00a6330fc2fa2ecd00c982821c6fadd9b",
+           "datavalue": {
+            "value": {
+             "entity-type": "item",
+             "numeric-id": 141147595,
+             "id": "Q141147595"
+            },
+            "type": "wikibase-entityid"
+           },
+           "datatype": "wikibase-item"
+          },
+          {
+           "snaktype": "value",
+           "property": "P1013",
+           "hash": "3b6f351ef0cda71800067033fca0d51d6adcebf7",
+           "datavalue": {
+            "value": {
+             "entity-type": "item",
+             "numeric-id": 141147596,
+             "id": "Q141147596"
+            },
+            "type": "wikibase-entityid"
+           },
+           "datatype": "wikibase-item"
+          },
+          {
+           "snaktype": "value",
+           "property": "P1013",
+           "hash": "18211244d27251642cff20578eee5b93d2d49537",
+           "datavalue": {
+            "value": {
+             "entity-type": "item",
+             "numeric-id": 141147597,
+             "id": "Q141147597"
+            },
+            "type": "wikibase-entityid"
+           },
+           "datatype": "wikibase-item"
+          },
+          {
+           "snaktype": "value",
+           "property": "P1013",
+           "hash": "68c0364994afa8fdced5c9e877ef34decb982a90",
+           "datavalue": {
+            "value": {
+             "entity-type": "item",
+             "numeric-id": 141147599,
+             "id": "Q141147599"
+            },
+            "type": "wikibase-entityid"
+           },
+           "datatype": "wikibase-item"
+          },
+          {
+           "snaktype": "value",
+           "property": "P1013",
+           "hash": "9c5c2f6d8b1cfe10f414b00896c8195a57299185",
+           "datavalue": {
+            "value": {
+             "entity-type": "item",
+             "numeric-id": 141147602,
+             "id": "Q141147602"
+            },
+            "type": "wikibase-entityid"
+           },
+           "datatype": "wikibase-item"
+          }
+         ],
+         "P459": [
+          {
+           "snaktype": "value",
+           "property": "P459",
+           "hash": "c08e7c89e4c2aef30e0f62e8d6e30bad6b50282c",
+           "datavalue": {
+            "value": {
+             "entity-type": "item",
+             "numeric-id": 141147675,
+             "id": "Q141147675"
+            },
+            "type": "wikibase-entityid"
+           },
+           "datatype": "wikibase-item"
+          }
+         ]
+        },
+        "qualifiers-order": [
+         "P585",
+         "P1013",
+         "P459"
+        ],
+        "id": "Q1194832$F41C58C8-E32F-408F-A16D-EF4AFE794E69",
+        "rank": "normal",
+        "references": [
+         {
+          "hash": "903f5c7569e3668a00169c32f998f1044c4c4250",
+          "snaks": {
+           "P854": [
+            {
+             "snaktype": "value",
+             "property": "P854",
+             "hash": "ec84ba84aae652b08aeb536b0c8c33c60b72f136",
+             "datavalue": {
+              "value": "https://www.fsb.org/uploads/P271125.pdf",
+              "type": "string"
+             },
+             "datatype": "url"
+            }
+           ],
+           "P813": [
+            {
+             "snaktype": "value",
+             "property": "P813",
+             "hash": "f0dde348bbc7baf4bca30954fe6509b978ee7a39",
+             "datavalue": {
+              "value": {
+               "time": "+2026-08-22T00:00:00Z",
+               "timezone": 0,
+               "before": 0,
+               "after": 0,
+               "precision": 11,
+               "calendarmodel": "http://www.wikidata.org/entity/Q1985727"
+              },
+              "type": "time"
+             },
+             "datatype": "time"
+            }
+           ]
+          },
+          "snaks-order": [
+           "P854",
+           "P813"
+          ]
+         },
+         {
+          "hash": "356ea980ce23e280462c8c544a0376747ee1808a",
+          "snaks": {
+           "P854": [
+            {
+             "snaktype": "value",
+             "property": "P854",
+             "hash": "fdf0afd45d07f25bd89cfa9e08fac10a921e3fcd",
+             "datavalue": {
+              "value": "https://www.bis.org/basel_framework/chapter/SCO/40.htm?inforce=20210101&published=20191215",
+              "type": "string"
+             },
+             "datatype": "url"
+            }
+           ],
+           "P813": [
+            {
+             "snaktype": "value",
+             "property": "P813",
+             "hash": "f0dde348bbc7baf4bca30954fe6509b978ee7a39",
+             "datavalue": {
+              "value": {
+               "time": "+2026-08-22T00:00:00Z",
+               "timezone": 0,
+               "before": 0,
+               "after": 0,
+               "precision": 11,
+               "calendarmodel": "http://www.wikidata.org/entity/Q1985727"
+              },
+              "type": "time"
+             },
+             "datatype": "time"
+            }
+           ]
+          },
+          "snaks-order": [
+           "P854",
+           "P813"
+          ]
+         },
+         {
+          "hash": "3b0558bd335331fce26f4c9a3242d53a841369a1",
+          "snaks": {
+           "P854": [
+            {
+             "snaktype": "value",
+             "property": "P854",
+             "hash": "1feae7ff89da2c1634b4b8b729a97e648da6cdd5",
+             "datavalue": {
+              "value": "https://www.bis.org/basel_framework/chapter/SCO/40.htm",
+              "type": "string"
+             },
+             "datatype": "url"
+            }
+           ],
+           "P813": [
+            {
+             "snaktype": "value",
+             "property": "P813",
+             "hash": "f0dde348bbc7baf4bca30954fe6509b978ee7a39",
+             "datavalue": {
+              "value": {
+               "time": "+2026-08-22T00:00:00Z",
+               "timezone": 0,
+               "before": 0,
+               "after": 0,
+               "precision": 11,
+               "calendarmodel": "http://www.wikidata.org/entity/Q1985727"
+              },
+              "type": "time"
+             },
+             "datatype": "time"
+            }
+           ]
+          },
+          "snaks-order": [
+           "P854",
+           "P813"
+          ]
+         }
+        ]
+       }
+      ],
+      "P17": [
+       {
+        "mainsnak": {
+         "snaktype": "value",
+         "property": "P17",
+         "hash": "a3723c4c3601569aebcc86e0f0c5c3697821da1b",
+         "datavalue": {
+          "value": {
+           "entity-type": "item",
+           "numeric-id": 16,
+           "id": "Q16"
+          },
+          "type": "wikibase-entityid"
+         },
+         "datatype": "wikibase-item"
+        },
+        "type": "statement",
+        "id": "Q1194832$062F4CEE-A791-4786-8BCF-D47DA7B688C3",
+        "rank": "normal",
+        "references": [
+         {
+          "hash": "3a9abee475d0f52864299d3bb7c47a27b28281a7",
+          "snaks": {
+           "P2427": [
+            {
+             "snaktype": "value",
+             "property": "P2427",
+             "hash": "192710aee9bab3dc7f8ff4c7f8c497f658ccf6bf",
+             "datavalue": {
+              "value": "grid.451406.2",
+              "type": "string"
+             },
+             "datatype": "external-id"
+            }
+           ]
+          },
+          "snaks-order": [
+           "P2427"
+          ]
+         },
+         {
+          "hash": "108a389e5e2b0a0674ad457bd61e53a833c413e1",
+          "snaks": {
+           "P854": [
+            {
+             "snaktype": "value",
+             "property": "P854",
+             "hash": "fcb93db6f3a619a9e81efc93b30613c41234bddc",
+             "datavalue": {
+              "value": "https://www.unepfi.org/net-zero-banking/members/",
+              "type": "string"
+             },
+             "datatype": "url"
+            }
+           ],
+           "P813": [
+            {
+             "snaktype": "value",
+             "property": "P813",
+             "hash": "ef7e186b9c210c90d9beb8488830da37e26a38eb",
+             "datavalue": {
+              "value": {
+               "time": "+2024-08-23T00:00:00Z",
+               "timezone": 0,
+               "before": 0,
+               "after": 0,
+               "precision": 11,
+               "calendarmodel": "http://www.wikidata.org/entity/Q1985727"
+              },
+              "type": "time"
+             },
+             "datatype": "time"
+            }
+           ]
+          },
+          "snaks-order": [
+           "P854",
+           "P813"
+          ]
+         },
+         {
+          "hash": "8adfdf96101d5c32b6b769c4633401ec06e02307",
+          "snaks": {
+           "P248": [
+            {
+             "snaktype": "value",
+             "property": "P248",
+             "hash": "88b1aea91b49e7281dc2608b867987d014c88992",
+             "datavalue": {
+              "value": {
+               "entity-type": "item",
+               "numeric-id": 55259097,
+               "id": "Q55259097"
+              },
+              "type": "wikibase-entityid"
+             },
+             "datatype": "wikibase-item"
+            }
+           ],
+           "P813": [
+            {
+             "snaktype": "value",
+             "property": "P813",
+             "hash": "e89ed975a583a10e83aa56ce16069435a04494bf",
+             "datavalue": {
+              "value": {
+               "time": "+2024-09-17T00:00:00Z",
+               "timezone": 0,
+               "before": 0,
+               "after": 0,
+               "precision": 11,
+               "calendarmodel": "http://www.wikidata.org/entity/Q1985727"
+              },
+              "type": "time"
+             },
+             "datatype": "time"
+            }
+           ]
+          },
+          "snaks-order": [
+           "P248",
+           "P813"
+          ]
+         },
+         {
+          "hash": "0ea623319072db46f260a3ffbfe7f77f152698d5",
+          "snaks": {
+           "P854": [
+            {
+             "snaktype": "value",
+             "property": "P854",
+             "hash": "7de001156d539b307813f9b756b4c611a71ee01a",
+             "datavalue": {
+              "value": "https://www.lobbyfacts.eu/datacard/td-bank-group?rid=280345542218-76",
+              "type": "string"
+             },
+             "datatype": "url"
+            }
+           ]
+          },
+          "snaks-order": [
+           "P854"
+          ]
+         }
+        ]
+       }
+      ],
+      "P856": [
+       {
+        "mainsnak": {
+         "snaktype": "value",
+         "property": "P856",
+         "hash": "fba11843a24c68edbc536dd5c9b9b22092ac655c",
+         "datavalue": {
+          "value": "http://www.td.com/",
+          "type": "string"
+         },
+         "datatype": "url"
+        },
+        "type": "statement",
+        "id": "Q1194832$FD2F0E55-2464-468C-B3C8-51C125F78C2F",
+        "rank": "normal",
+        "references": [
+         {
+          "hash": "9a24f7c0208b05d6be97077d855671d1dfdbc0dd",
+          "snaks": {
+           "P143": [
+            {
+             "snaktype": "value",
+             "property": "P143",
+             "hash": "d38375ffe6fe142663ff55cd783aa4df4301d83d",
+             "datavalue": {
+              "value": {
+               "entity-type": "item",
+               "numeric-id": 48183,
+               "id": "Q48183"
+              },
+              "type": "wikibase-entityid"
+             },
+             "datatype": "wikibase-item"
+            }
+           ]
+          },
+          "snaks-order": [
+           "P143"
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    },
+    "Q432105": {
+     "id": "Q432105",
+     "labels": {
+      "en": {
+       "language": "en",
+       "value": "TD Garden"
+      }
+     },
+     "descriptions": {
+      "en": {
+       "language": "en",
+       "value": "multi-purpose arena in Boston, Massachusetts, United States"
+      }
+     },
+     "claims": {
+      "P31": [
+       {
+        "mainsnak": {
+         "snaktype": "value",
+         "property": "P31",
+         "hash": "c541e660ea15bb30e997a5ed16f8b6e54d7e955a",
+         "datavalue": {
+          "value": {
+           "entity-type": "item",
+           "numeric-id": 811979,
+           "id": "Q811979"
+          },
+          "type": "wikibase-entityid"
+         },
+         "datatype": "wikibase-item"
+        },
+        "type": "statement",
+        "id": "Q432105$A5675897-CC39-4C2D-8A90-FDC33A7C5F17",
+        "rank": "normal"
+       },
+       {
+        "mainsnak": {
+         "snaktype": "value",
+         "property": "P31",
+         "hash": "012137cf0d43e306a5edeb8d01e28c60fd7ef499",
+         "datavalue": {
+          "value": {
+           "entity-type": "item",
+           "numeric-id": 8719053,
+           "id": "Q8719053"
+          },
+          "type": "wikibase-entityid"
+         },
+         "datatype": "wikibase-item"
+        },
+        "type": "statement",
+        "id": "Q432105$46DB9F1C-0A75-4D8D-8612-BF5BE5DDEFE2",
+        "rank": "normal"
+       }
+      ],
+      "P17": [
+       {
+        "mainsnak": {
+         "snaktype": "value",
+         "property": "P17",
+         "hash": "be4c6eafa2984964f04be85667263f5642ba1a72",
+         "datavalue": {
+          "value": {
+           "entity-type": "item",
+           "numeric-id": 30,
+           "id": "Q30"
+          },
+          "type": "wikibase-entityid"
+         },
+         "datatype": "wikibase-item"
+        },
+        "type": "statement",
+        "id": "q432105$86A122A6-8D90-4346-953A-0D3E767554B0",
+        "rank": "normal",
+        "references": [
+         {
+          "hash": "fa278ebfc458360e5aed63d5058cca83c46134f1",
+          "snaks": {
+           "P143": [
+            {
+             "snaktype": "value",
+             "property": "P143",
+             "hash": "e4f6d9441d0600513c4533c672b5ab472dc73694",
+             "datavalue": {
+              "value": {
+               "entity-type": "item",
+               "numeric-id": 328,
+               "id": "Q328"
+              },
+              "type": "wikibase-entityid"
+             },
+             "datatype": "wikibase-item"
+            }
+           ]
+          },
+          "snaks-order": [
+           "P143"
+          ]
+         }
+        ]
+       }
+      ],
+      "P856": [
+       {
+        "mainsnak": {
+         "snaktype": "value",
+         "property": "P856",
+         "hash": "3b69ccab1864981152f49aab08f42f1b2524cc78",
+         "datavalue": {
+          "value": "http://www.tdgarden.com/",
+          "type": "string"
+         },
+         "datatype": "url"
+        },
+        "type": "statement",
+        "qualifiers": {
+         "P407": [
+          {
+           "snaktype": "value",
+           "property": "P407",
+           "hash": "daf1c4fcb58181b02dff9cc89deb084004ddae4b",
+           "datavalue": {
+            "value": {
+             "entity-type": "item",
+             "numeric-id": 1860,
+             "id": "Q1860"
+            },
+            "type": "wikibase-entityid"
+           },
+           "datatype": "wikibase-item"
+          }
+         ]
+        },
+        "qualifiers-order": [
+         "P407"
+        ],
+        "id": "Q432105$2C84CC8F-8C4F-4CFA-AC85-82E8D63218FA",
+        "rank": "normal",
+        "references": [
+         {
+          "hash": "fa278ebfc458360e5aed63d5058cca83c46134f1",
+          "snaks": {
+           "P143": [
+            {
+             "snaktype": "value",
+             "property": "P143",
+             "hash": "e4f6d9441d0600513c4533c672b5ab472dc73694",
+             "datavalue": {
+              "value": {
+               "entity-type": "item",
+               "numeric-id": 328,
+               "id": "Q328"
+              },
+              "type": "wikibase-entityid"
+             },
+             "datatype": "wikibase-item"
+            }
+           ]
+          },
+          "snaks-order": [
+           "P143"
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    },
+    "Q7669891": {
+     "id": "Q7669891",
+     "labels": {
+      "en": {
+       "language": "en",
+       "value": "TD Bank"
+      }
+     },
+     "descriptions": {
+      "en": {
+       "language": "en",
+       "value": "American bank with branches along the East Coast of the United States"
+      }
+     },
+     "claims": {
+      "P31": [
+       {
+        "mainsnak": {
+         "snaktype": "value",
+         "property": "P31",
+         "hash": "326e3d41d1e9c34715e880be6e1c6a1e822e4317",
+         "datavalue": {
+          "value": {
+           "entity-type": "item",
+           "numeric-id": 4830453,
+           "id": "Q4830453"
+          },
+          "type": "wikibase-entityid"
+         },
+         "datatype": "wikibase-item"
+        },
+        "type": "statement",
+        "id": "Q7669891$B9E632A1-6CFD-4A20-8827-D41FF89E1F56",
+        "rank": "normal"
+       },
+       {
+        "mainsnak": {
+         "snaktype": "value",
+         "property": "P31",
+         "hash": "6cb6a4205767ea98d196f7886598fc0e510b8fe8",
+         "datavalue": {
+          "value": {
+           "entity-type": "item",
+           "numeric-id": 22687,
+           "id": "Q22687"
+          },
+          "type": "wikibase-entityid"
+         },
+         "datatype": "wikibase-item"
+        },
+        "type": "statement",
+        "id": "Q7669891$735e48d2-4678-ecae-d98a-dd1086208829",
+        "rank": "normal"
+       }
+      ],
+      "P17": [
+       {
+        "mainsnak": {
+         "snaktype": "value",
+         "property": "P17",
+         "hash": "be4c6eafa2984964f04be85667263f5642ba1a72",
+         "datavalue": {
+          "value": {
+           "entity-type": "item",
+           "numeric-id": 30,
+           "id": "Q30"
+          },
+          "type": "wikibase-entityid"
+         },
+         "datatype": "wikibase-item"
+        },
+        "type": "statement",
+        "id": "Q7669891$98273135-6DB1-48CB-B6B9-4C567481128D",
+        "rank": "normal",
+        "references": [
+         {
+          "hash": "fa278ebfc458360e5aed63d5058cca83c46134f1",
+          "snaks": {
+           "P143": [
+            {
+             "snaktype": "value",
+             "property": "P143",
+             "hash": "e4f6d9441d0600513c4533c672b5ab472dc73694",
+             "datavalue": {
+              "value": {
+               "entity-type": "item",
+               "numeric-id": 328,
+               "id": "Q328"
+              },
+              "type": "wikibase-entityid"
+             },
+             "datatype": "wikibase-item"
+            }
+           ]
+          },
+          "snaks-order": [
+           "P143"
+          ]
+         }
+        ]
+       }
+      ],
+      "P856": [
+       {
+        "mainsnak": {
+         "snaktype": "value",
+         "property": "P856",
+         "hash": "3b8b7d1b3bcd4303201c23d2af2a246dd5f17584",
+         "datavalue": {
+          "value": "http://tdbank.com",
+          "type": "string"
+         },
+         "datatype": "url"
+        },
+        "type": "statement",
+        "qualifiers": {
+         "P407": [
+          {
+           "snaktype": "value",
+           "property": "P407",
+           "hash": "daf1c4fcb58181b02dff9cc89deb084004ddae4b",
+           "datavalue": {
+            "value": {
+             "entity-type": "item",
+             "numeric-id": 1860,
+             "id": "Q1860"
+            },
+            "type": "wikibase-entityid"
+           },
+           "datatype": "wikibase-item"
+          }
+         ],
+         "P2241": [
+          {
+           "snaktype": "value",
+           "property": "P2241",
+           "hash": "105d2bc25c8e2dffd7699885ce8c4e0ab28500d8",
+           "datavalue": {
+            "value": {
+             "entity-type": "item",
+             "numeric-id": 92056121,
+             "id": "Q92056121"
+            },
+            "type": "wikibase-entityid"
+           },
+           "datatype": "wikibase-item"
+          }
+         ]
+        },
+        "qualifiers-order": [
+         "P407",
+         "P2241"
+        ],
+        "id": "Q7669891$155FF9A0-F0C5-41FB-8E23-E35BCE0CAF1F",
+        "rank": "deprecated",
+        "references": [
+         {
+          "hash": "fa278ebfc458360e5aed63d5058cca83c46134f1",
+          "snaks": {
+           "P143": [
+            {
+             "snaktype": "value",
+             "property": "P143",
+             "hash": "e4f6d9441d0600513c4533c672b5ab472dc73694",
+             "datavalue": {
+              "value": {
+               "entity-type": "item",
+               "numeric-id": 328,
+               "id": "Q328"
+              },
+              "type": "wikibase-entityid"
+             },
+             "datatype": "wikibase-item"
+            }
+           ]
+          },
+          "snaks-order": [
+           "P143"
+          ]
+         }
+        ]
+       },
+       {
+        "mainsnak": {
+         "snaktype": "value",
+         "property": "P856",
+         "hash": "51794dfa9b49ac73bb951912f583fc7f31097be2",
+         "datavalue": {
+          "value": "https://www.td.com/",
+          "type": "string"
+         },
+         "datatype": "url"
+        },
+        "type": "statement",
+        "qualifiers": {
+         "P407": [
+          {
+           "snaktype": "value",
+           "property": "P407",
+           "hash": "daf1c4fcb58181b02dff9cc89deb084004ddae4b",
+           "datavalue": {
+            "value": {
+             "entity-type": "item",
+             "numeric-id": 1860,
+             "id": "Q1860"
+            },
+            "type": "wikibase-entityid"
+           },
+           "datatype": "wikibase-item"
+          }
+         ]
+        },
+        "qualifiers-order": [
+         "P407"
+        ],
+        "id": "Q7669891$dacbe24e-40a4-24e8-3452-ddddf1d81b90",
+        "rank": "preferred"
+       },
+       {
+        "mainsnak": {
+         "snaktype": "value",
+         "property": "P856",
+         "hash": "09c00bf4f6c81fb65a5f083f4364069665aa4386",
+         "datavalue": {
+          "value": "https://advisors.td.com/",
+          "type": "string"
+         },
+         "datatype": "url"
+        },
+        "type": "statement",
+        "qualifiers": {
+         "P407": [
+          {
+           "snaktype": "value",
+           "property": "P407",
+           "hash": "daf1c4fcb58181b02dff9cc89deb084004ddae4b",
+           "datavalue": {
+            "value": {
+             "entity-type": "item",
+             "numeric-id": 1860,
+             "id": "Q1860"
+            },
+            "type": "wikibase-entityid"
+           },
+           "datatype": "wikibase-item"
+          }
+         ]
+        },
+        "qualifiers-order": [
+         "P407"
+        ],
+        "id": "Q7669891$ba898147-49a2-0cc6-7c27-4191b981368b",
+        "rank": "normal"
+       },
+       {
+        "mainsnak": {
+         "snaktype": "value",
+         "property": "P856",
+         "hash": "a3fb0799daa1c1d23cede7ab0edca30d3d1d41b2",
+         "datavalue": {
+          "value": "https://uswealthadvisors.td.com/",
+          "type": "string"
+         },
+         "datatype": "url"
+        },
+        "type": "statement",
+        "qualifiers": {
+         "P407": [
+          {
+           "snaktype": "value",
+           "property": "P407",
+           "hash": "daf1c4fcb58181b02dff9cc89deb084004ddae4b",
+           "datavalue": {
+            "value": {
+             "entity-type": "item",
+             "numeric-id": 1860,
+             "id": "Q1860"
+            },
+            "type": "wikibase-entityid"
+           },
+           "datatype": "wikibase-item"
+          }
+         ]
+        },
+        "qualifiers-order": [
+         "P407"
+        ],
+        "id": "Q7669891$ecaca854-4bfc-b9d6-798a-2c3703344d82",
+        "rank": "normal"
+       },
+       {
+        "mainsnak": {
+         "snaktype": "value",
+         "property": "P856",
+         "hash": "fbd6c60735ddf24600786c7287cc5e92a062bee2",
+         "datavalue": {
+          "value": "https://private-bankers.td.com",
+          "type": "string"
+         },
+         "datatype": "url"
+        },
+        "type": "statement",
+        "qualifiers": {
+         "P407": [
+          {
+           "snaktype": "value",
+           "property": "P407",
+           "hash": "daf1c4fcb58181b02dff9cc89deb084004ddae4b",
+           "datavalue": {
+            "value": {
+             "entity-type": "item",
+             "numeric-id": 1860,
+             "id": "Q1860"
+            },
+            "type": "wikibase-entityid"
+           },
+           "datatype": "wikibase-item"
+          }
+         ]
+        },
+        "qualifiers-order": [
+         "P407"
+        ],
+        "id": "Q7669891$1b516960-4d51-4f9f-685c-04c70976cdb5",
+        "rank": "normal"
+       },
+       {
+        "mainsnak": {
+         "snaktype": "value",
+         "property": "P856",
+         "hash": "0476cecb3aaaca428a6682ab4e9ee25f51a5e70a",
+         "datavalue": {
+          "value": "https://portfolio-managers.td.com/",
+          "type": "string"
+         },
+         "datatype": "url"
+        },
+        "type": "statement",
+        "qualifiers": {
+         "P407": [
+          {
+           "snaktype": "value",
+           "property": "P407",
+           "hash": "daf1c4fcb58181b02dff9cc89deb084004ddae4b",
+           "datavalue": {
+            "value": {
+             "entity-type": "item",
+             "numeric-id": 1860,
+             "id": "Q1860"
+            },
+            "type": "wikibase-entityid"
+           },
+           "datatype": "wikibase-item"
+          }
+         ]
+        },
+        "qualifiers-order": [
+         "P407"
+        ],
+        "id": "Q7669891$40c53dff-4fce-5acb-eeb5-21d818d2d763",
+        "rank": "normal"
+       },
+       {
+        "mainsnak": {
+         "snaktype": "value",
+         "property": "P856",
+         "hash": "5f7c9962652d13dcced6b716deaef3088bb84546",
+         "datavalue": {
+          "value": "https://mlo.td.com/",
+          "type": "string"
+         },
+         "datatype": "url"
+        },
+        "type": "statement",
+        "qualifiers": {
+         "P407": [
+          {
+           "snaktype": "value",
+           "property": "P407",
+           "hash": "daf1c4fcb58181b02dff9cc89deb084004ddae4b",
+           "datavalue": {
+            "value": {
+             "entity-type": "item",
+             "numeric-id": 1860,
+             "id": "Q1860"
+            },
+            "type": "wikibase-entityid"
+           },
+           "datatype": "wikibase-item"
+          }
+         ]
+        },
+        "qualifiers-order": [
+         "P407"
+        ],
+        "id": "Q7669891$334404aa-44d1-5ae1-9413-c5ef2e95f017",
+        "rank": "normal"
+       }
+      ]
+     }
+    },
+    "Q7501150": {
+     "id": "Q7501150",
+     "labels": {
+      "en": {
+       "language": "en",
+       "value": "Shopify"
+      }
+     },
+     "descriptions": {
+      "en": {
+       "language": "en",
+       "value": "Canadian e-commerce company"
+      }
+     },
+     "claims": {
+      "P31": [
+       {
+        "mainsnak": {
+         "snaktype": "value",
+         "property": "P31",
+         "hash": "eef1731db85f0ac84d4ae5d83756e45ce052108d",
+         "datavalue": {
+          "value": {
+           "entity-type": "item",
+           "numeric-id": 6881511,
+           "id": "Q6881511"
+          },
+          "type": "wikibase-entityid"
+         },
+         "datatype": "wikibase-item"
+        },
+        "type": "statement",
+        "id": "Q7501150$fdd24101-4494-206c-3526-feae5b55b9c7",
+        "rank": "normal",
+        "references": [
+         {
+          "hash": "9a24f7c0208b05d6be97077d855671d1dfdbc0dd",
+          "snaks": {
+           "P143": [
+            {
+             "snaktype": "value",
+             "property": "P143",
+             "hash": "d38375ffe6fe142663ff55cd783aa4df4301d83d",
+             "datavalue": {
+              "value": {
+               "entity-type": "item",
+               "numeric-id": 48183,
+               "id": "Q48183"
+              },
+              "type": "wikibase-entityid"
+             },
+             "datatype": "wikibase-item"
+            }
+           ]
+          },
+          "snaks-order": [
+           "P143"
+          ]
+         }
+        ]
+       },
+       {
+        "mainsnak": {
+         "snaktype": "value",
+         "property": "P31",
+         "hash": "af3410ae4f813c757b304403dd1af5becc963ebe",
+         "datavalue": {
+          "value": {
+           "entity-type": "item",
+           "numeric-id": 891723,
+           "id": "Q891723"
+          },
+          "type": "wikibase-entityid"
+         },
+         "datatype": "wikibase-item"
+        },
+        "type": "statement",
+        "id": "Q7501150$A03D3509-2A5F-47D6-9CA4-1FB42EEF8F44",
+        "rank": "normal"
+       },
+       {
+        "mainsnak": {
+         "snaktype": "value",
+         "property": "P31",
+         "hash": "326e3d41d1e9c34715e880be6e1c6a1e822e4317",
+         "datavalue": {
+          "value": {
+           "entity-type": "item",
+           "numeric-id": 4830453,
+           "id": "Q4830453"
+          },
+          "type": "wikibase-entityid"
+         },
+         "datatype": "wikibase-item"
+        },
+        "type": "statement",
+        "id": "Q7501150$329034fa-49c3-368e-5e38-727f40e20067",
+        "rank": "normal"
+       }
+      ],
+      "P17": [
+       {
+        "mainsnak": {
+         "snaktype": "value",
+         "property": "P17",
+         "hash": "a3723c4c3601569aebcc86e0f0c5c3697821da1b",
+         "datavalue": {
+          "value": {
+           "entity-type": "item",
+           "numeric-id": 16,
+           "id": "Q16"
+          },
+          "type": "wikibase-entityid"
+         },
+         "datatype": "wikibase-item"
+        },
+        "type": "statement",
+        "id": "Q7501150$94821bd1-4753-7dbe-4e84-f84b993b8198",
+        "rank": "normal",
+        "references": [
+         {
+          "hash": "549e66cf8f85e0ff6b6ee38c7c24da3ea3d48afe",
+          "snaks": {
+           "P854": [
+            {
+             "snaktype": "value",
+             "property": "P854",
+             "hash": "1e3161cdcbc21757eccc2287fe82bc204252dc2a",
+             "datavalue": {
+              "value": "https://www.lobbyfacts.eu/datacard/shopify-inc?rid=104142342214-75",
+              "type": "string"
+             },
+             "datatype": "url"
+            }
+           ]
+          },
+          "snaks-order": [
+           "P854"
+          ]
+         }
+        ]
+       }
+      ],
+      "P1128": [
+       {
+        "mainsnak": {
+         "snaktype": "value",
+         "property": "P1128",
+         "hash": "95687757e4a9f2e578d454e8facaec5c12a89174",
+         "datavalue": {
+          "value": {
+           "amount": "+10000",
+           "unit": "1"
+          },
+          "type": "quantity"
+         },
+         "datatype": "quantity"
+        },
+        "type": "statement",
+        "qualifiers": {
+         "P585": [
+          {
+           "snaktype": "value",
+           "property": "P585",
+           "hash": "4a6fe7f861358928efef462e361b21704446d129",
+           "datavalue": {
+            "value": {
+             "time": "+2021-00-00T00:00:00Z",
+             "timezone": 0,
+             "before": 0,
+             "after": 0,
+             "precision": 9,
+             "calendarmodel": "http://www.wikidata.org/entity/Q1985727"
+            },
+            "type": "time"
+           },
+           "datatype": "time"
+          }
+         ]
+        },
+        "qualifiers-order": [
+         "P585"
+        ],
+        "id": "Q7501150$7a264d33-48d9-4747-4db3-95f857913361",
+        "rank": "normal",
+        "references": [
+         {
+          "hash": "8d36132d56920d26b4d61cee4088b255b2b5b163",
+          "snaks": {
+           "P854": [
+            {
+             "snaktype": "value",
+             "property": "P854",
+             "hash": "d832135e098ea625ac817201818cd9d86298294b",
+             "datavalue": {
+              "value": "https://s27.q4cdn.com/572064924/files/doc_financials/2021/q4/99a0d08d-4015-4a0a-a8fb-fe6ec66553c4.pdf",
+              "type": "string"
+             },
+             "datatype": "url"
+            }
+           ]
+          },
+          "snaks-order": [
+           "P854"
+          ]
+         },
+         {
+          "hash": "7341cc5127076d6f7bfa30269872e6fad7a0372e",
+          "snaks": {
+           "P854": [
+            {
+             "snaktype": "value",
+             "property": "P854",
+             "hash": "730916196fee7c8d7ef2b96afdf071b8d3434bc2",
+             "datavalue": {
+              "value": "https://news.shopify.com/company-info",
+              "type": "string"
+             },
+             "datatype": "url"
+            }
+           ]
+          },
+          "snaks-order": [
+           "P854"
+          ]
+         }
+        ]
+       },
+       {
+        "mainsnak": {
+         "snaktype": "value",
+         "property": "P1128",
+         "hash": "1823500ef5d9fff065b7dadd5111085d87defddc",
+         "datavalue": {
+          "value": {
+           "amount": "+8300",
+           "unit": "1"
+          },
+          "type": "quantity"
+         },
+         "datatype": "quantity"
+        },
+        "type": "statement",
+        "qualifiers": {
+         "P585": [
+          {
+           "snaktype": "value",
+           "property": "P585",
+           "hash": "1a3e5e8f69f70a8a6b056a6cb8cf5fce7fffa373",
+           "datavalue": {
+            "value": {
+             "time": "+2023-00-00T00:00:00Z",
+             "timezone": 0,
+             "before": 0,
+             "after": 0,
+             "precision": 9,
+             "calendarmodel": "http://www.wikidata.org/entity/Q1985727"
+            },
+            "type": "time"
+           },
+           "datatype": "time"
+          }
+         ]
+        },
+        "qualifiers-order": [
+         "P585"
+        ],
+        "id": "Q7501150$adcb7ba3-4e9f-a414-2821-96b08a60e3b7",
+        "rank": "preferred",
+        "references": [
+         {
+          "hash": "8b7e87755d1674699a8f27ff59451b40f046b581",
+          "snaks": {
+           "P854": [
+            {
+             "snaktype": "value",
+             "property": "P854",
+             "hash": "946c16f810e1c175bb9bc66f0ad62b03bc43cf07",
+             "datavalue": {
+              "value": "https://www.shopify.com/news/company-info",
+              "type": "string"
+             },
+             "datatype": "url"
+            }
+           ],
+           "P813": [
+            {
+             "snaktype": "value",
+             "property": "P813",
+             "hash": "ada3eb68726a05b9f07e34683e5c78b25c52f941",
+             "datavalue": {
+              "value": {
+               "time": "+2024-03-22T00:00:00Z",
+               "timezone": 0,
+               "before": 0,
+               "after": 0,
+               "precision": 11,
+               "calendarmodel": "http://www.wikidata.org/entity/Q1985727"
+              },
+              "type": "time"
+             },
+             "datatype": "time"
+            }
+           ]
+          },
+          "snaks-order": [
+           "P854",
+           "P813"
+          ]
+         }
+        ]
+       }
+      ],
+      "P856": [
+       {
+        "mainsnak": {
+         "snaktype": "value",
+         "property": "P856",
+         "hash": "1d6154aed49b096f35b86c85e35499459db513b6",
+         "datavalue": {
+          "value": "https://www.shopify.com",
+          "type": "string"
+         },
+         "datatype": "url"
+        },
+        "type": "statement",
+        "qualifiers": {
+         "P407": [
+          {
+           "snaktype": "value",
+           "property": "P407",
+           "hash": "daf1c4fcb58181b02dff9cc89deb084004ddae4b",
+           "datavalue": {
+            "value": {
+             "entity-type": "item",
+             "numeric-id": 1860,
+             "id": "Q1860"
+            },
+            "type": "wikibase-entityid"
+           },
+           "datatype": "wikibase-item"
+          }
+         ],
+         "P1001": [
+          {
+           "snaktype": "value",
+           "property": "P1001",
+           "hash": "fd03a46bac885aad8c96834e86183c078494dce6",
+           "datavalue": {
+            "value": {
+             "entity-type": "item",
+             "numeric-id": 30,
+             "id": "Q30"
+            },
+            "type": "wikibase-entityid"
+           },
+           "datatype": "wikibase-item"
+          }
+         ]
+        },
+        "qualifiers-order": [
+         "P407",
+         "P1001"
+        ],
+        "id": "Q7501150$b718ec00-462c-c976-5ee2-c166162de985",
+        "rank": "preferred"
+       },
+       {
+        "mainsnak": {
+         "snaktype": "value",
+         "property": "P856",
+         "hash": "1b875c5083b5ae9fdd358ba38f82e2b294f9f865",
+         "datavalue": {
+          "value": "https://pt.shopify.com",
+          "type": "string"
+         },
+         "datatype": "url"
+        },
+        "type": "statement",
+        "qualifiers": {
+         "P407": [
+          {
+           "snaktype": "value",
+           "property": "P407",
+           "hash": "d3341820d45f6bb2097e8460656f7cd8fea3cf2a",
+           "datavalue": {
+            "value": {
+             "entity-type": "item",
+             "numeric-id": 5146,
+             "id": "Q5146"
+            },
+            "type": "wikibase-entityid"
+           },
+           "datatype": "wikibase-item"
+          }
+         ]
+        },
+        "qualifiers-order": [
+         "P407"
+        ],
+        "id": "Q7501150$b40a9d09-4e4f-9856-8266-ff636d6918e0",
+        "rank": "normal"
+       },
+       {
+        "mainsnak": {
+         "snaktype": "value",
+         "property": "P856",
+         "hash": "df36061f37fa66c72af8e5361a0678695e49e264",
+         "datavalue": {
+          "value": "https://www.shopify.com/jp",
+          "type": "string"
+         },
+         "datatype": "url"
+        },
+        "type": "statement",
+        "qualifiers": {
+         "P407": [
+          {
+           "snaktype": "value",
+           "property": "P407",
+           "hash": "d858d1b9f6e6e383f38dfbe706d102f056c07312",
+           "datavalue": {
+            "value": {
+             "entity-type": "item",
+             "numeric-id": 5287,
+             "id": "Q5287"
+            },
+            "type": "wikibase-entityid"
+           },
+           "datatype": "wikibase-item"
+          }
+         ]
+        },
+        "qualifiers-order": [
+         "P407"
+        ],
+        "id": "Q7501150$27a07536-4719-db2d-22ea-8968cac4b1de",
+        "rank": "normal"
+       },
+       {
+        "mainsnak": {
+         "snaktype": "value",
+         "property": "P856",
+         "hash": "965038d13b9931c113dffb8296ab92a84a716941",
+         "datavalue": {
+          "value": "https://en.shopify.nl/",
+          "type": "string"
+         },
+         "datatype": "url"
+        },
+        "type": "statement",
+        "qualifiers": {
+         "P407": [
+          {
+           "snaktype": "value",
+           "property": "P407",
+           "hash": "daf1c4fcb58181b02dff9cc89deb084004ddae4b",
+           "datavalue": {
+            "value": {
+             "entity-type": "item",
+             "numeric-id": 1860,
+             "id": "Q1860"
+            },
+            "type": "wikibase-entityid"
+           },
+           "datatype": "wikibase-item"
+          }
+         ],
+         "P1001": [
+          {
+           "snaktype": "value",
+           "property": "P1001",
+           "hash": "501523847e0be105c5c6bfa9a66cf405a3ef43b8",
+           "datavalue": {
+            "value": {
+             "entity-type": "item",
+             "numeric-id": 55,
+             "id": "Q55"
+            },
+            "type": "wikibase-entityid"
+           },
+           "datatype": "wikibase-item"
+          }
+         ]
+        },
+        "qualifiers-order": [
+         "P407",
+         "P1001"
+        ],
+        "id": "Q7501150$75b3d82b-4a66-13a8-d78f-706154487481",
+        "rank": "normal"
+       },
+       {
+        "mainsnak": {
+         "snaktype": "value",
+         "property": "P856",
+         "hash": "d67c52deb8ca88a48709eefeb943cfdefbfc8cf6",
+         "datavalue": {
+          "value": "http://www.shopify.com",
+          "type": "string"
+         },
+         "datatype": "url"
+        },
+        "type": "statement",
+        "id": "Q7501150$48B40521-FB51-4308-A8A8-06AE5DA1EF5D",
+        "rank": "normal",
+        "references": [
+         {
+          "hash": "555b7e32cf9944c0828f1190db8ba9e90b0d83b3",
+          "snaks": {
+           "P248": [
+            {
+             "snaktype": "value",
+             "property": "P248",
+             "hash": "ab3a8d932bbcda6238c9054801c45cb065e4a899",
+             "datavalue": {
+              "value": {
+               "entity-type": "item",
+               "numeric-id": 15851383,
+               "id": "Q15851383"
+              },
+              "type": "wikibase-entityid"
+             },
+             "datatype": "wikibase-item"
+            }
+           ],
+           "P2657": [
+            {
+             "snaktype": "value",
+             "property": "P2657",
+             "hash": "3223304a8ecc0fdb40484870dfa41f6cc03d2b89",
+             "datavalue": {
+              "value": "104142342214-75",
+              "type": "string"
+             },
+             "datatype": "external-id"
+            }
+           ]
+          },
+          "snaks-order": [
+           "P248",
+           "P2657"
+          ]
+         }
+        ]
+       },
+       {
+        "mainsnak": {
+         "snaktype": "value",
+         "property": "P856",
+         "hash": "2772e83419253e70e4190e623ae42af4b40510e5",
+         "datavalue": {
+          "value": "https://es.shopify.com/",
+          "type": "string"
+         },
+         "datatype": "url"
+        },
+        "type": "statement",
+        "qualifiers": {
+         "P407": [
+          {
+           "snaktype": "value",
+           "property": "P407",
+           "hash": "ffe70325d10cfc55f0dca807ed80ca0b5b97c472",
+           "datavalue": {
+            "value": {
+             "entity-type": "item",
+             "numeric-id": 1321,
+             "id": "Q1321"
+            },
+            "type": "wikibase-entityid"
+           },
+           "datatype": "wikibase-item"
+          }
+         ]
+        },
+        "qualifiers-order": [
+         "P407"
+        ],
+        "id": "Q7501150$bc1939bd-4033-b340-29a9-b54148ae0915",
+        "rank": "normal"
+       },
+       {
+        "mainsnak": {
+         "snaktype": "value",
+         "property": "P856",
+         "hash": "fa920d15a3d061c211217c0129f6451dd5e52647",
+         "datavalue": {
+          "value": "https://www.shopify.com/fr",
+          "type": "string"
+         },
+         "datatype": "url"
+        },
+        "type": "statement",
+        "qualifiers": {
+         "P407": [
+          {
+           "snaktype": "value",
+           "property": "P407",
+           "hash": "d197d0a5efa4b4c23a302a829dd3ef43684fe002",
+           "datavalue": {
+            "value": {
+             "entity-type": "item",
+             "numeric-id": 150,
+             "id": "Q150"
+            },
+            "type": "wikibase-entityid"
+           },
+           "datatype": "wikibase-item"
+          }
+         ]
+        },
+        "qualifiers-order": [
+         "P407"
+        ],
+        "id": "Q7501150$6715823e-4738-51d4-cc88-ab888eba480a",
+        "rank": "normal"
+       }
+      ]
+     }
+    },
+    "Q141100259": {
+     "id": "Q141100259",
+     "labels": {},
+     "descriptions": {
+      "en": {
+       "language": "en",
+       "value": "commerce platform operated by Shopify Inc."
+      }
+     },
+     "claims": {
+      "P31": [
+       {
+        "mainsnak": {
+         "snaktype": "value",
+         "property": "P31",
+         "hash": "c0b915816797f836839b7d0cf948e00e7f81ec7f",
+         "datavalue": {
+          "value": {
+           "entity-type": "item",
+           "numeric-id": 18450215,
+           "id": "Q18450215"
+          },
+          "type": "wikibase-entityid"
+         },
+         "datatype": "wikibase-item"
+        },
+        "type": "statement",
+        "id": "Q141100259$e1f27c87-4f51-c975-bfae-57b4cca64ec9",
+        "rank": "normal"
+       },
+       {
+        "mainsnak": {
+         "snaktype": "value",
+         "property": "P31",
+         "hash": "296874dbcbb9fbe242080fecb83879851f5ce6be",
+         "datavalue": {
+          "value": {
+           "entity-type": "item",
+           "numeric-id": 1254596,
+           "id": "Q1254596"
+          },
+          "type": "wikibase-entityid"
+         },
+         "datatype": "wikibase-item"
+        },
+        "type": "statement",
+        "id": "Q141100259$727d1c88-405c-75e2-6725-5df2636b460f",
+        "rank": "normal"
+       }
+      ]
+     }
+    },
+    "Q105620580": {
+     "id": "Q105620580",
+     "labels": {
+      "en": {
+       "language": "en",
+       "value": "Shopify Rebellion"
+      }
+     },
+     "descriptions": {
+      "en": {
+       "language": "en",
+       "value": "Esports team"
+      }
+     },
+     "claims": {
+      "P31": [
+       {
+        "mainsnak": {
+         "snaktype": "value",
+         "property": "P31",
+         "hash": "34d891aea006c01c382162653f4a62e70ebcd834",
+         "datavalue": {
+          "value": {
+           "entity-type": "item",
+           "numeric-id": 61974339,
+           "id": "Q61974339"
+          },
+          "type": "wikibase-entityid"
+         },
+         "datatype": "wikibase-item"
+        },
+        "type": "statement",
+        "id": "Q105620580$a8e265eb-4d94-568f-8f41-bcbb2555f4a0",
+        "rank": "normal"
+       }
+      ],
+      "P17": [
+       {
+        "mainsnak": {
+         "snaktype": "value",
+         "property": "P17",
+         "hash": "a3723c4c3601569aebcc86e0f0c5c3697821da1b",
+         "datavalue": {
+          "value": {
+           "entity-type": "item",
+           "numeric-id": 16,
+           "id": "Q16"
+          },
+          "type": "wikibase-entityid"
+         },
+         "datatype": "wikibase-item"
+        },
+        "type": "statement",
+        "id": "Q105620580$1a93ae10-4410-14a2-8f4c-9c1855bfe58e",
+        "rank": "normal"
+       }
+      ],
+      "P856": [
+       {
+        "mainsnak": {
+         "snaktype": "value",
+         "property": "P856",
+         "hash": "f0be63562da1f57efdf0d8123e2be5720f4c1722",
+         "datavalue": {
+          "value": "https://shopifyrebellion.gg/",
+          "type": "string"
+         },
+         "datatype": "url"
+        },
+        "type": "statement",
+        "id": "Q105620580$1fa9f98c-4fd8-bd6e-c4aa-b348d07f0f56",
+        "rank": "normal"
+       }
+      ]
+     }
+    },
+    "Q21501617": {
+     "id": "Q21501617",
+     "labels": {
+      "en": {
+       "language": "en",
+       "value": "Hopper"
+      }
+     },
+     "descriptions": {
+      "en": {
+       "language": "en",
+       "value": "family name"
+      }
+     },
+     "claims": {
+      "P31": [
+       {
+        "mainsnak": {
+         "snaktype": "value",
+         "property": "P31",
+         "hash": "3a01d0950849b76433d9aeec3107b57e86bb6378",
+         "datavalue": {
+          "value": {
+           "entity-type": "item",
+           "numeric-id": 101352,
+           "id": "Q101352"
+          },
+          "type": "wikibase-entityid"
+         },
+         "datatype": "wikibase-item"
+        },
+        "type": "statement",
+        "id": "Q21501617$61F1EDC2-33F6-4EA5-BCA9-692594F6C792",
+        "rank": "normal"
+       }
+      ]
+     }
+    },
+    "Q19863275": {
+     "id": "Q19863275",
+     "labels": {
+      "en": {
+       "language": "en",
+       "value": "Hopper"
+      }
+     },
+     "descriptions": {
+      "en": {
+       "language": "en",
+       "value": "1982 computer game"
+      }
+     },
+     "claims": {
+      "P31": [
+       {
+        "mainsnak": {
+         "snaktype": "value",
+         "property": "P31",
+         "hash": "03d2d8ec4a899b29435a104a9ce7c189a31ae380",
+         "datavalue": {
+          "value": {
+           "entity-type": "item",
+           "numeric-id": 7889,
+           "id": "Q7889"
+          },
+          "type": "wikibase-entityid"
+         },
+         "datatype": "wikibase-item"
+        },
+        "type": "statement",
+        "id": "Q19863275$c3213dde-46b7-cf47-daa5-fbf333380b08",
+        "rank": "normal"
+       }
+      ]
+     }
+    },
+    "Q50316275": {
+     "id": "Q50316275",
+     "labels": {
+      "en": {
+       "language": "en",
+       "value": "Hopper"
+      }
+     },
+     "descriptions": {
+      "en": {
+       "language": "en",
+       "value": "given name"
+      }
+     },
+     "claims": {
+      "P31": [
+       {
+        "mainsnak": {
+         "snaktype": "value",
+         "property": "P31",
+         "hash": "795ff806ce03e8abbe039fee43005e0253a02b5e",
+         "datavalue": {
+          "value": {
+           "entity-type": "item",
+           "numeric-id": 202444,
+           "id": "Q202444"
+          },
+          "type": "wikibase-entityid"
+         },
+         "datatype": "wikibase-item"
+        },
+        "type": "statement",
+        "id": "Q50316275$BE3C7305-BBA7-4EC5-8275-008E96510170",
+        "rank": "normal"
+       }
+      ]
+     }
+    }
+   },
+   "success": 1
+  }
+ }
+}
