@@ -2,7 +2,9 @@
 // that serves this page, so there is no base URL to configure.
 
 import type {
+  Candidate,
   Company,
+  DetectedBoard,
   CompanyStatus,
   JobDetail,
   JobPage,
@@ -13,6 +15,7 @@ import type {
   ScanRecord,
   ScanResultRow,
   ScanState,
+  TaskState,
 } from "./types";
 
 export class ApiError extends Error {
@@ -78,13 +81,34 @@ export const api = {
 
   companies: (params: URLSearchParams) => request<Company[]>("GET", `/api/companies?${params}`),
   company: (id: number) => request<Company>("GET", `/api/companies/${id}`),
-  addCompany: (body: { name: string; canadian: boolean; careers_url?: string; board?: NewBoard }) =>
+  addCompany: (body: { name: string; canadian: boolean; careers_url?: string | null; board?: NewBoard }) =>
     request<Company>("POST", "/api/companies", body),
   patchCompany: (id: number, patch: CompanyPatch) => request<Company>("PATCH", `/api/companies/${id}`, patch),
   addBoard: (companyId: number, board: NewBoard) =>
     request<Company>("POST", `/api/companies/${companyId}/boards`, board),
   patchBoard: (id: number, patch: { enabled?: boolean; confirmed?: boolean }) =>
     request<unknown>("PATCH", `/api/boards/${id}`, patch),
+
+  acceptSize: (id: number) => request<Company>("POST", `/api/companies/${id}/accept-size`),
+  lookUpSize: (id: number) => request<{ result: string }>("POST", "/api/enrich", { company_id: id }),
+  fillAllSizes: () => request<TaskState>("POST", "/api/enrich", {}),
+  detect: (body: { name: string; careers_url?: string | null; canadian: boolean }) =>
+    request<DetectedBoard[]>("POST", "/api/detect", body),
+  currentTask: () => request<TaskState>("GET", "/api/tasks/current"),
+
+  candidates: (params: URLSearchParams) =>
+    request<{ refreshed_at: string | null; items: Candidate[] }>("GET", `/api/candidates?${params}`),
+  refreshCandidates: () =>
+    request<{ total: number; new: number; gone: number; canadian: number; linked: number; sizes: number }>(
+      "POST",
+      "/api/candidates/refresh",
+    ),
+  approveCandidate: (id: number, board?: NewBoard) =>
+    request<{ company_id: number }>("POST", `/api/candidates/${id}/approve`, board ?? {}),
+  rejectCandidate: (id: number) => request<unknown>("POST", `/api/candidates/${id}/reject`),
+  restoreCandidate: (id: number) => request<unknown>("POST", `/api/candidates/${id}/restore`),
+  detectCandidate: (id: number) => request<{ options: DetectedBoard[] }>("POST", `/api/candidates/${id}/detect`),
+  detectAllCandidates: () => request<TaskState>("POST", "/api/candidates/detect-all"),
 
   savedSearches: () => request<SavedSearch[]>("GET", "/api/saved-searches"),
   saveSearch: (body: { name: string; query: string; filters: Record<string, string>; use_for_sources: boolean }) =>

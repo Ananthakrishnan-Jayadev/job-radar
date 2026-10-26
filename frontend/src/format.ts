@@ -48,6 +48,19 @@ export const SYSTEM_LABEL: Record<string, string> = {
   workday: "Workday",
 };
 
+export const SIZE_SOURCE_LABEL: Record<string, string> = {
+  manual: "entered by you",
+  stillhiring: "from stillhiring.today",
+  wikidata: "from Wikidata",
+  estimate: "estimated from open roles",
+};
+
+export const CONFIDENCE_LABEL: Record<string, string> = {
+  certain: "From its careers link",
+  likely: "Found on its careers page",
+  possible: "Guessed from its name",
+};
+
 const MONTH_DAY = new Intl.DateTimeFormat("en-CA", { month: "short", day: "numeric" });
 const FULL_DATE = new Intl.DateTimeFormat("en-CA", { month: "short", day: "numeric", year: "numeric" });
 const DATE_TIME = new Intl.DateTimeFormat("en-CA", {

@@ -1,16 +1,17 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { Link, useParams } from "react-router-dom";
 import { api } from "../api";
-import { COMPANY_STATUS_LABEL, SIZE_LABEL, SYSTEM_LABEL, boardLabel, formatCount, formatDateTime } from "../format";
+import {
+  COMPANY_STATUS_LABEL,
+  SIZE_LABEL,
+  SIZE_SOURCE_LABEL,
+  SYSTEM_LABEL,
+  boardLabel,
+  formatCount,
+  formatDateTime,
+} from "../format";
 import { useApp, useLoad } from "../state";
 import type { Company, CompanyStatus } from "../types";
-
-const SIZE_SOURCE: Record<string, string> = {
-  manual: "entered by you",
-  wikidata: "from Wikidata",
-  estimate: "estimated",
-  stillhiring: "from stillhiring.today",
-};
 
 export default function CompanyPage() {
   const id = Number(useParams().id);
@@ -45,6 +46,7 @@ export default function CompanyPage() {
         <h1>{c.name}</h1>
         <p className="job-sub">
           <span>{c.canadian ? "Canadian company" : "Global company"}</span>
+          {c.hq && <span>Based in {c.hq}</span>}
           <Link to={`/?company=${c.id}&include_ignored=1`}>
             {formatCount(c.canada_open)} open {c.canada_open === 1 ? "job" : "jobs"} in Canada
           </Link>
@@ -123,7 +125,12 @@ export default function CompanyPage() {
               </select>
             </label>
             {c.status === "ignored" && <p className="hint">Its jobs are hidden from the jobs list.</p>}
-            <CompanySize company={c} onSave={(n) => patch({ employee_count: n })} />
+            <CompanySize
+              company={c}
+              onSave={(n) => patch({ employee_count: n })}
+              onUpdated={(updated) => company.setData(updated)}
+              onReload={company.reload}
+            />
             <CompanyNotes company={c} onSave={(notes) => patch({ notes })} />
           </section>
         </aside>
@@ -132,8 +139,33 @@ export default function CompanyPage() {
   );
 }
 
-function CompanySize({ company, onSave }: { company: Company; onSave: (n: number | null) => void }) {
+function CompanySize({
+  company,
+  onSave,
+  onUpdated,
+  onReload,
+}: {
+  company: Company;
+  onSave: (n: number | null) => void;
+  onUpdated: (c: Company) => void;
+  onReload: () => void;
+}) {
   const [value, setValue] = useState(company.employee_count?.toString() ?? "");
+  const [lookup, setLookup] = useState<string | null>(null);
+  const [looking, setLooking] = useState(false);
+  const suggestion = company.size_suggestion;
+
+  async function lookUp() {
+    setLooking(true);
+    try {
+      setLookup((await api.lookUpSize(company.id)).result);
+      onReload();
+    } catch (err) {
+      setLookup(err instanceof Error ? err.message : String(err));
+    } finally {
+      setLooking(false);
+    }
+  }
   useEffect(() => setValue(company.employee_count?.toString() ?? ""), [company.employee_count]);
   const parsed = value.trim() === "" ? null : Number(value.replace(/[,\s]/g, ""));
   const valid = parsed === null || (Number.isInteger(parsed) && parsed >= 0);
@@ -150,9 +182,32 @@ function CompanySize({ company, onSave }: { company: Company; onSave: (n: number
       </div>
       <p className="hint">
         {SIZE_LABEL[company.size_band] ?? company.size_band}
-        {company.size_source && `, ${SIZE_SOURCE[company.size_source] ?? company.size_source}`}.
+        {company.size_source && `, ${SIZE_SOURCE_LABEL[company.size_source] ?? company.size_source}`}.
         {!valid && " Enter a whole number."}
       </p>
+      {suggestion && (
+        <div className="notice small">
+          Wikidata may list this company as{" "}
+          {suggestion.url ? (
+            <a href={suggestion.url} target="_blank" rel="noreferrer">
+              {suggestion.label ?? "an entry"}
+            </a>
+          ) : (
+            suggestion.label
+          )}
+          {suggestion.description && ` (${suggestion.description})`} with {formatCount(suggestion.employees)} employees
+          {suggestion.as_of && ` in ${suggestion.as_of}`}.{" "}
+          <button type="button" className="link" onClick={async () => onUpdated(await api.acceptSize(company.id))}>
+            Use this size
+          </button>
+        </div>
+      )}
+      {company.size_source !== "manual" && (
+        <button type="button" className="link" disabled={looking} onClick={lookUp}>
+          {looking ? "Looking up…" : "Look up on Wikidata"}
+        </button>
+      )}
+      {lookup && <p className="hint">{lookup}</p>}
     </div>
   );
 }

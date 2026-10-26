@@ -816,6 +816,97 @@ tr.detail-row > td {
   background: var(--bg);
 }
 
+/* --- candidates and background tasks ---------------------------------------- */
+
+.tabs {
+  display: flex;
+  gap: 0.25rem;
+  border-bottom: 1px solid var(--line);
+  margin: 1rem 0 0.75rem;
+}
+
+.tabs button {
+  border: 0;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+  background: none;
+  color: var(--muted);
+  padding: 0.4rem 0.8rem;
+}
+
+.tabs button.on {
+  color: var(--ink);
+  border-bottom-color: var(--lake);
+  font-weight: 600;
+}
+
+.filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.filter-row .check {
+  margin-top: 0;
+}
+
+.tagline {
+  display: block;
+  max-width: 48ch;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.block {
+  display: block;
+}
+
+td.actions {
+  white-space: nowrap;
+}
+
+td.actions button + button {
+  margin-left: 0.4rem;
+}
+
+.task-status {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.task-status progress {
+  flex: 1;
+  max-width: 16rem;
+  accent-color: var(--lake);
+}
+
+.task-status.done {
+  color: var(--spruce);
+}
+
+.options {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 0.5rem 0.75rem;
+  margin: 0 0 0.9rem;
+}
+
+.options legend {
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0 0.25rem;
+}
+
+.options .check {
+  flex-wrap: wrap;
+}
+
 /* --- small screens ------------------------------------------------------ */
 
 @media (max-width: 900px) {

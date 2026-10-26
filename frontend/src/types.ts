@@ -103,6 +103,16 @@ export interface Board {
   total_open: number | null;
 }
 
+export interface SizeSuggestion {
+  source: string;
+  employees: number;
+  as_of?: string | null;
+  wikidata_id?: string;
+  label?: string;
+  description?: string;
+  url?: string;
+}
+
 export interface Company {
   id: number;
   name: string;
@@ -113,6 +123,8 @@ export interface Company {
   employee_count: number | null;
   size_band: string;
   size_source: string | null;
+  size_suggestion: SizeSuggestion | null;
+  hq: string | null;
   canada_open: number;
   total_open: number | null;
   boards: Board[];
@@ -148,6 +160,47 @@ export interface ScanState {
   scan_id: number | null;
   error: string | null;
   recent: ScanBoardResult[];
+}
+
+export interface DetectedBoard {
+  system: string;
+  slug_or_url: string;
+  how: "link" | "page" | "guess";
+  confidence: "certain" | "likely" | "possible";
+  note: string;
+  jobs_canada: number | null;
+  jobs_total: number | null;
+}
+
+export interface Candidate {
+  id: number;
+  name: string;
+  tagline: string | null;
+  employees: number | null;
+  size_band: string;
+  hq_country: string | null;
+  hq_province: string | null;
+  hq_city: string | null;
+  jobs_url: string | null;
+  detected_system: string | null;
+  detected_slug: string | null;
+  detect_note: string | null;
+  company_id: number | null;
+  company_name: string | null;
+  decision: "pending" | "approved" | "rejected";
+  first_seen: string;
+  gone_at: string | null;
+}
+
+export interface TaskState {
+  name: string | null;
+  running: boolean;
+  done: number;
+  total: number;
+  result: string | null;
+  error: string | null;
+  started_at: string | null;
+  finished_at: string | null;
 }
 
 export interface ScanRecord {
