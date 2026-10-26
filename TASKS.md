@@ -35,7 +35,7 @@ pip install -e ".[dev]"
 
 ---
 
-## Phase 1: Foundation (models, locations, database, CLI skeleton)
+## Phase 1: Foundation (models, locations, database, CLI skeleton) ✅ done 2026-10-26
 
 **Goal:** the package installs, the database is created, and the location
 parser handles every Canadian form we know of. No network yet.
