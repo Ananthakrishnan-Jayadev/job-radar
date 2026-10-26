@@ -289,7 +289,11 @@ def connect(path: Path | str) -> sqlite3.Connection:
     """Open (creating if needed) the database and bring the schema up to date."""
     if str(path) != ":memory:":
         Path(path).parent.mkdir(parents=True, exist_ok=True)
-    conn = sqlite3.connect(path, timeout=10)  # waits if a background scan is writing
+    # timeout: wait if a background scan is writing.
+    # check_same_thread=False: the web app may open a request's connection on one
+    # worker thread and close it on another. Each connection still serves one
+    # request (or one background task) at a time; it is never shared.
+    conn = sqlite3.connect(path, timeout=10, check_same_thread=False)
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA foreign_keys = ON")
     if str(path) != ":memory:":
