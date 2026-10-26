@@ -144,6 +144,8 @@ def test_suggestion_accept(conn):
     ("https://careers.smartrecruiters.com/Canva", "smartrecruiters", "Canva"),
     ("https://acme.breezy.hr/p/123", "breezy", "acme"),
     ("https://xello.applytojob.com/", "jazzhr", "xello"),
+    ("https://ats.rippling.com/en-GB/netwrix-corporation/jobs", "rippling", "netwrix-corporation"),
+    ("https://jobs.ashbyhq.com/Rose%20Rocket", "ashby", "Rose Rocket"),
     ("https://apertera.applytojob.com/apply", "jazzhr", "apertera"),
 ])
 def test_from_url(url, system, slug):

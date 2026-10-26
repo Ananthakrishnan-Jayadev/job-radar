@@ -14,7 +14,7 @@ from __future__ import annotations
 import asyncio
 import re
 from dataclasses import dataclass, field
-from urllib.parse import urljoin, urlsplit
+from urllib.parse import unquote, urljoin, urlsplit
 
 from .boards import BoardError, normalize_board
 from .config import Settings
@@ -30,13 +30,13 @@ LINK_PATTERNS: list[tuple[str, str]] = [
     ("greenhouse", r"boards-api\.greenhouse\.io/v1/boards/([\w-]+)"),
     ("lever", r"jobs\.(?:eu\.)?lever\.co/([\w.-]+)"),
     ("lever", r"api\.lever\.co/v0/postings/([\w.-]+)"),
-    ("ashby", r"jobs\.ashbyhq\.com/([\w.%-]+)"),
+    ("ashby", r"jobs\.ashbyhq\.com/([\w.%-]+)"),  # board names may contain encoded spaces
     ("ashby", r"api\.ashbyhq\.com/posting-api/job-board/([\w.-]+)"),
     ("smartrecruiters", r"(?:jobs|careers)\.smartrecruiters\.com/([\w-]+)"),
     ("workable", r"apply\.workable\.com/(?!api\b|j/)([\w-]+)"),
     ("recruitee", r"([\w-]+)\.recruitee\.com"),
     ("breezy", r"([\w-]+)\.breezy\.hr"),
-    ("rippling", r"ats\.rippling\.com/(?!api\b)([\w-]+)"),
+    ("rippling", r"ats\.rippling\.com/(?:[a-z]{2}-[A-Z]{2}/)?(?!api\b)([\w-]+)"),
     ("bamboohr", r"([\w-]+)\.bamboohr\.com/(?:careers|jobs)"),
     ("workday", r"(https?://[\w-]+\.wd\d+\.myworkdayjobs\.com/(?:[a-z]{2}-[A-Z]{2}/)?[\w-]+)"),
     ("jazzhr", r"([\w-]+)\.applytojob\.com"),
@@ -69,7 +69,7 @@ def from_text(text: str, how: str = "link") -> list[Detected]:
     found: dict[tuple[str, str], Detected] = {}
     for system, pattern in _COMPILED:
         for match in pattern.finditer(text):
-            raw = match.group(1)
+            raw = unquote(match.group(1))  # "Rose%20Rocket" -> "Rose Rocket"
             if raw.lower() in _IGNORED_SLUGS:
                 continue
             try:
