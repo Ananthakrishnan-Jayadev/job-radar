@@ -144,6 +144,62 @@ def cmd_serve(args) -> int:
     return 0
 
 
+def cmd_enrich(args) -> int:
+    from .enrich import run_enrich
+
+    settings = load_settings(args.root)
+    conn, _ = _open_db(args)
+    print("Looking up company sizes on Wikidata...")
+    summary = run_enrich(conn, settings, company=args.company)
+    for line in summary.details:
+        print(f"  {line}")
+    print(f"\nLooked up {summary.looked_up} companies: {summary.from_wikidata} sizes from Wikidata, "
+          f"{summary.suggested} suggestions to check on the company page, {summary.estimated} estimated.")
+    return 0
+
+
+def cmd_candidates(args) -> int:
+    from . import candidates
+
+    settings = load_settings(args.root)
+    conn, _ = _open_db(args)
+    if args.action == "refresh":
+        s = candidates.refresh(conn, settings)
+        print(f"stillhiring.today: {s.total} companies ({s.canadian} with a Canadian HQ), {s.new} new, "
+              f"{s.gone} no longer listed. {s.linked} matched companies already on your list; "
+              f"{s.sizes} sizes updated.")
+        return 0
+    rows = candidates.list_candidates(conn, scope="readable" if args.all else "canada")
+    for r in rows:
+        board = f"{r['detected_system']}:{r['detected_slug']}" if r["detected_system"] else "board not found yet"
+        hq = ", ".join(p for p in (r["hq_city"], r["hq_province"], r["hq_country"]) if p)
+        gone = "  [no longer listed]" if r["gone_at"] else ""
+        print(f"{r['name']}  |  {hq}  |  {r['employees'] or '?'} employees  |  {board}{gone}")
+    print(f"\n{len(rows)} candidates to review. Approve them in the web app (Candidates page).")
+    return 0
+
+
+def cmd_detect(args) -> int:
+    import asyncio
+
+    from .detect import detect_company
+    from .http import HttpClient
+
+    settings = load_settings(args.root)
+
+    async def go():
+        async with HttpClient(settings) as client:
+            return await detect_company(client, settings, args.name, args.url, not args.global_company)
+
+    found = asyncio.run(go())
+    if not found:
+        print("No job board found. Add one by hand on the company page.")
+        return 1
+    for d in found:
+        print(f"{d.system}: {d.slug_or_url}  ({d.confidence}, {d.how}){'  ' + d.note if d.note else ''}")
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="jobradar", description=__doc__)
     parser.add_argument("--root", help="project folder with config.toml (default: current folder)")
@@ -176,6 +232,21 @@ def build_parser() -> argparse.ArgumentParser:
     export.add_argument("--province", help=province_help)
     export.add_argument("--include-closed", action="store_true")
     export.set_defaults(func=cmd_export)
+
+    enrich = sub.add_parser("enrich", help="fill in company sizes (Wikidata, then estimates)")
+    enrich.add_argument("--company", help="only this company (by name)")
+    enrich.set_defaults(func=cmd_enrich)
+
+    cands = sub.add_parser("candidates", help="companies suggested by stillhiring.today")
+    cands.add_argument("action", choices=["refresh", "list"])
+    cands.add_argument("--all", action="store_true", help="list: also non-Canadian companies with a readable board")
+    cands.set_defaults(func=cmd_candidates)
+
+    detect = sub.add_parser("detect", help="find which job board a company uses")
+    detect.add_argument("name")
+    detect.add_argument("--url", help="the company's careers page")
+    detect.add_argument("--global-company", action="store_true", help="the company isn't Canadian")
+    detect.set_defaults(func=cmd_detect)
 
     serve = sub.add_parser("serve", help="run the web app")
     serve.add_argument("--host", default="127.0.0.1", help="default 127.0.0.1 (this computer only)")

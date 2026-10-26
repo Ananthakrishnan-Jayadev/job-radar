@@ -127,12 +127,16 @@ class CandidateError(ValueError):
     pass
 
 
+class CandidateNotFound(CandidateError):
+    pass
+
+
 def approve(conn: sqlite3.Connection, listing_id: int, system: str | None = None,
             slug_or_url: str | None = None) -> int:
     """Add the listing's company (with its board, size and HQ) to the scan list. Returns its id."""
     row = conn.execute("SELECT * FROM listings WHERE id = ?", (listing_id,)).fetchone()
     if row is None:
-        raise CandidateError(f"candidate {listing_id} not found")
+        raise CandidateNotFound(f"candidate {listing_id} not found")
     system = system or row["detected_system"]
     slug = normalize_board(system, slug_or_url or row["detected_slug"]) if system else None
     if slug:
@@ -163,7 +167,7 @@ def decide(conn: sqlite3.Connection, listing_id: int, decision: str) -> None:
     with conn:
         cur = conn.execute("UPDATE listings SET decision = ? WHERE id = ?", (decision, listing_id))
     if cur.rowcount == 0:
-        raise CandidateError(f"candidate {listing_id} not found")
+        raise CandidateNotFound(f"candidate {listing_id} not found")
 
 
 def set_detected(conn: sqlite3.Connection, listing_id: int, system: str | None, slug: str | None, note: str) -> None:

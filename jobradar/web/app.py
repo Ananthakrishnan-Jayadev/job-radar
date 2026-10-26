@@ -6,6 +6,8 @@ Run with `jobradar serve`. The UI is built from frontend/ into ./static
 
 from __future__ import annotations
 
+import asyncio
+import json
 import sqlite3
 from collections.abc import Iterator
 from datetime import date
@@ -17,14 +19,17 @@ from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, Response
 from pydantic import BaseModel
 
-from .. import db, queries, tracking
+from .. import candidates, db, enrich, queries, tracking
 from ..boards import BoardError, normalize_board
+from ..detect import Detected, detect_company
+from ..http import FetchError, HttpClient
 from ..config import Settings
 from ..connectors import CONNECTORS
 from ..export import jobs_csv
 from ..locations import PROVINCE_NAMES
 from ..models import COMPANY_STATUSES, JOB_STATUSES, SIZE_BANDS, UNKNOWN_SIZE, WORKPLACES, Location, size_band
 from .scanner import ScanRunner
+from .tasks import TaskRunner
 
 STATIC_DIR = Path(__file__).parent / "static"
 
@@ -95,6 +100,21 @@ class ScanIn(BaseModel):
     company_id: int | None = None
 
 
+class ApproveIn(BaseModel):
+    system: str | None = None
+    slug_or_url: str | None = None
+
+
+class DetectIn(BaseModel):
+    name: str
+    careers_url: str | None = None
+    canadian: bool = True
+
+
+class EnrichIn(BaseModel):
+    company_id: int | None = None
+
+
 def _given(model: BaseModel) -> dict:
     """Only the fields the client actually sent (null included)."""
     return {name: getattr(model, name) for name in model.model_fields_set}
@@ -126,6 +146,8 @@ def _company(row: dict) -> dict:
         "id": row["id"], "name": row["name"], "canadian": bool(row["canadian"]), "status": row["status"],
         "notes": row["notes"], "careers_url": row["careers_url"], "employee_count": row["employee_count"],
         "size_band": size_band(row["employee_count"]), "size_source": row["size_source"],
+        "size_suggestion": json.loads(row["size_suggestion"]) if row["size_suggestion"] else None,
+        "hq": ", ".join(p for p in (row["hq_city"], row["hq_province"], row["hq_country"]) if p) or None,
         "canada_open": row["canada_open"], "total_open": row["total_open"],
         "boards": [{
             "id": b["id"], "system": b["system"], "slug_or_url": b["slug_or_url"],
@@ -133,6 +155,18 @@ def _company(row: dict) -> dict:
             "last_scanned_at": b["last_scanned_at"], "last_error": b["last_error"], "total_open": b["total_open"],
         } for b in row["boards"]],
     }
+
+
+def _detected(d: Detected) -> dict:
+    return {"system": d.system, "slug_or_url": d.slug_or_url, "how": d.how, "confidence": d.confidence,
+            "note": d.note, "jobs_canada": d.jobs_canada, "jobs_total": d.jobs_total}
+
+
+def _candidate(row: dict) -> dict:
+    keys = ("id", "name", "tagline", "employees", "hq_country", "hq_province", "hq_city", "jobs_url",
+            "detected_system", "detected_slug", "detect_note", "company_id", "company_name", "decision",
+            "first_seen", "gone_at")
+    return {k: row.get(k) for k in keys} | {"size_band": size_band(row.get("employees"))}
 
 
 def linkedin_search_url(title: str, company: str) -> str:
@@ -187,8 +221,16 @@ def create_app(settings: Settings, db_path: Path | None = None,
     db_path = db_path or settings.database
     db.connect(db_path).close()  # create / migrate before the first request
     runner = ScanRunner(settings, db_path, transport=transport)
+    tasks = TaskRunner()
     app = FastAPI(title="Job Radar", docs_url="/api/docs", openapi_url="/api/openapi.json")
     app.state.runner = runner
+    app.state.tasks = tasks
+
+    def detect(name: str, careers_url: str | None, canadian: bool) -> list[Detected]:
+        async def go():
+            async with HttpClient(settings, transport=transport) as client:
+                return await detect_company(client, settings, name, careers_url, canadian)
+        return asyncio.run(go())
 
     def get_conn() -> Iterator[sqlite3.Connection]:
         conn = db.connect(db_path)
@@ -206,6 +248,11 @@ def create_app(settings: Settings, db_path: Path | None = None,
     @app.exception_handler(tracking.InvalidValue)
     async def _invalid(_, exc):
         return JSONResponse({"detail": str(exc)}, status_code=400)
+
+    @app.exception_handler(candidates.CandidateError)
+    async def _bad_candidate(_, exc):
+        status = 404 if isinstance(exc, candidates.CandidateNotFound) else 409
+        return JSONResponse({"detail": str(exc)}, status_code=status)
 
     @app.exception_handler(BoardError)
     async def _bad_board(_, exc):
@@ -344,6 +391,117 @@ def create_app(settings: Settings, db_path: Path | None = None,
     def patch_board(board_id: int, body: BoardPatch, conn: sqlite3.Connection = Conn):
         tracking.update_board(conn, board_id, **_given(body))
         return dict(conn.execute("SELECT * FROM boards WHERE id = ?", (board_id,)).fetchone())
+
+    @app.post("/api/companies/{company_id}/accept-size")
+    def accept_size(company_id: int, conn: sqlite3.Connection = Conn):
+        if not enrich.accept_suggestion(conn, company_id):
+            raise HTTPException(409, "there is no size suggestion to accept, or a better size is already set")
+        return _company(queries.list_companies(conn, company_id=company_id)[0])
+
+    @app.post("/api/detect")
+    def detect_board(body: DetectIn):
+        """Which job board a company uses, from its careers link or its name."""
+        return [_detected(d) for d in detect(body.name, body.careers_url, body.canadian)]
+
+    # company sizes
+
+    @app.post("/api/enrich", status_code=202)
+    def start_enrich(body: EnrichIn | None = None, conn: sqlite3.Connection = Conn):
+        if body and body.company_id is not None:
+            row = conn.execute("SELECT name FROM companies WHERE id = ?", (body.company_id,)).fetchone()
+            if row is None:
+                raise HTTPException(404, f"company {body.company_id} not found")
+            summary = enrich.run_enrich(conn, settings, company=row["name"], transport=transport)
+            return {"result": "; ".join(summary.details) or "No size found on Wikidata."}
+
+        def work(progress) -> str:
+            own = db.connect(db_path)
+            try:
+                s = enrich.run_enrich(own, settings, transport=transport, progress=progress)
+            finally:
+                own.close()
+            return (f"Looked up {s.looked_up} companies: {s.from_wikidata} sizes from Wikidata, "
+                    f"{s.suggested} suggestions to check, {s.estimated} estimated.")
+
+        if not tasks.start("sizes", work):
+            raise HTTPException(409, "another task is already running")
+        return tasks.state()
+
+    @app.get("/api/tasks/current")
+    def current_task():
+        return tasks.state()
+
+    # candidates (companies suggested by outside lists)
+
+    @app.get("/api/candidates")
+    def list_candidates(request: Request, conn: sqlite3.Connection = Conn):
+        rows = candidates.list_candidates(
+            conn, decision=request.query_params.get("decision", "pending"),
+            scope=request.query_params.get("scope", "canada"), query=request.query_params.get("q"))
+        return {"refreshed_at": db.get_setting(conn, "stillhiring_refreshed_at"),
+                "items": [_candidate(r) for r in rows]}
+
+    @app.post("/api/candidates/refresh")
+    def refresh_candidates(conn: sqlite3.Connection = Conn):
+        try:
+            s = candidates.refresh(conn, settings, transport=transport)
+        except FetchError as exc:
+            raise HTTPException(502, f"stillhiring.today couldn't be read: {exc}") from exc
+        return {"total": s.total, "new": s.new, "gone": s.gone, "canadian": s.canadian,
+                "linked": s.linked, "sizes": s.sizes}
+
+    @app.post("/api/candidates/{listing_id}/approve")
+    def approve_candidate(listing_id: int, body: ApproveIn | None = None, conn: sqlite3.Connection = Conn):
+        body = body or ApproveIn()
+        company_id = candidates.approve(conn, listing_id, body.system, body.slug_or_url)
+        return {"company_id": company_id}
+
+    @app.post("/api/candidates/{listing_id}/reject")
+    def reject_candidate(listing_id: int, conn: sqlite3.Connection = Conn):
+        candidates.decide(conn, listing_id, "rejected")
+        return {"ok": True}
+
+    @app.post("/api/candidates/{listing_id}/restore")
+    def restore_candidate(listing_id: int, conn: sqlite3.Connection = Conn):
+        candidates.decide(conn, listing_id, "pending")
+        return {"ok": True}
+
+    @app.post("/api/candidates/{listing_id}/detect")
+    def detect_candidate(listing_id: int, conn: sqlite3.Connection = Conn):
+        row = conn.execute("SELECT * FROM listings WHERE id = ?", (listing_id,)).fetchone()
+        if row is None:
+            raise HTTPException(404, f"candidate {listing_id} not found")
+        found = detect(row["name"], row["jobs_url"], row["hq_country"] == "CA")
+        best = found[0] if found else None
+        candidates.set_detected(conn, listing_id, best.system if best else None, best.slug_or_url if best else None,
+                                best.note if best else "No job board found; add one by hand.")
+        return {"options": [_detected(d) for d in found]}
+
+    @app.post("/api/candidates/detect-all", status_code=202)
+    def detect_all(conn: sqlite3.Connection = Conn):
+        todo = [dict(r) for r in conn.execute(
+            "SELECT id, name, jobs_url, hq_country FROM listings WHERE decision = 'pending' AND hq_country = 'CA' "
+            "AND detected_system IS NULL AND detect_note IS NULL AND gone_at IS NULL")]
+
+        def work(progress) -> str:
+            own = db.connect(db_path)
+            found = 0
+            try:
+                for i, row in enumerate(todo, start=1):
+                    hits = detect(row["name"], row["jobs_url"], True)
+                    best = hits[0] if hits else None
+                    found += best is not None
+                    candidates.set_detected(own, row["id"], best.system if best else None,
+                                            best.slug_or_url if best else None,
+                                            best.note if best else "No job board found; add one by hand.")
+                    progress(i, len(todo))
+            finally:
+                own.close()
+            return f"Found job boards for {found} of {len(todo)} companies."
+
+        if not tasks.start("boards", work):
+            raise HTTPException(409, "another task is already running")
+        return tasks.state()
 
     # saved searches
 
