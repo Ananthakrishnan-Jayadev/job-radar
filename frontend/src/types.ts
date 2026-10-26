@@ -23,6 +23,8 @@ export interface Meta {
   /** Job systems that currently have jobs: the ones worth filtering by. */
   systems_in_use: string[];
   workplaces: Workplace[];
+  /** Role groups from roles.toml; enabled ones are shown by default. */
+  role_categories: { name: string; label: string; enabled: boolean }[];
   open_jobs: number;
   companies: number;
 }
@@ -49,6 +51,8 @@ export interface JobSummary {
   first_seen: string;
   last_seen: string;
   closed_at: string | null;
+  /** Role groups the title belongs to (software, data, ai, adjacent). */
+  roles: string[];
 }
 
 export interface JobPage {
@@ -126,6 +130,8 @@ export interface Company {
   size_suggestion: SizeSuggestion | null;
   hq: string | null;
   canada_open: number;
+  /** Open Canadian jobs in the wanted role groups. */
+  wanted_open: number;
   total_open: number | null;
   boards: Board[];
 }

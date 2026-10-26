@@ -17,7 +17,9 @@ export default function CompaniesPage() {
   const [sortByRoles, setSortByRoles] = useState(true);
 
   const rows = [...(companies.data ?? [])].sort((a, b) =>
-    sortByRoles ? b.canada_open - a.canada_open || a.name.localeCompare(b.name) : a.name.localeCompare(b.name),
+    sortByRoles
+      ? b.wanted_open - a.wanted_open || b.canada_open - a.canada_open || a.name.localeCompare(b.name)
+      : a.name.localeCompare(b.name),
   );
 
   async function fillSizes() {
@@ -62,7 +64,7 @@ export default function CompaniesPage() {
         <label className="sort">
           Sort
           <select value={sortByRoles ? "roles" : "name"} onChange={(e) => setSortByRoles(e.target.value === "roles")}>
-            <option value="roles">Most Canadian roles</option>
+            <option value="roles">Most matching roles</option>
             <option value="name">Name A–Z</option>
           </select>
         </label>
@@ -108,6 +110,9 @@ export default function CompaniesPage() {
             <thead>
               <tr>
                 <th scope="col">Company</th>
+                <th scope="col" className="num" title="Open jobs in Canada in your role groups (roles.toml)">
+                  Matching roles
+                </th>
                 <th scope="col" className="num">Open in Canada</th>
                 <th scope="col" className="num">Open worldwide</th>
                 <th scope="col">Size</th>
@@ -125,8 +130,11 @@ export default function CompaniesPage() {
                     {!c.canadian && <span className="hint"> Global</span>}
                   </td>
                   <td className="num">
+                    {c.wanted_open > 0 ? <Link to={`/?company=${c.id}&include_ignored=1`}>{formatCount(c.wanted_open)}</Link> : "0"}
+                  </td>
+                  <td className="num">
                     {c.canada_open > 0 ? (
-                      <Link to={`/?company=${c.id}&include_ignored=1`}>{formatCount(c.canada_open)}</Link>
+                      <Link to={`/?company=${c.id}&include_ignored=1&all_roles=1`}>{formatCount(c.canada_open)}</Link>
                     ) : (
                       "0"
                     )}

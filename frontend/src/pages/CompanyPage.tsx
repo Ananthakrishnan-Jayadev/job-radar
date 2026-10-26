@@ -48,6 +48,9 @@ export default function CompanyPage() {
           <span>{c.canadian ? "Canadian company" : "Global company"}</span>
           {c.hq && <span>Based in {c.hq}</span>}
           <Link to={`/?company=${c.id}&include_ignored=1`}>
+            {formatCount(c.wanted_open)} matching {c.wanted_open === 1 ? "role" : "roles"}
+          </Link>
+          <Link to={`/?company=${c.id}&include_ignored=1&all_roles=1`}>
             {formatCount(c.canada_open)} open {c.canada_open === 1 ? "job" : "jobs"} in Canada
           </Link>
           {c.total_open !== null && <span>{formatCount(c.total_open)} worldwide</span>}
