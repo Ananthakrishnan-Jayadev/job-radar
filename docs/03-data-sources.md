@@ -77,6 +77,7 @@ all its open jobs.**
 | Personio | Public XML feed | No | ✅ | Mostly European companies |
 | Dayforce | No known public feed | – | ❌ | Common with Canadian employers (founded in Toronto) |
 | SAP SuccessFactors (Career Site Builder) | Public job feed at `/sitemap.xml` | No | ✅ | **Large enterprises, e.g. Scotiabank** |
+| JazzHR | Public XML job feed | No | ✅ | Small companies (careers pages at `*.applytojob.com`) |
 | iCIMS / Taleo (Oracle) | No public feed | – | ❌ | Large enterprises |
 | Jobvite, JazzHR, Teamtailor, Pinpoint, Comeet | Not investigated | – | – | – |
 
@@ -277,6 +278,21 @@ all its open jobs.**
 - Tested: Scotiabank (1,471 jobs; 1,060 in Canada; 682 in Ontario, matching
   the site's own Ontario search). Details in
   `docs/decisions/2026-10-26-successfactors.md`.
+
+### JazzHR ✅ (added 2026-10-26)
+
+- Careers pages live at `https://{company}.applytojob.com/apply` (HTML).
+- **List:** `GET https://app.jazz.co/feeds/export/jobs/{company}`: XML for job
+  sites, `<jobs><company/><job>…</job></jobs>`. Job fields: `id`
+  (`job_YYYYMMDDhhmmss_…`, the creation time), `status` (Open), `title`,
+  `department`, `url`, `city`, `state` (province code), `country` (name),
+  `postalcode`, `description` (HTML), `type` (Full Time…), `experience`.
+- Unknown company: 404 with an empty body.
+- Quirk: the city field can hold "Remote – Canada & United States" or
+  "Remote/Toronto"; read as remote (keeping a real city if one is named).
+- Not usable: `{company}.applytojob.com/apply/jobs/feed` (404).
+- Tested: Xello (3 jobs), Apertera, formerly Alexa Translations (26 jobs,
+  in Canada and abroad).
 
 ### Personio ✅ (mostly European companies)
 
