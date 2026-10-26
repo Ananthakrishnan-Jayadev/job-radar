@@ -94,6 +94,23 @@ export default function JobFilters({ meta, params, setParams, provinceCounts, pr
         )}
       </fieldset>
 
+      {meta.role_categories.length > 0 && (
+        <fieldset className="field">
+          <Chips
+            legend="Role"
+            options={meta.role_categories.map((r) => ({ value: r.name, label: r.label }))}
+            selected={getList(params, "roles")}
+            onToggle={(v) => setParams(toggleInList(params, "roles", v))}
+          />
+          {!params.has("roles") && (
+            <label className="check">
+              <input type="checkbox" checked={isOn(params, "all_roles")} onChange={(e) => flag("all_roles")(e.target.checked)} />
+              Show all roles, not just {meta.role_categories.filter((r) => r.enabled).map((r) => r.name).join(", ")}
+            </label>
+          )}
+        </fieldset>
+      )}
+
       <Chips
         legend="Company size"
         options={meta.size_bands.map((b) => ({ value: b, label: SIZE_LABEL[b] ?? b }))}

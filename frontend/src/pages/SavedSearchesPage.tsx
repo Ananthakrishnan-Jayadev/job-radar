@@ -16,6 +16,8 @@ const FILTER_LABEL: Record<string, string> = {
   include_ignored: "ignored companies included",
   company: "company",
   sort: "sorted by",
+  roles: "role",
+  all_roles: "all roles",
 };
 
 function describe(search: SavedSearch): string {
