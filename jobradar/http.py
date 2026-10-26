@@ -67,8 +67,14 @@ class HttpClient:
                     self._fallback_hosts.discard(host)
         return _check(response)
 
+    async def get_text(self, url: str, params: dict | None = None) -> str:
+        """An HTML page, following redirects (careers pages often redirect)."""
+        response = await self.request("GET", url, params=params, headers={"Accept": "text/html"},
+                                      follow_redirects=True)
+        return response.text
+
     async def _send(self, method: str, url: str, host: str, **kwargs) -> httpx.Response:
-        headers = {}
+        headers = dict(kwargs.pop("headers", None) or {})
         if host in self._fallback_hosts:
             headers["User-Agent"] = self.settings.http.fallback_user_agent
         for attempt in (1, 2):
