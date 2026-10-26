@@ -159,6 +159,15 @@ def test_find_boards_ignores_adzuna_snapshots(conn, settings):
     assert (summary.checked, summary.found) == (1, 1)
 
 
+def test_find_boards_only_given_companies(conn, settings):
+    wanted = db.upsert_company(conn, "Nudge", canadian=True)
+    db.upsert_company(conn, "Other Co", canadian=True)
+    sources = FakeSources({("GET", "https://api.ashbyhq.com/posting-api/job-board/nudge"): ashby_board()})
+    summary = asyncio.run(find_missing_boards(conn, settings, transport=sources.transport(), company_ids=[wanted]))
+    assert summary.checked == 1
+    assert not [r for r in sources.requests if "other" in str(r.url)]
+
+
 def test_find_boards_none_found(conn, settings):
     db.upsert_company(conn, "Nobody Inc", canadian=True)
     summary = asyncio.run(find_missing_boards(conn, settings, transport=FakeSources().transport()))
