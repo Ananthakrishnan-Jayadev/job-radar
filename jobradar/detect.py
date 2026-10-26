@@ -12,6 +12,7 @@ In order of trust:
 from __future__ import annotations
 
 import asyncio
+import json
 import re
 from dataclasses import dataclass, field
 from urllib.parse import unquote, urljoin, urlsplit
@@ -195,7 +196,7 @@ class FindSummary:
 
 
 async def find_missing_boards(conn, settings: Settings, *, transport=None, company: str | None = None,
-                              progress=None) -> FindSummary:
+                              company_ids: list[int] | None = None, progress=None) -> FindSummary:
     """Detect and add a job board for every company that has none.
 
     A board found from a careers link or page is added as confirmed; one guessed
@@ -210,6 +211,9 @@ async def find_missing_boards(conn, settings: Settings, *, transport=None, compa
     if company:
         sql += " AND c.name = ? COLLATE NOCASE"
         params.append(company)
+    if company_ids is not None:
+        sql += " AND c.id IN (SELECT value FROM json_each(?))"
+        params.append(json.dumps(company_ids))
     rows = [dict(r) for r in conn.execute(sql + " ORDER BY c.name", params)]
     summary = FindSummary(checked=len(rows))
     limit = asyncio.Semaphore(4)  # a few companies at once; each host is still limited per request
