@@ -7,7 +7,9 @@ and their order are explained at the top of roles.toml.
 
 from __future__ import annotations
 
+import hashlib
 import re
+import sqlite3
 import tomllib
 import unicodedata
 from dataclasses import dataclass, field
@@ -90,7 +92,50 @@ def load_rules(path: Path | str) -> RoleRules:
 
 
 @lru_cache(maxsize=4)
-def rules_for(root: str) -> RoleRules | None:
-    """The project's rules, or None when it has no roles.toml (keep every title)."""
+def _cached_rules(path: str, digest: str) -> RoleRules:
+    return load_rules(path)
+
+
+def rules_for(root: str | Path) -> RoleRules | None:
+    """The project's rules, or None when it has no roles.toml (keep every title).
+    Re-read whenever the file changes."""
     path = Path(root) / ROLES_FILE
-    return load_rules(path) if path.is_file() else None
+    if not path.is_file():
+        return None
+    return _cached_rules(str(path), _digest(path))
+
+
+def _digest(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def sync_roles(conn: sqlite3.Connection, root: str | Path) -> int:
+    """Store each job's role categories. Recomputes every job when roles.toml has
+    changed since last time, otherwise only jobs not done yet. Returns jobs updated.
+
+    Without a roles.toml, every job is marked unknown (NULL), which shows it.
+    """
+    from . import db
+
+    path = Path(root) / ROLES_FILE
+    digest = _digest(path) if path.is_file() else ""
+    changed = db.get_setting(conn, "roles_digest") != digest
+    if not digest:
+        if changed:
+            with conn:
+                conn.execute("UPDATE jobs SET role_categories = NULL, role_wanted = NULL")
+            db.set_setting(conn, "roles_digest", digest)
+        return 0
+    rules = rules_for(root)
+    sql = "SELECT id, title FROM jobs" + ("" if changed else " WHERE role_wanted IS NULL")
+    rows = conn.execute(sql).fetchall()
+    updates = []
+    for job_id, title in rows:
+        categories = rules.judge(title).categories
+        wanted = any(c in rules.enabled for c in categories)
+        updates.append(("," + ",".join(categories) + "," if categories else "", int(wanted), job_id))
+    with conn:
+        conn.executemany("UPDATE jobs SET role_categories = ?, role_wanted = ? WHERE id = ?", updates)
+    if changed:
+        db.set_setting(conn, "roles_digest", digest)
+    return len(updates)
