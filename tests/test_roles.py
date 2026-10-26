@@ -113,5 +113,4 @@ def test_fold():
 
 
 def test_rules_for_missing_file(tmp_path):
-    rules_for.cache_clear()
     assert rules_for(str(tmp_path)) is None

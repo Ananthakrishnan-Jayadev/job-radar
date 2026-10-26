@@ -22,6 +22,7 @@ def jobs(conn):
         db.upsert_job(conn, board, RawJob(ext, title, f"https://x/{ext}", locations, posted_at=posted,
                                           salary_text="CA$100K" if ext == "1" else None))
     conn.execute("UPDATE jobs SET closed_at = '2026-10-25' WHERE external_id = '2'")
+    conn.commit()  # the CLI opens its own connection, which also writes
     return conn
 
 

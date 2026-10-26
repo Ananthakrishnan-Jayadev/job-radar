@@ -106,7 +106,7 @@ def test_cli_init_seed_companies(tmp_path, capsys):
     assert cli.main(["--db", db_path, "seed", "--file", str(SEED_FILE)]) == 0
     assert cli.main(["--db", db_path, "companies"]) == 0
     out = capsys.readouterr().out
-    assert "schema version 4" in out
+    assert "schema version 5" in out
     assert "Cohere" in out and "ashby:cohere" in out
 
 

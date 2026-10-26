@@ -25,9 +25,10 @@ def export_jobs(
     query: str | None = None,
     provinces: list[str] | None = None,
     include_closed: bool = False,
+    all_roles: bool = False,
 ) -> int:
     """Write matching jobs to *path*. Returns the number of rows written."""
-    rows = queries.find_jobs(conn, query, provinces=provinces, include_closed=include_closed)
+    rows = queries.find_jobs(conn, query, provinces=provinces, include_closed=include_closed, all_roles=all_roles)
     with Path(path).open("w", newline="", encoding="utf-8") as f:
         write_csv(rows, f)
     return len(rows)

@@ -23,6 +23,7 @@ from .connectors import CONNECTORS, FetchContext
 from .http import HttpClient
 from .locations import is_canadian
 from .models import Board
+from .roles import sync_roles
 
 BOARDS_AT_ONCE = 6  # different hosts in parallel; each host is still limited by http.max_per_host
 
@@ -188,6 +189,7 @@ async def scan_async(
         await asyncio.gather(*(run(b) for b in boards))
 
     summary = ScanSummary(scan_id=scan_id, outcomes=outcomes)
+    sync_roles(conn, settings.root)  # role categories for the new jobs
     with conn:
         conn.execute(
             "UPDATE scans SET finished_at = ?, boards_ok = ?, boards_failed = ?, jobs_new = ?, jobs_closed = ? "

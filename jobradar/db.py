@@ -277,6 +277,13 @@ MIGRATIONS: list[str] = [
                         WHERE b.company_id = new.id);
     END;
     """,
+    # 5: each job's role categories from roles.toml (",software,data," or ""),
+    #    and whether they include an enabled one. NULL = not worked out yet.
+    """
+    ALTER TABLE jobs ADD COLUMN role_categories TEXT;
+    ALTER TABLE jobs ADD COLUMN role_wanted INTEGER;
+    CREATE INDEX jobs_role_wanted ON jobs(role_wanted);
+    """,
 ]
 
 

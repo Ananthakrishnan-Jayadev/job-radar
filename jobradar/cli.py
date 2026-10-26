@@ -10,6 +10,7 @@ from . import db, queries
 from .config import load_settings
 from .export import export_jobs
 from .models import size_band
+from .roles import sync_roles
 from .scan import BoardOutcome, run_scan
 from .seed import SeedError, apply_seed, load_seed_file
 
@@ -89,10 +90,11 @@ def cmd_scan(args) -> int:
 
 def cmd_search(args) -> int:
     conn, _ = _open_db(args)
+    sync_roles(conn, load_settings(args.root).root)
     query = " ".join(args.query) or None
     try:
         rows = queries.find_jobs(conn, query, provinces=_provinces(args.province),
-                            include_closed=args.include_closed, limit=args.limit)
+                                 include_closed=args.include_closed, limit=args.limit, all_roles=args.all_roles)
     except Exception as exc:  # bad FTS syntax, e.g. an unclosed quote
         print(f"Search failed: {exc}", file=sys.stderr)
         return 1
@@ -107,8 +109,9 @@ def cmd_search(args) -> int:
 
 def cmd_export(args) -> int:
     conn, _ = _open_db(args)
+    sync_roles(conn, load_settings(args.root).root)
     count = export_jobs(conn, args.out, query=args.query, provinces=_provinces(args.province),
-                        include_closed=args.include_closed)
+                        include_closed=args.include_closed, all_roles=args.all_roles)
     print(f"Wrote {count} jobs to {args.out}.")
     return 0
 
@@ -264,6 +267,7 @@ def build_parser() -> argparse.ArgumentParser:
     search.add_argument("--province", help=province_help)
     search.add_argument("--limit", type=int, default=25)
     search.add_argument("--include-closed", action="store_true")
+    search.add_argument("--all-roles", action="store_true", help="include roles that roles.toml leaves out")
     search.set_defaults(func=cmd_search)
 
     export = sub.add_parser("export", help="write jobs to a CSV file")
@@ -271,6 +275,7 @@ def build_parser() -> argparse.ArgumentParser:
     export.add_argument("--query", help="full-text query, as for search")
     export.add_argument("--province", help=province_help)
     export.add_argument("--include-closed", action="store_true")
+    export.add_argument("--all-roles", action="store_true", help="include roles that roles.toml leaves out")
     export.set_defaults(func=cmd_export)
 
     enrich = sub.add_parser("enrich", help="fill in company sizes (Wikidata, then estimates)")

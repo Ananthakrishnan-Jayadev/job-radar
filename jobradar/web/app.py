@@ -28,6 +28,7 @@ from ..connectors import CONNECTORS
 from ..export import jobs_csv
 from ..locations import PROVINCE_NAMES
 from ..models import COMPANY_STATUSES, JOB_STATUSES, SIZE_BANDS, UNKNOWN_SIZE, WORKPLACES, Location, size_band
+from ..roles import rules_for, sync_roles
 from .scanner import ScanRunner
 from .tasks import TaskRunner
 
@@ -138,6 +139,7 @@ def _job_summary(row: dict) -> dict:
         "workplace": row["workplace"], "posted_at": row["posted_at"], "salary": row["salary_text"],
         "status": row["status"], "notes": row["notes"], "applied_at": row["applied_at"],
         "first_seen": row["first_seen"], "last_seen": row["last_seen"], "closed_at": row["closed_at"],
+        "roles": [c for c in (row.get("role_categories") or "").split(",") if c],
     }
 
 
@@ -148,7 +150,7 @@ def _company(row: dict) -> dict:
         "size_band": size_band(row["employee_count"]), "size_source": row["size_source"],
         "size_suggestion": json.loads(row["size_suggestion"]) if row["size_suggestion"] else None,
         "hq": ", ".join(p for p in (row["hq_city"], row["hq_province"], row["hq_country"]) if p) or None,
-        "canada_open": row["canada_open"], "total_open": row["total_open"],
+        "canada_open": row["canada_open"], "wanted_open": row["wanted_open"], "total_open": row["total_open"],
         "boards": [{
             "id": b["id"], "system": b["system"], "slug_or_url": b["slug_or_url"],
             "confirmed": bool(b["confirmed"]), "enabled": bool(b["enabled"]),
@@ -211,6 +213,8 @@ def job_filter(request: Request) -> queries.JobFilter:
         has_salary=_flag(request, "has_salary"),
         include_closed=_flag(request, "include_closed"),
         new_since=request.query_params.get("new_since") or None,
+        all_roles=_flag(request, "all_roles"),
+        role_categories=_list(request, "roles"),
     )
 
 
@@ -239,6 +243,18 @@ def create_app(settings: Settings, db_path: Path | None = None,
         finally:
             conn.close()
 
+    def roles_conn() -> Iterator[sqlite3.Connection]:
+        """A connection with role categories up to date (roles.toml may have changed)."""
+        conn = db.connect(db_path)
+        try:
+            sync_roles(conn, settings.root)
+            yield conn
+        finally:
+            conn.close()
+
+    RolesConn = Depends(roles_conn)
+    sync_roles(db.connect(db_path), settings.root)
+
     Conn = Depends(get_conn)
 
     @app.exception_handler(tracking.NotFoundError)
@@ -261,7 +277,8 @@ def create_app(settings: Settings, db_path: Path | None = None,
     # meta
 
     @app.get("/api/meta")
-    def meta(conn: sqlite3.Connection = Conn):
+    def meta(conn: sqlite3.Connection = RolesConn):
+        rules = rules_for(settings.root)
         open_jobs = queries.search_jobs(conn, queries.JobFilter(include_ignored=True), limit=0)[0]
         return {
             "provinces": [{"code": c, "name": n} for c, n in PROVINCES],
@@ -272,6 +289,9 @@ def create_app(settings: Settings, db_path: Path | None = None,
             "systems_in_use": queries.systems_in_use(conn),  # the ones with jobs, for filtering
             "workplaces": list(WORKPLACES),
             "open_jobs": open_jobs,
+            "role_categories": [] if rules is None else [
+                {"name": name, "label": label, "enabled": name in rules.enabled}
+                for name, label in rules.labels.items()],
             "companies": conn.execute("SELECT COUNT(*) FROM companies").fetchone()[0],
         }
 
@@ -282,7 +302,7 @@ def create_app(settings: Settings, db_path: Path | None = None,
     # jobs
 
     @app.get("/api/jobs")
-    def list_jobs(request: Request, conn: sqlite3.Connection = Conn):
+    def list_jobs(request: Request, conn: sqlite3.Connection = RolesConn):
         f = job_filter(request)
         page = max(_int(request, "page", 1), 1)
         page_size = min(max(_int(request, "page_size", 50), 1), MAX_PAGE_SIZE)
@@ -297,14 +317,14 @@ def create_app(settings: Settings, db_path: Path | None = None,
         return {"total": total, "page": page, "page_size": page_size, "items": [_job_summary(r) for r in rows]}
 
     @app.get("/api/jobs/provinces")
-    def province_counts(request: Request, conn: sqlite3.Connection = Conn):
+    def province_counts(request: Request, conn: sqlite3.Connection = RolesConn):
         try:
             return queries.province_counts(conn, job_filter(request))
         except sqlite3.OperationalError as exc:
             raise HTTPException(400, f"search syntax: {exc}") from exc
 
     @app.get("/api/jobs.csv")
-    def export_csv(request: Request, conn: sqlite3.Connection = Conn):
+    def export_csv(request: Request, conn: sqlite3.Connection = RolesConn):
         try:
             text = jobs_csv(conn, job_filter(request), sort=request.query_params.get("sort") or None)
         except sqlite3.OperationalError as exc:
@@ -345,7 +365,7 @@ def create_app(settings: Settings, db_path: Path | None = None,
     # companies and boards
 
     @app.get("/api/companies")
-    def companies(request: Request, conn: sqlite3.Connection = Conn):
+    def companies(request: Request, conn: sqlite3.Connection = RolesConn):
         rows = queries.list_companies(conn, query=request.query_params.get("q"),
                                       size_bands=_list(request, "sizes"), statuses=_list(request, "status"))
         return [_company(r) for r in rows]
