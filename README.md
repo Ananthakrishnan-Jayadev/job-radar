@@ -1,12 +1,14 @@
 # Job Radar
 
-A personal job-hunting tool. It finds Canadian roles in public company job
-feeds and job-search APIs, shows which companies are hiring and how big they
-are, and lets you track what you've applied to.
+A personal job-hunting tool for Canada. It reads the public job feeds of the
+companies you care about, keeps only jobs located in Canada, and lets you
+search them, filter by province and company size, and track what you've
+saved and applied to. No LinkedIn automation, no accounts.
 
-**Status:** phases 1–3 of 5 done, phase 4 part 1 done (company sizes,
-stillhiring.today candidates, job-board detection). Next: phase 4 part 2
-(Adzuna, needs a key). See [TASKS.md](TASKS.md).
+**Status:** phases 1–3 of 5 done; phase 4 part 1 done (company sizes,
+stillhiring.today candidates, job-board detection, importing your own company
+lists), plus five more job systems than planned. Next: phase 4 part 2 (Adzuna
+job search, needs a free key). See [TASKS.md](TASKS.md).
 
 - [PROJECT.md](PROJECT.md): the specification
 - [TASKS.md](TASKS.md): the build plan in five phases
@@ -15,7 +17,8 @@ stillhiring.today candidates, job-board detection). Next: phase 4 part 2
 
 ## Setup
 
-Everything installs into the project's own `.venv`, never system-wide.
+Everything installs into the project's own folders, never system-wide:
+Python packages into `.venv`, UI packages into `frontend/node_modules`.
 
 ```bash
 cd ~/Desktop/ai_projects/job-radar
@@ -23,8 +26,11 @@ python3 -m venv .venv            # skip if .venv already exists
 .venv/bin/pip install -e ".[dev]"
 cp config.local.example.toml config.local.toml   # then add your email
 
-# The web UI (needs Node 18+; packages go into frontend/node_modules only)
+# The web UI (needs Node 18+)
 cd frontend && npm install && npm run build && cd ..
+
+.venv/bin/jobradar init-db       # create data/jobradar.db
+.venv/bin/jobradar seed          # load the starting company list
 ```
 
 ## Run the app
@@ -37,6 +43,46 @@ One command, one terminal: the Python server serves both the data and the
 built UI. After changing anything in `frontend/`, run `npm run build` again,
 or use `.venv/bin/jobradar serve --dev`, which rebuilds the UI on every save
 (reload the page to see it).
+
+### The pages
+
+- **Jobs:** search (words, `"exact phrases"`, `OR`, `analy*`), a tile map of
+  Canada to filter by province (with live counts) plus "Remote anywhere in
+  Canada", and filters for company size, your status, workplace, date posted,
+  job system and salary. Change a job's status right in the list; new jobs
+  since your last visit have an amber edge. Save a search, export a CSV.
+- **Job page:** description, Canadian locations, notes, applied date, status
+  history, and links to the posting, the careers page and a LinkedIn search.
+- **Companies:** open roles in Canada and worldwide, size, job boards, your
+  status. Buttons to fill in company sizes and to find job boards for
+  companies that have none. Add a company (paste its careers link and let the
+  app find its job board).
+- **Company page:** boards (switch on or off, confirm a board matched by name,
+  add one by pasting its link), size (type your own, or accept a Wikidata
+  suggestion), notes, and "scan this company now".
+- **Candidates:** companies listed on stillhiring.today; add the ones worth
+  scanning.
+- **Saved searches:** your saved views; mark the ones whose keywords big
+  Workday sites (TD, RBC, BMO, CIBC) should be searched for.
+- **Scans:** "Scan now", progress, and every past scan with per-board results.
+
+## Job systems it reads (15)
+
+| System | Read from | Example companies |
+|---|---|---|
+| Greenhouse, Lever, Ashby, SmartRecruiters | Official public job APIs | Stripe, Wattpad, Cohere, Canva |
+| Workable, Recruitee, Breezy, Rippling | Public job widgets and feeds | Borrowell, nesto, Personify |
+| BambooHR | Careers list (undocumented) | Asigra, Block 64, NexJ Health |
+| Workday | Careers site search (undocumented) | TD, RBC, BMO, CIBC, Sun Life, Manulife |
+| SAP SuccessFactors | The site's job feed (`/sitemap.xml`) | Scotiabank |
+| JazzHR | Its XML job feed | Xello, Apertera, Cognota |
+| Pinpoint | Its JSON job feed | Crawford Technologies |
+| Teamtailor | Its RSS job feed | commonsku |
+| Humi | The careers page's HTML (no feed; the most fragile) | Ecopia.AI, Hypercare |
+
+Only jobs with a location in Canada are kept (or, for Canadian companies,
+postings that say nothing but "Remote"). Details and quirks of each source:
+[docs/03-data-sources.md](docs/03-data-sources.md).
 
 ## Commands
 
@@ -60,15 +106,6 @@ Run these from the project folder (or activate the venv with
 .venv/bin/jobradar find-boards  # find job boards for companies that have none
 ```
 
-**Importing your own company list** (`.xlsx` or `.csv`): a sheet with a
-"Company" column, where the first real link in each row is taken as the careers
-page (Google and LinkedIn search links are skipped); and/or lines like
-"Acme (51-200)" under headings, which set the size and go into the notes.
-Existing companies are never overwritten, only filled in. `find-boards` then
-reads careers pages and tries each company's name on the common job systems;
-boards found by name only are added as *unconfirmed*: check them on the company
-page.
-
 Search accepts words, `"exact phrases"`, `OR` and prefixes (`analy*`).
 `--province` takes codes (ON, BC, QC...) and `REMOTE` for jobs open
 anywhere in Canada; leave it out for all of Canada. Add `--include-closed`
@@ -76,12 +113,35 @@ to see jobs that have disappeared from their board.
 
 A scan prints one line per board: how many of its jobs are in Canada, how
 many are new or closed, and any errors. A failing board doesn't stop the
-others. To fix a wrong slug (or Workday URL) until the web UI can edit boards:
-in `seeds/companies.toml`, add `enabled = false` to the old board, add the
-corrected board, and run `jobradar seed` again.
+others. To fix a wrong board, open the company in the web app: switch the old
+board off and add the right one by pasting its link.
+
+**Importing your own company list** (`.xlsx` or `.csv`): a sheet with a
+"Company" column, where the first real link in each row is taken as the careers
+page (Google and LinkedIn search links are skipped); and/or lines like
+"Acme (51-200)" under headings, which set the size and go into the notes.
+Existing companies are never overwritten, only filled in. `find-boards` then
+reads careers pages and tries each company's name on the common job systems;
+boards found by name only are added as *unconfirmed*: check them on the
+company page.
+
+**Company sizes** come from, best first: your own entry, stillhiring.today,
+your imported list ("51-200" counts as 125), Wikidata, then an estimate from
+open roles. A source never overwrites a better one.
 
 Options for any command: `--db PATH` uses another database file,
 `--root PATH` reads `config.toml` from another folder.
+
+## Your data
+
+Everything lives in `data/jobradar.db` (git-ignored). The database upgrades
+itself when a new version needs it. Bulk changes made for you (imports,
+board research) were preceded by a copy in `data/jobradar-backup-*.db`;
+delete old ones whenever you like. To make your own copy:
+
+```bash
+cp data/jobradar.db data/jobradar-$(date +%F).db   # with the server stopped
+```
 
 ## Tests
 
@@ -95,26 +155,32 @@ Tests never touch the network; they use recorded responses in
 ## Layout
 
 ```
-jobradar/          the package
-  config.py        settings from config.toml + config.local.toml
-  models.py        Location, RawJob, Board, size bands, statuses
-  locations.py     location parser (Canada / province / remote)
-  db.py            SQLite schema, migrations, queries, full-text search
-  seed.py          loads seeds/companies.toml
-  http.py          shared HTTP client: per-host limits, pauses, retry
-  connectors/      one module per job system (greenhouse.py, workday.py...)
-  scan.py          runs connectors, stores Canadian jobs, closes vanished ones
-  queries.py       job search with every filter, company lists, scan history
-  tracking.py      statuses, notes, sizes, saved searches, "new since last visit"
-  boards.py        turns a pasted board link into a slug
-  export.py        CSV export
-  cli.py           the `jobradar` command
-  web/app.py       JSON API under /api, serves the built UI
-  web/scanner.py   "Scan now" in a background thread
-  web/static/      the built UI (generated by npm run build; git-ignored)
-frontend/          the React + TypeScript UI (Vite)
-seeds/             starting company list
-tests/             pytest tests and recorded API responses
-docs/              research and decisions
-data/              the database (git-ignored)
+jobradar/            the package
+  config.py          settings from config.toml + config.local.toml
+  models.py          Location, RawJob, Board, size bands, statuses
+  locations.py       location parser (Canada / province / remote)
+  db.py              SQLite schema, migrations, connections
+  seed.py            loads seeds/companies.toml
+  http.py            shared HTTP client: per-host limits, pauses, retry
+  connectors/        one module per job system (greenhouse.py, workday.py...)
+  scan.py            runs connectors, stores Canadian jobs, closes vanished ones
+  queries.py         job search with every filter, company lists, scan history
+  tracking.py        statuses, notes, sizes, saved searches, "new since last visit"
+  enrich.py          company sizes: precedence, Wikidata, estimates
+  detect.py          finds a company's job board (link, careers page, name)
+  boards.py          turns a pasted board link into a board name
+  candidates.py      candidate companies from outside lists
+  sources/           those lists (stillhiring.py)
+  importer.py        imports your own .xlsx / .csv company lists
+  export.py          CSV export
+  cli.py             the `jobradar` command
+  web/app.py         JSON API under /api, serves the built UI
+  web/scanner.py     "Scan now" in a background thread
+  web/tasks.py       other long jobs (sizes, finding boards) in the background
+  web/static/        the built UI (generated by npm run build; git-ignored)
+frontend/            the React + TypeScript UI (Vite)
+seeds/               starting company list
+tests/               pytest tests and recorded API responses
+docs/                research and decisions
+data/                the database and backups (git-ignored)
 ```
