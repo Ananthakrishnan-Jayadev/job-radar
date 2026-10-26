@@ -2,13 +2,24 @@ import { useState, type FormEvent } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { api } from "../api";
 import Chips from "../components/Chips";
-import { COMPANY_STATUS_LABEL, SIZE_LABEL, SYSTEM_LABEL, formatCount } from "../format";
+import TaskStatus from "../components/TaskStatus";
+import { COMPANY_STATUS_LABEL, CONFIDENCE_LABEL, SIZE_LABEL, SYSTEM_LABEL, boardLabel, formatCount } from "../format";
 import { getList, toggleInList, withParam } from "../params";
 import { useApp, useLoad } from "../state";
-import type { Company, CompanyStatus } from "../types";
+import type { Company, CompanyStatus, DetectedBoard } from "../types";
 
 export default function CompaniesPage() {
-  const { meta, dataVersion } = useApp();
+  const { meta, dataVersion, task, watchTask } = useApp();
+  const [taskError, setTaskError] = useState<string | null>(null);
+
+  async function fillSizes() {
+    setTaskError(null);
+    try {
+      watchTask(await api.fillAllSizes());
+    } catch (err) {
+      setTaskError(err instanceof Error ? err.message : String(err));
+    }
+  }
   const [params, setParams] = useSearchParams();
   const companies = useLoad(() => api.companies(params), `${params}|${dataVersion}`);
   const [query, setQuery] = useState(params.get("q") ?? "");
@@ -44,7 +55,12 @@ export default function CompaniesPage() {
             <option value="name">Name A–Z</option>
           </select>
         </label>
+        <button type="button" disabled={task?.running} onClick={fillSizes}>
+          Fill in company sizes
+        </button>
       </div>
+      <TaskStatus name="sizes" />
+      {taskError && <p className="error" role="alert">{taskError}</p>}
 
       {meta && (
         <div className="filter-bar">
@@ -139,9 +155,29 @@ function AddCompany({ systems }: { systems: string[] }) {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [canadian, setCanadian] = useState(true);
+  const [careersUrl, setCareersUrl] = useState("");
   const [system, setSystem] = useState("");
   const [board, setBoard] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [options, setOptions] = useState<DetectedBoard[] | null>(null);
+  const [finding, setFinding] = useState(false);
+
+  async function find() {
+    setFinding(true);
+    setError(null);
+    try {
+      const found = await api.detect({ name, careers_url: careersUrl || null, canadian });
+      setOptions(found);
+      if (found.length > 0) {
+        setSystem(found[0].system);
+        setBoard(found[0].slug_or_url);
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err));
+    } finally {
+      setFinding(false);
+    }
+  }
 
   async function add(event: FormEvent) {
     event.preventDefault();
@@ -150,6 +186,7 @@ function AddCompany({ systems }: { systems: string[] }) {
       const company = await api.addCompany({
         name,
         canadian,
+        careers_url: careersUrl || null,
         board: system && board ? { system, slug_or_url: board } : undefined,
       });
       navigate(`/companies/${company.id}`);
@@ -176,6 +213,46 @@ function AddCompany({ systems }: { systems: string[] }) {
         <input type="checkbox" checked={canadian} onChange={(e) => setCanadian(e.target.checked)} />
         Canadian company (its plain "Remote" postings count as Canada)
       </label>
+      <div className="row">
+        <label className="stack grow">
+          Careers page (optional)
+          <input
+            type="url"
+            value={careersUrl}
+            placeholder="https://company.com/careers"
+            onChange={(e) => setCareersUrl(e.target.value)}
+          />
+        </label>
+        <button type="button" disabled={!name || finding} onClick={find}>
+          {finding ? "Looking…" : "Find its job board"}
+        </button>
+      </div>
+      {options && options.length === 0 && (
+        <p className="hint">No job board found. Pick the system and enter the board below, or add it later.</p>
+      )}
+      {options && options.length > 0 && (
+        <fieldset className="options">
+          <legend>Job boards found</legend>
+          {options.map((o) => (
+            <label key={`${o.system}:${o.slug_or_url}`} className="check">
+              <input
+                type="radio"
+                name="found-board"
+                checked={system === o.system && board === o.slug_or_url}
+                onChange={() => {
+                  setSystem(o.system);
+                  setBoard(o.slug_or_url);
+                }}
+              />
+              {boardLabel(o.system, o.slug_or_url)}
+              <span className="hint">
+                {CONFIDENCE_LABEL[o.confidence]}
+                {o.note && `: ${o.note}`}
+              </span>
+            </label>
+          ))}
+        </fieldset>
+      )}
       <div className="row">
         <label className="stack">
           Job system

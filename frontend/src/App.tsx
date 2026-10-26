@@ -1,5 +1,6 @@
 import { NavLink, Route, Routes } from "react-router-dom";
 import ScanButton from "./components/ScanButton";
+import CandidatesPage from "./pages/CandidatesPage";
 import CompaniesPage from "./pages/CompaniesPage";
 import CompanyPage from "./pages/CompanyPage";
 import JobPage from "./pages/JobPage";
@@ -23,6 +24,7 @@ export default function App() {
             Jobs
           </NavLink>
           <NavLink to="/companies">Companies</NavLink>
+          <NavLink to="/candidates">Candidates</NavLink>
           <NavLink to="/saved">Saved searches</NavLink>
           <NavLink to="/scans">Scans</NavLink>
         </nav>
@@ -34,6 +36,7 @@ export default function App() {
           <Route path="/jobs/:id" element={<JobPage />} />
           <Route path="/companies" element={<CompaniesPage />} />
           <Route path="/companies/:id" element={<CompanyPage />} />
+          <Route path="/candidates" element={<CandidatesPage />} />
           <Route path="/saved" element={<SavedSearchesPage />} />
           <Route path="/scans" element={<ScansPage />} />
           <Route path="*" element={<p className="empty">There's no page here. Pick one from the menu above.</p>} />

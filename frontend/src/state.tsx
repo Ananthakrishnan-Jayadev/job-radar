@@ -3,7 +3,7 @@
 
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import { api } from "./api";
-import type { Meta, ScanState } from "./types";
+import type { Meta, ScanState, TaskState } from "./types";
 
 interface AppState {
   meta: Meta | null;
@@ -14,6 +14,9 @@ interface AppState {
   dataVersion: number;
   startScan: (companyId?: number) => Promise<void>;
   scanError: string | null;
+  /** The running background chore (filling sizes, finding boards), polled while it runs. */
+  task: TaskState | null;
+  watchTask: (state: TaskState) => void;
 }
 
 const AppContext = createContext<AppState | null>(null);
@@ -25,10 +28,28 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [dataVersion, setDataVersion] = useState(0);
   const [scanError, setScanError] = useState<string | null>(null);
   const wasRunning = useRef(false);
+  const [task, setTask] = useState<TaskState | null>(null);
+  const taskWasRunning = useRef(false);
+
+  useEffect(() => {
+    if (!task?.running) {
+      if (taskWasRunning.current) {
+        taskWasRunning.current = false;
+        setDataVersion((v) => v + 1);
+      }
+      return;
+    }
+    taskWasRunning.current = true;
+    const timer = window.setTimeout(() => {
+      api.currentTask().then(setTask).catch(() => undefined);
+    }, 1500);
+    return () => window.clearTimeout(timer);
+  }, [task]);
 
   useEffect(() => {
     api.visit().then((v) => setPreviousVisit(v.previous)).catch(() => undefined);
     api.currentScan().then(setScan).catch(() => undefined);
+    api.currentTask().then(setTask).catch(() => undefined);
   }, []);
 
   useEffect(() => {
@@ -61,7 +82,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <AppContext.Provider value={{ meta, previousVisit, scan, dataVersion, startScan, scanError }}>
+    <AppContext.Provider
+      value={{ meta, previousVisit, scan, dataVersion, startScan, scanError, task, watchTask: setTask }}
+    >
       {children}
     </AppContext.Provider>
   );
