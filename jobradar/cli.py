@@ -200,6 +200,46 @@ def cmd_detect(args) -> int:
     return 0
 
 
+def cmd_import(args) -> int:
+    from .importer import ImportError_, import_companies, parse_sheets, read_file
+
+    try:
+        companies = parse_sheets(read_file(args.file))
+    except ImportError_ as exc:
+        print(f"Could not import: {exc}", file=sys.stderr)
+        return 1
+    if not companies:
+        print("No companies found. The file needs a 'Company' column, or lines like 'Name (11-50)'.")
+        return 1
+    conn, _ = _open_db(args)
+    s = import_companies(conn, companies, source=Path(args.file).name, canadian=not args.not_canadian)
+    print(f"Read {len(companies)} companies: {s.added} added, {s.updated} already on the list. "
+          f"{s.with_link} have a careers link; {s.with_size} sizes set.")
+    print("Next: `jobradar find-boards` to look for their job boards.")
+    return 0
+
+
+def cmd_find_boards(args) -> int:
+    import asyncio
+
+    from .detect import find_missing_boards
+
+    settings = load_settings(args.root)
+    conn, _ = _open_db(args)
+
+    def progress(done: int, total: int) -> None:
+        print(f"\r  {done} of {total} companies checked", end="", flush=True)
+
+    print("Looking for job boards (careers pages first, then guesses from the name)...")
+    s = asyncio.run(find_missing_boards(conn, settings, company=args.company, progress=progress))
+    print()
+    for line in s.details:
+        print(f"  {line}")
+    print(f"\nChecked {s.checked} companies without a job board: found {s.found} "
+          f"({s.unconfirmed} guessed from the name; confirm those on each company's page).")
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="jobradar", description=__doc__)
     parser.add_argument("--root", help="project folder with config.toml (default: current folder)")
@@ -247,6 +287,15 @@ def build_parser() -> argparse.ArgumentParser:
     detect.add_argument("--url", help="the company's careers page")
     detect.add_argument("--global-company", action="store_true", help="the company isn't Canadian")
     detect.set_defaults(func=cmd_detect)
+
+    imp = sub.add_parser("import-companies", help="add companies from an .xlsx or .csv list")
+    imp.add_argument("file")
+    imp.add_argument("--not-canadian", action="store_true", help="the companies aren't Canadian")
+    imp.set_defaults(func=cmd_import)
+
+    find = sub.add_parser("find-boards", help="find job boards for companies that have none")
+    find.add_argument("--company", help="only this company (by name)")
+    find.set_defaults(func=cmd_find_boards)
 
     serve = sub.add_parser("serve", help="run the web app")
     serve.add_argument("--host", default="127.0.0.1", help="default 127.0.0.1 (this computer only)")

@@ -233,6 +233,50 @@ MIGRATIONS: list[str] = [
     );
     CREATE INDEX listings_decision ON listings(decision);
     """,
+    # 4: size_source loses its CHECK list (sources are validated in enrich.PRIORITY),
+    #    so adding a source ("imported", from the user's own lists) needs no rebuild again.
+    """
+    DROP TRIGGER jobs_fts_insert;
+    CREATE TABLE companies_new (
+        id              INTEGER PRIMARY KEY,
+        name            TEXT NOT NULL UNIQUE COLLATE NOCASE,
+        canadian        INTEGER NOT NULL DEFAULT 0,
+        status          TEXT NOT NULL DEFAULT 'none'
+                        CHECK (status IN ('none', 'target', 'watching', 'ignored')),
+        notes           TEXT NOT NULL DEFAULT '',
+        careers_url     TEXT,
+        website         TEXT,
+        hq_city         TEXT,
+        hq_province     TEXT,
+        hq_country      TEXT,
+        employee_count  INTEGER,
+        size_source     TEXT,
+        size_updated_at TEXT,
+        size_suggestion TEXT,
+        wikidata_id     TEXT,
+        created_at      TEXT NOT NULL
+    );
+    INSERT INTO companies_new SELECT id, name, canadian, status, notes, careers_url, website, hq_city,
+        hq_province, hq_country, employee_count, size_source, size_updated_at, size_suggestion,
+        wikidata_id, created_at FROM companies;
+    DROP TABLE companies;
+    ALTER TABLE companies_new RENAME TO companies;
+
+    CREATE TRIGGER jobs_fts_insert AFTER INSERT ON jobs BEGIN
+        INSERT INTO jobs_fts (rowid, title, company, department, description)
+        VALUES (
+            new.id, new.title,
+            (SELECT c.name FROM boards b JOIN companies c ON c.id = b.company_id
+             WHERE b.id = new.board_id),
+            new.department, new.description
+        );
+    END;
+    CREATE TRIGGER companies_fts_rename AFTER UPDATE OF name ON companies BEGIN
+        UPDATE jobs_fts SET company = new.name
+        WHERE rowid IN (SELECT j.id FROM jobs j JOIN boards b ON b.id = j.board_id
+                        WHERE b.company_id = new.id);
+    END;
+    """,
 ]
 
 

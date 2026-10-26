@@ -427,6 +427,23 @@ def create_app(settings: Settings, db_path: Path | None = None,
             raise HTTPException(409, "another task is already running")
         return tasks.state()
 
+    @app.post("/api/find-boards", status_code=202)
+    def start_find_boards():
+        from ..detect import find_missing_boards
+
+        def work(progress) -> str:
+            own = db.connect(db_path)
+            try:
+                s = asyncio.run(find_missing_boards(own, settings, transport=transport, progress=progress))
+            finally:
+                own.close()
+            return (f"Checked {s.checked} companies without a job board: found {s.found}"
+                    f" ({s.unconfirmed} guessed from the name; confirm those on each company's page).")
+
+        if not tasks.start("find-boards", work):
+            raise HTTPException(409, "another task is already running")
+        return tasks.state()
+
     @app.get("/api/tasks/current")
     def current_task():
         return tasks.state()

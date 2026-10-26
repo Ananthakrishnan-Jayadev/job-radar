@@ -52,6 +52,7 @@ export const SYSTEM_LABEL: Record<string, string> = {
 export const SIZE_SOURCE_LABEL: Record<string, string> = {
   manual: "entered by you",
   stillhiring: "from stillhiring.today",
+  imported: "from your imported list",
   wikidata: "from Wikidata",
   estimate: "estimated from open roles",
 };

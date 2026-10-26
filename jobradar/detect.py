@@ -13,7 +13,7 @@ from __future__ import annotations
 
 import asyncio
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from urllib.parse import urljoin, urlsplit
 
 from .boards import BoardError, normalize_board
@@ -115,8 +115,8 @@ async def check_board(client: HttpClient, settings: Settings, system: str, slug:
 
 
 async def guess_boards(client: HttpClient, settings: Settings, name: str, canadian: bool,
-                       systems: tuple[str, ...] = ("greenhouse", "lever", "ashby", "smartrecruiters",
-                                                   "workable", "recruitee", "breezy", "rippling")) -> list[Detected]:
+                       systems: tuple[str, ...] = ("greenhouse", "lever", "ashby", "smartrecruiters", "workable",
+                                                   "recruitee", "breezy", "rippling", "bamboohr")) -> list[Detected]:
     """Try the name's slug guesses on each feed. Boards with no Canadian jobs are left out:
     for a job hunt in Canada they're useless, and they're the likeliest name collisions."""
     hits: list[Detected] = []
@@ -173,3 +173,62 @@ async def _from_careers_page(client: HttpClient, url: str) -> list[Detected]:
         hit.how, hit.confidence = "page", "likely"
         hit.note = hit.note or f"linked from {final}"
     return found
+
+
+# --- filling in boards for companies that have none --------------------------------------
+
+@dataclass
+class FindSummary:
+    checked: int = 0
+    found: int = 0
+    unconfirmed: int = 0  # guessed from the name: added, but flagged for the user to check
+    details: list[str] = field(default_factory=list)
+
+
+async def find_missing_boards(conn, settings: Settings, *, transport=None, company: str | None = None,
+                              progress=None) -> FindSummary:
+    """Detect and add a job board for every company that has none.
+
+    A board found from a careers link or page is added as confirmed; one guessed
+    from the name is added unconfirmed (it may be another company's).
+    """
+    from . import db
+
+    sql = """SELECT c.id, c.name, c.careers_url, c.canadian FROM companies c
+             WHERE NOT EXISTS (SELECT 1 FROM boards b WHERE b.company_id = c.id)"""
+    params: list = []
+    if company:
+        sql += " AND c.name = ? COLLATE NOCASE"
+        params.append(company)
+    rows = [dict(r) for r in conn.execute(sql + " ORDER BY c.name", params)]
+    summary = FindSummary(checked=len(rows))
+    limit = asyncio.Semaphore(4)  # a few companies at once; each host is still limited per request
+    done = 0
+
+    async with HttpClient(settings, transport=transport) as client:
+        async def one(row: dict) -> None:
+            nonlocal done
+            async with limit:
+                hits = await detect_company(client, settings, row["name"], row["careers_url"], bool(row["canadian"]))
+            done += 1
+            if progress:
+                progress(done, len(rows))
+            if not hits:
+                summary.details.append(f"{row['name']}: no job board found")
+                return
+            best = hits[0]
+            owner = conn.execute("SELECT company_id FROM boards WHERE system = ? AND slug_or_url = ?",
+                                 (best.system, best.slug_or_url)).fetchone()
+            if owner and owner[0] != row["id"]:
+                summary.details.append(f"{row['name']}: {best.system}:{best.slug_or_url} belongs to another company")
+                return
+            confirmed = best.confidence != "possible"
+            db.upsert_board(conn, row["id"], best.system, best.slug_or_url, confirmed=confirmed, enabled=True)
+            summary.found += 1
+            summary.unconfirmed += not confirmed
+            how = "guessed from the name, unconfirmed" if not confirmed else best.note or "from its careers link"
+            summary.details.append(f"{row['name']}: {best.system}:{best.slug_or_url} ({how})")
+
+        await asyncio.gather(*(one(r) for r in rows))
+    summary.details.sort()
+    return summary

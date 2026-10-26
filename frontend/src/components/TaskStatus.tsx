@@ -3,6 +3,7 @@ import { useApp } from "../state";
 const RUNNING_LABEL: Record<string, string> = {
   sizes: "Looking up company sizes",
   boards: "Finding job boards",
+  "find-boards": "Finding job boards",
 };
 
 /** Progress of the background chore named *name*, or its last result. */
