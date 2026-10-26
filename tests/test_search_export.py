@@ -29,6 +29,28 @@ def titles(rows):
     return [r["title"] for r in rows]
 
 
+def add(conn, ext, title, locations):
+    board = conn.execute("SELECT id FROM boards").fetchone()[0]
+    db.upsert_job(conn, board, RawJob(ext, title, f"https://x/{ext}", locations))
+
+
+def test_never_shows_jobs_outside_canada(jobs):
+    add(jobs, "9", "Dubai Sales", [Location("Dubai", None, None, remote=True, raw="Dubai")])
+    add(jobs, "10", "NYC Sales", [Location("New York", "NY", "US")])
+    add(jobs, "11", "Bare Remote", [Location(remote=True, raw="Remote")])
+    found = titles(db.find_jobs(jobs, include_closed=True))
+    assert "Dubai Sales" not in found and "NYC Sales" not in found
+    assert "Bare Remote" in found
+    assert "Bare Remote" in titles(db.find_jobs(jobs, provinces=["REMOTE"]))
+    assert "Bare Remote" not in titles(db.find_jobs(jobs, provinces=["ON"]))
+
+
+def test_label_names_only_canadian_places():
+    locs = [Location("Toronto", "ON", "CA"), Location("Dallas", "TX", "US"), Location("Phoenix", "AZ", "US")]
+    assert db.location_label(locs) == "Toronto, ON (+2 outside Canada)"
+    assert db.location_label([Location(remote=True, raw="Remote")]) == "Remote (country not stated)"
+
+
 def test_find_all_open_newest_first(jobs):
     assert titles(db.find_jobs(jobs)) == ["Data Scientist", "Applied AI Engineer", "Machine Learning Engineer"]
 
