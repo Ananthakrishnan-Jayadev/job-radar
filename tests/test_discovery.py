@@ -168,10 +168,11 @@ def test_from_html_embedded_boards():
 
 
 @pytest.mark.parametrize("name,guesses", [
-    ("Top Hat", ["tophat", "top-hat", "top"]),
+    ("Top Hat", ["tophat", "top-hat"]),
     ("Avidbots Corp.", ["avidbots"]),
     ("1Password", ["1password"]),
-    ("Dye & Durham Corporation", ["dyedurham", "dye-durham", "dye"]),
+    ("Dye & Durham Corporation", ["dyedurham", "dye-durham"]),
+    ("Block 64", ["block64", "block-64"]),  # never just "block": that's Block Inc.
 ])
 def test_slug_guesses(name, guesses):
     assert detect.slug_guesses(name) == guesses

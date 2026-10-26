@@ -95,7 +95,9 @@ def slug_guesses(name: str) -> list[str]:
     words = re.findall(r"[a-z0-9]+", base)
     if not words:
         return []
-    guesses = ["".join(words), "-".join(words), words[0]]
+    # Only the whole name: the first word alone ("block" for "Block 64",
+    # "contractor" for "Contractor Compliance") matched other companies' boards.
+    guesses = ["".join(words), "-".join(words)]
     return [g for g in dict.fromkeys(guesses) if len(g) >= 3]
 
 
