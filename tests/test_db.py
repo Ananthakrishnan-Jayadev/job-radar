@@ -54,7 +54,7 @@ def test_upgrade_from_version_2_keeps_data(tmp_path):
     assert [r["title"] for r in db.search_jobs(conn, "cohere")] == ["ML Engineer", "Data Analyst"]
     conn.execute("UPDATE companies SET name = 'Cohere AI' WHERE id = 1")
     assert len(db.search_jobs(conn, '"cohere ai"')) == 2
-    conn.execute("UPDATE companies SET size_source = 'stillhiring' WHERE id = 1")
+    conn.execute("UPDATE companies SET size_source = 'imported' WHERE id = 1")
     assert conn.execute("PRAGMA foreign_keys").fetchone()[0] == 1
 
 

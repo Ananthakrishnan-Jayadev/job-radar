@@ -94,6 +94,7 @@ export const api = {
   fillAllSizes: () => request<TaskState>("POST", "/api/enrich", {}),
   detect: (body: { name: string; careers_url?: string | null; canadian: boolean }) =>
     request<DetectedBoard[]>("POST", "/api/detect", body),
+  findMissingBoards: () => request<TaskState>("POST", "/api/find-boards"),
   currentTask: () => request<TaskState>("GET", "/api/tasks/current"),
 
   candidates: (params: URLSearchParams) =>

@@ -29,6 +29,17 @@ export default function CompaniesPage() {
     }
   }
 
+  async function findBoards() {
+    setTaskError(null);
+    try {
+      watchTask(await api.findMissingBoards());
+    } catch (err) {
+      setTaskError(err instanceof Error ? err.message : String(err));
+    }
+  }
+
+  const withoutBoard = (companies.data ?? []).filter((c) => c.boards.length === 0).length;
+
   async function setStatus(company: Company, status: CompanyStatus) {
     const updated = await api.patchCompany(company.id, { status });
     companies.setData((list) => list?.map((c) => (c.id === updated.id ? updated : c)));
@@ -58,8 +69,14 @@ export default function CompaniesPage() {
         <button type="button" disabled={task?.running} onClick={fillSizes}>
           Fill in company sizes
         </button>
+        {withoutBoard > 0 && (
+          <button type="button" disabled={task?.running} onClick={findBoards}>
+            Find job boards for {withoutBoard} companies
+          </button>
+        )}
       </div>
       <TaskStatus name="sizes" />
+      <TaskStatus name="find-boards" />
       {taskError && <p className="error" role="alert">{taskError}</p>}
 
       {meta && (
@@ -117,6 +134,7 @@ export default function CompaniesPage() {
                   <td className="num">{formatCount(c.total_open)}</td>
                   <td className="nowrap">{SIZE_LABEL[c.size_band] ?? c.size_band}</td>
                   <td>
+                    {c.boards.length === 0 && <span className="tag warn">No job board yet</span>}
                     {c.boards.map((b) => (
                       <span
                         key={b.id}

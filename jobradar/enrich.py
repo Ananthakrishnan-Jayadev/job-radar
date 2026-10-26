@@ -1,6 +1,6 @@
 """Company size (employee count) from several sources, best one wins.
 
-Precedence: manual > stillhiring > wikidata > estimate. A source never
+Precedence: manual > stillhiring > imported > wikidata > estimate. A source never
 overwrites a better one; the same source may refresh its own number.
 
 Wikidata is read through its regular API (wbsearchentities + wbgetentities),
@@ -25,7 +25,8 @@ from . import db
 from .config import Settings
 from .http import FetchError, HttpClient
 
-PRIORITY = {"estimate": 1, "wikidata": 2, "stillhiring": 3, "manual": 4}
+# "imported": a size range from the user's own company list (e.g. "51-200").
+PRIORITY = {"estimate": 1, "wikidata": 2, "imported": 3, "stillhiring": 4, "manual": 5}
 
 WIKIDATA_API = "https://www.wikidata.org/w/api.php"
 CANADA = "Q16"
@@ -41,6 +42,8 @@ def apply_size(conn: sqlite3.Connection, company_id: int, count: int | None, sou
     """Store *count* from *source* unless the company has a size from a better source."""
     if count is None or count < 0:
         return False
+    if source not in PRIORITY:
+        raise ValueError(f"unknown size source {source!r}")
     row = conn.execute("SELECT size_source FROM companies WHERE id = ?", (company_id,)).fetchone()
     if row is None:
         return False
