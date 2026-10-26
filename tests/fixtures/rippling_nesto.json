@@ -1,0 +1,55 @@
+{
+  "_request": {
+    "url": "https://ats.rippling.com/api/v2/board/nesto/jobs",
+    "method": "GET",
+    "body": null
+  },
+  "response": {
+    "items": [
+      {
+        "id": "fad48ccf-31cc-4b6e-90f4-3c25eacb224d",
+        "name": "Ing\u00e9nieur IA Appliqu\u00e9e Senior  ",
+        "url": "https://ats.rippling.com/nesto/jobs/fad48ccf-31cc-4b6e-90f4-3c25eacb224d",
+        "department": {
+          "name": "Corporate - AI Engineering"
+        },
+        "locations": [
+          {
+            "name": "Canada",
+            "country": "Canada",
+            "countryCode": "CA",
+            "state": null,
+            "stateCode": null,
+            "city": null,
+            "workplaceType": "REMOTE"
+          }
+        ],
+        "language": "en-US"
+      },
+      {
+        "id": "759b4c0f-3907-4cd5-b552-413981eed4a7",
+        "name": "Senior Applied AI Engineer ",
+        "url": "https://ats.rippling.com/nesto/jobs/759b4c0f-3907-4cd5-b552-413981eed4a7",
+        "department": {
+          "name": "Corporate - AI Engineering"
+        },
+        "locations": [
+          {
+            "name": "Canada",
+            "country": "Canada",
+            "countryCode": "CA",
+            "state": null,
+            "stateCode": null,
+            "city": null,
+            "workplaceType": "REMOTE"
+          }
+        ],
+        "language": "en-US"
+      }
+    ],
+    "page": 0,
+    "pageSize": 20,
+    "totalItems": 39,
+    "totalPages": 2
+  }
+}

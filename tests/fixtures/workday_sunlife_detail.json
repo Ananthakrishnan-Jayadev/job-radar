@@ -1,0 +1,48 @@
+{
+  "_request": {
+    "url": "https://sunlife.wd3.myworkdayjobs.com/wday/cxs/sunlife/Experienced-Jobs/job/Toronto-Ontario/Data-Scientist_JR00128241",
+    "method": "GET"
+  },
+  "response": {
+    "jobPostingInfo": {
+      "id": "cb6d73759e8e1001a49a717cb7c10000",
+      "title": "Data Scientist",
+      "jobDescription": "<p style=\"text-align:left !important\">You are as unique as your background, experience and point of view. Here, you\u2019ll be encouraged, empowered and challenged to be your best self. You&#39;ll work with dynamic colleagues - experts in their fields - who are eager to share their knowledge with you. Yo...[trimmed]",
+      "location": "Toronto, Ontario",
+      "additionalLocations": [
+        "Waterloo, Ontario"
+      ],
+      "postedOn": "Posted 2 Days Ago",
+      "startDate": "2026-10-23",
+      "timeType": "Full time",
+      "jobReqId": "JR00128241",
+      "jobPostingId": "Data-Scientist_JR00128241",
+      "jobPostingSiteId": "Experienced-Jobs",
+      "country": {
+        "descriptor": "Canada",
+        "id": "a30a87ed25634629aa6c3958aa2b91ea"
+      },
+      "canApply": true,
+      "posted": true,
+      "includeResumeParsing": true,
+      "jobRequisitionLocation": {
+        "descriptor": "Sun Life Toronto One York",
+        "country": {
+          "descriptor": "Canada",
+          "id": "a30a87ed25634629aa6c3958aa2b91ea",
+          "alpha2Code": "CA"
+        }
+      },
+      "externalUrl": "https://sunlife.wd3.myworkdayjobs.com/Experienced-Jobs/job/Toronto-Ontario/Data-Scientist_JR00128241",
+      "questionnaireId": "d6c367ad798f1001f22d0a9a92950000",
+      "secondaryQuestionnaireId": "07092c6e50bc01650a99054c522d5644",
+      "endDate": "2026-10-30"
+    },
+    "hiringOrganization": {
+      "name": "Sun Life Assurance Company of Canada",
+      "url": ""
+    },
+    "similarJobs": [],
+    "userAuthenticated": false
+  }
+}
