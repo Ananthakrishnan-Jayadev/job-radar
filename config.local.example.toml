@@ -1,0 +1,11 @@
+# Copy to config.local.toml (git-ignored) and fill in.
+# Values here override config.toml.
+
+[general]
+# Goes into the User-Agent header so sources can reach you.
+contact = "you@example.com"
+
+[adzuna]
+# Free key from https://developer.adzuna.com (needed from phase 4).
+app_id = ""
+app_key = ""

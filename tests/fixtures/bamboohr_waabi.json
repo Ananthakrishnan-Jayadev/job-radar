@@ -1,0 +1,34 @@
+{
+  "_request": {
+    "url": "https://waabi.bamboohr.com/careers/list",
+    "method": "GET",
+    "body": null
+  },
+  "response": {
+    "meta": {
+      "totalCount": 1
+    },
+    "result": [
+      {
+        "id": "23",
+        "jobOpeningName": "Test",
+        "departmentId": "18626",
+        "departmentLabel": "Human Resources",
+        "employmentStatusLabel": "Full-Time",
+        "employmentType": null,
+        "location": {
+          "city": "San Francisco",
+          "state": "California"
+        },
+        "atsLocation": {
+          "country": null,
+          "state": null,
+          "province": null,
+          "city": null
+        },
+        "isRemote": null,
+        "locationType": "0"
+      }
+    ]
+  }
+}

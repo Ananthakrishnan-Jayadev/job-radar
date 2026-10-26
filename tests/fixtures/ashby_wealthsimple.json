@@ -1,0 +1,116 @@
+{
+  "_request": {
+    "url": "https://api.ashbyhq.com/posting-api/job-board/wealthsimple?includeCompensation=true",
+    "method": "GET",
+    "body": null
+  },
+  "response": {
+    "jobs": [
+      {
+        "id": "ca4434c0-9935-40aa-8bf9-5caaf0f2ce1b",
+        "title": "Lead, Workplace Operations",
+        "department": "People Operations & Communications",
+        "team": "People Operations",
+        "employmentType": "FullTime",
+        "location": "Toronto Headquarters",
+        "shouldDisplayCompensationOnJobPostings": true,
+        "secondaryLocations": [],
+        "publishedAt": "2026-09-11T17:27:53.395+00:00",
+        "isListed": true,
+        "isRemote": false,
+        "workplaceType": "OnSite",
+        "address": {
+          "postalAddress": {
+            "addressRegion": "Ontario",
+            "addressCountry": "Canada",
+            "addressLocality": "Toronto"
+          }
+        },
+        "jobUrl": "https://jobs.ashbyhq.com/wealthsimple/ca4434c0-9935-40aa-8bf9-5caaf0f2ce1b",
+        "applyUrl": "https://jobs.ashbyhq.com/wealthsimple/ca4434c0-9935-40aa-8bf9-5caaf0f2ce1b/application",
+        "descriptionHtml": "<h2><strong>Build something people love</strong></h2><p style=\"min-height:1.5em\">Wealthsimple is Canada\u2019s leading financial innovator. The company offers a full suite of simple, sophisticated financial products across managed investing, do-it-yourself trading, cryptocurrency, tax filing, spending an...[trimmed]",
+        "descriptionPlain": "BUILD SOMETHING PEOPLE LOVE\n\nWealthsimple is Canada\u2019s leading financial innovator. The company offers a full suite of simple, sophisticated financial products across managed investing, do-it-yourself trading, cryptocurrency, tax filing, spending and saving. Wealthsimple currently serves more than 4 ...[trimmed]",
+        "compensation": {
+          "compensationTierSummary": "CA$116K \u2013 CA$145K \u2022 Offers Equity",
+          "scrapeableCompensationSalarySummary": "CA$116K - CA$145K",
+          "compensationTiers": [
+            {
+              "id": "88bbefb1-5555-4171-912d-6d20992f9013",
+              "tierSummary": "CA$116K \u2013 CA$145K \u2022 Offers Equity",
+              "title": null,
+              "additionalInformation": null,
+              "components": [
+                {
+                  "id": "76f3a7e1-2d78-4950-865c-73acc581ff01",
+                  "summary": "CA$116K \u2013 CA$145K",
+                  "compensationType": "Salary",
+                  "interval": "1 YEAR",
+                  "currencyCode": "CAD",
+                  "minValue": 116000,
+                  "maxValue": 145000
+                },
+                {
+                  "id": "002d8fbb-bb25-47bc-80b2-d20564bbb95d",
+                  "summary": "Offers Equity",
+                  "compensationType": "EquityCashValue",
+                  "interval": "1 YEAR",
+                  "currencyCode": "CAD",
+                  "minValue": null,
+                  "maxValue": null
+                }
+              ]
+            }
+          ],
+          "summaryComponents": [
+            {
+              "compensationType": "Salary",
+              "interval": "1 YEAR",
+              "currencyCode": "CAD",
+              "minValue": 116000,
+              "maxValue": 145000
+            },
+            {
+              "compensationType": "EquityCashValue",
+              "interval": "1 YEAR",
+              "currencyCode": "CAD",
+              "minValue": null,
+              "maxValue": null
+            }
+          ]
+        }
+      },
+      {
+        "id": "93453282-d95c-42a3-87e4-b13df7d9ec03",
+        "title": "Future Opportunities - North Star: Calling all Canadians Abroad",
+        "department": "General",
+        "team": "Future Opportunities",
+        "employmentType": "FullTime",
+        "location": "Remote (Canada)",
+        "shouldDisplayCompensationOnJobPostings": false,
+        "secondaryLocations": [],
+        "publishedAt": "2026-02-14T17:27:16.004+00:00",
+        "isListed": true,
+        "isRemote": true,
+        "workplaceType": "Remote",
+        "address": {
+          "postalAddress": {
+            "addressRegion": "",
+            "addressCountry": "Canada",
+            "addressLocality": ""
+          }
+        },
+        "jobUrl": "https://jobs.ashbyhq.com/wealthsimple/93453282-d95c-42a3-87e4-b13df7d9ec03",
+        "applyUrl": "https://jobs.ashbyhq.com/wealthsimple/93453282-d95c-42a3-87e4-b13df7d9ec03/application",
+        "descriptionHtml": "<h2><strong>Build something people love</strong></h2><p style=\"min-height:1.5em\">Wealthsimple is Canada\u2019s leading financial innovator. The company offers a full suite of simple, sophisticated financial products across managed investing, do-it-yourself trading, cryptocurrency, tax filing, spending an...[trimmed]",
+        "descriptionPlain": "BUILD SOMETHING PEOPLE LOVE\n\nWealthsimple is Canada\u2019s leading financial innovator. The company offers a full suite of simple, sophisticated financial products across managed investing, do-it-yourself trading, cryptocurrency, tax filing, spending and saving. Wealthsimple currently serves more than 4 ...[trimmed]",
+        "compensation": {
+          "compensationTierSummary": null,
+          "scrapeableCompensationSalarySummary": null,
+          "compensationTiers": [],
+          "summaryComponents": []
+        }
+      }
+    ],
+    "apiVersion": "1"
+  }
+}

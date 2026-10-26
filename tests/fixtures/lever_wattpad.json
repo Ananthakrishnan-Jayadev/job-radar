@@ -1,0 +1,101 @@
+{
+  "_request": {
+    "url": "https://api.lever.co/v0/postings/wattpad?mode=json",
+    "method": "GET",
+    "body": null
+  },
+  "response": [
+    {
+      "additionalPlain": "What we offer (For Full-Time Only):\n* Career development; we believe in mentorship and investing in your learning, supporting you to achieve your goals\n* Top industry health benefits, including vision and dental\u00a0\nYour own health/wellness account to spend each year\n* RRSP Contributions (Canada), 401K...[trimmed]",
+      "additional": "<div><strong>What we offer (For Full-Time Only):</strong></div>\n<div>* Career development; we believe in mentorship and investing in your learning, supporting you to achieve your goals</div>\n<div>* Top industry health benefits, including vision and dental&nbsp;</div>\n<div>Your own health/wellness ac...[trimmed]",
+      "categories": {
+        "commitment": "Full-time",
+        "department": "Wattpad",
+        "location": "Toronto, Ontario",
+        "team": "Tech | Wattpad | Engineering",
+        "allLocations": [
+          "Toronto, Ontario"
+        ]
+      },
+      "createdAt": 1787156115902,
+      "descriptionPlain": "Wattpad\u2019s vision is to entertain and connect the world through stories. A leading global webnovel platform, Wattpad has democratized storytelling for a new generation of diverse Gen Z writers and their fans. Wattpad is part of WEBTOON Entertainment\u2019s IP & Creator Ecosystem, where approximately 155 m...[trimmed]",
+      "description": "<div><span style=\"font-size: 16px;\">Wattpad\u2019s vision is to entertain and connect the world through stories. A leading global webnovel platform, Wattpad has democratized storytelling for a new generation of diverse Gen Z writers and their fans. Wattpad is part of WEBTOON Entertainment\u2019s IP &amp; Crea...[trimmed]",
+      "id": "da811487-88c8-440b-b6c2-5da90eb80ca1",
+      "lists": [
+        {
+          "text": "What You'll Do:",
+          "content": "<div>\n\n<li>Lead and support a team of engineers, overseeing performance management, career growth, and general team administration including rituals and meetings</li>\n<li>Contribute to planning and determining the technical roadmap by understanding and aligning business and engineering goals</li>\n<l...[trimmed]"
+        },
+        {
+          "text": "Required Qualifications:",
+          "content": "<div>\n\n<li>8+ years of experience in software development with at least 3 years managing a team of 3 or more engineers including those at the Senior level or higher</li>\n<li>Significant experience designing and building backend distributed systems, including writing and critiquing design and technic...[trimmed]"
+        },
+        {
+          "text": "Nice To Haves:",
+          "content": "<div>\n<div aria-setsize=\"-1\" aria-labelledby=\"primary-D0B94H0LFBK-1787149408.599879-sender primary-D0B94H0LFBK-1787149408.599879-message_text primary-D0B94H0LFBK-1787149408.599879-alt_text primary-D0B94H0LFBK-1787149408.599879-date_time primary-D0B94H0LFBK-1787149408.599879-reaction_count primary-D0...[trimmed]"
+        }
+      ],
+      "salaryRange": {
+        "min": 140000,
+        "max": 180000,
+        "currency": "CAD",
+        "interval": "per-year-salary"
+      },
+      "text": "[Wattpad] Engineering Manager",
+      "country": "CA",
+      "workplaceType": "hybrid",
+      "opening": "<div><span style=\"font-size: 16px;\">Wattpad&rsquo;s vision is to entertain and connect the world through stories. A leading global webnovel platform, Wattpad has democratized storytelling for a new generation of diverse Gen Z writers and their fans. Wattpad is part of WEBTOON Entertainment&rsquo;s I...[trimmed]",
+      "openingPlain": "Wattpad\u2019s vision is to entertain and connect the world through stories. A leading global webnovel platform, Wattpad has democratized storytelling for a new generation of diverse Gen Z writers and their fans. Wattpad is part of WEBTOON Entertainment\u2019s IP & Creator Ecosystem, where approximately 155 m...[trimmed]",
+      "descriptionBody": "<div>We are hiring an <strong>Engineering Manager</strong> for our Platform Engineering team to lead the design, development, and maintenance of the backend platforms that underpin Wattpad's social, notifications, subscriptions, and coin economy features. This is a highly collaborative team that wor...[trimmed]",
+      "descriptionBodyPlain": "We are hiring an Engineering Manager for our Platform Engineering team to lead the design, development, and maintenance of the backend platforms that underpin Wattpad's social, notifications, subscriptions, and coin economy features. This is a highly collaborative team that works closely with Produc...[trimmed]",
+      "hostedUrl": "https://jobs.lever.co/wattpad/da811487-88c8-440b-b6c2-5da90eb80ca1",
+      "applyUrl": "https://jobs.lever.co/wattpad/da811487-88c8-440b-b6c2-5da90eb80ca1/apply"
+    },
+    {
+      "additionalPlain": "What we offer (For Full-Time Only):\n* Career development; we believe in mentorship and investing in your learning, supporting you to achieve your goals\n* Top industry health benefits, including vision and dental\u00a0\nYour own health/wellness account to spend each year\n* RRSP Contributions (Canada), 401K...[trimmed]",
+      "additional": "<div><strong>What we offer (For Full-Time Only):</strong></div>\n<div>* Career development; we believe in mentorship and investing in your learning, supporting you to achieve your goals</div>\n<div>* Top industry health benefits, including vision and dental&nbsp;</div>\n<div>Your own health/wellness ac...[trimmed]",
+      "categories": {
+        "commitment": "Full-time",
+        "department": "Wattpad",
+        "location": "Toronto, Ontario",
+        "team": "Tech | Wattpad | Engineering",
+        "allLocations": [
+          "Toronto, Ontario"
+        ]
+      },
+      "createdAt": 1789679878559,
+      "descriptionPlain": "Wattpad\u2019s vision is to entertain and connect the world through stories. A leading global webnovel platform, Wattpad has democratized storytelling for a new generation of diverse Gen Z writers and their fans. Wattpad is part of WEBTOON Entertainment\u2019s IP & Creator Ecosystem, where approximately 155 m...[trimmed]",
+      "description": "<div><span style=\"font-size: 16px;\">Wattpad\u2019s vision is to entertain and connect the world through stories. A leading global webnovel platform, Wattpad has democratized storytelling for a new generation of diverse Gen Z writers and their fans. Wattpad is part of WEBTOON Entertainment\u2019s IP &amp; Crea...[trimmed]",
+      "id": "27d282b1-1d8e-4aa7-9886-e48e897edd2f",
+      "lists": [
+        {
+          "text": "What You'll Do:",
+          "content": "<div>\n\n<li>\n<p>Lead and develop the engineering leadership team across architecture, client engineering, platform, and data engineering; building on the strengths and momentum already in place.</p>\n</li>\n<li>\n<p>Continue strengthening engineering delivery, planning, estimation, and technical roadmap...[trimmed]"
+        },
+        {
+          "text": "Required Qualifications:",
+          "content": "<div>\n\n<li>\n<p>10+ years of progressive software engineering experience, including 5+ years leading engineering teams and senior engineering leaders.</p>\n</li>\n<li>\n<p>Experience leading a multi team engineering organization across areas engineering, infrastructure, and data.&nbsp;</p>\n</li>\n<li>\n<p...[trimmed]"
+        },
+        {
+          "text": "Nice To Haves:",
+          "content": "<div>\n\n<li>\n<p>Strong technical judgment, with the ability to challenge assumptions and help teams make better architectural and systems decisions.</p>\n</li>\n<li>\n<p>A track record of creating engineering rigor through stronger planning, decision making, accountability, and operational discipline wi...[trimmed]"
+        }
+      ],
+      "salaryRange": {
+        "min": 240000,
+        "max": 280000,
+        "currency": "CAD",
+        "interval": "per-year-salary"
+      },
+      "text": "[Wattpad] Head of Engineering",
+      "country": "CA",
+      "workplaceType": "hybrid",
+      "opening": "<div><span style=\"font-size: 16px;\">Wattpad&rsquo;s vision is to entertain and connect the world through stories. A leading global webnovel platform, Wattpad has democratized storytelling for a new generation of diverse Gen Z writers and their fans. Wattpad is part of WEBTOON Entertainment&rsquo;s I...[trimmed]",
+      "openingPlain": "Wattpad\u2019s vision is to entertain and connect the world through stories. A leading global webnovel platform, Wattpad has democratized storytelling for a new generation of diverse Gen Z writers and their fans. Wattpad is part of WEBTOON Entertainment\u2019s IP & Creator Ecosystem, where approximately 155 m...[trimmed]",
+      "descriptionBody": "<div>\n<p>Our Engineering team builds and operates the systems that power Wattpad&rsquo;s reader and writer experiences across mobile and web. The team works across client engineering, platform, data, infrastructure, safety, monetization, and the technical foundations that support discovery, personal...[trimmed]",
+      "descriptionBodyPlain": "Our Engineering team builds and operates the systems that power Wattpad\u2019s reader and writer experiences across mobile and web. The team works across client engineering, platform, data, infrastructure, safety, monetization, and the technical foundations that support discovery, personalization, commun...[trimmed]",
+      "hostedUrl": "https://jobs.lever.co/wattpad/27d282b1-1d8e-4aa7-9886-e48e897edd2f",
+      "applyUrl": "https://jobs.lever.co/wattpad/27d282b1-1d8e-4aa7-9886-e48e897edd2f/apply"
+    }
+  ]
+}

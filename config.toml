@@ -1,0 +1,28 @@
+# Job Radar settings. Safe to commit: no secrets here.
+# Put API keys and your contact email in config.local.toml (git-ignored);
+# see config.local.example.toml.
+
+[general]
+# SQLite file, relative to this folder.
+database = "data/jobradar.db"
+
+[http]
+# Sent with every request so sources can see who is calling.
+# "{contact}" is replaced with general.contact from config.local.toml.
+user_agent = "job-radar/0.1 (personal use; {contact})"
+# Used only for sources that reject the honest agent above.
+fallback_user_agent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36"
+timeout_seconds = 20
+max_per_host = 2
+page_delay_seconds = 0.5
+
+[workday]
+# List every Canadian job when a board has at most this many;
+# above it, search per saved search instead.
+max_list = 400
+max_details_per_scan = 60
+delay_seconds = 1.0
+
+[smartrecruiters]
+# Postings older than this are skipped (some boards keep 2017 postings).
+max_age_days = 180

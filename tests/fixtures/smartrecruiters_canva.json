@@ -1,0 +1,273 @@
+{
+  "_request": {
+    "url": "https://api.smartrecruiters.com/v1/companies/canva/postings?limit=2",
+    "method": "GET",
+    "body": null
+  },
+  "response": {
+    "offset": 0,
+    "limit": 2,
+    "totalFound": 95,
+    "content": [
+      {
+        "id": "6000000001518828",
+        "name": "Strategic Customer Success Manager",
+        "uuid": "2828ce0a-2a1e-4f27-9231-7a2e8ec5767d",
+        "jobAdId": "59c1736e-fc8e-4700-9f2f-280dc43821c2",
+        "defaultJobAd": true,
+        "refNumber": "R103077",
+        "company": {
+          "identifier": "Canva",
+          "name": "Canva"
+        },
+        "releasedDate": "2026-10-23T14:16:37.111Z",
+        "location": {
+          "city": "Austin",
+          "region": "TX",
+          "country": "us",
+          "remote": false,
+          "hybrid": true,
+          "fullLocation": "Austin, TX, United States"
+        },
+        "industry": {
+          "id": "computer_software",
+          "label": "Computer Software"
+        },
+        "department": {},
+        "function": {
+          "id": "sales",
+          "label": "Sales"
+        },
+        "typeOfEmployment": {
+          "id": "permanent",
+          "label": "Full-time"
+        },
+        "experienceLevel": {
+          "id": "not_applicable",
+          "label": "Not Applicable"
+        },
+        "customField": [
+          {
+            "fieldId": "651ba0114967807d2e86fe5a",
+            "fieldLabel": "Team",
+            "valueId": "552b243cafd4100169ae6c6bcff30000",
+            "valueLabel": "AMER Strategic Success"
+          },
+          {
+            "fieldId": "651ba508aac0da4b9cbd91cb",
+            "fieldLabel": "Worker type",
+            "valueId": "d588c41a446c11de98360015c5e6daf6",
+            "valueLabel": "Employee"
+          },
+          {
+            "fieldId": "651ba0b93066d20abe11145b",
+            "fieldLabel": "Specialty",
+            "valueId": "220b5c7e743d01c7acafdaa7b8008513",
+            "valueLabel": "Sales & Success"
+          },
+          {
+            "fieldId": "651ba171eec5b66729429433",
+            "fieldLabel": "Subspecialty",
+            "valueId": "220b5c7e743d01ab3e9e14f4b7000913",
+            "valueLabel": "Customer Success Management"
+          },
+          {
+            "fieldId": "COUNTRY",
+            "fieldLabel": "Country/Region",
+            "valueId": "us",
+            "valueLabel": "United States"
+          },
+          {
+            "fieldId": "6514d94a9c140e09b2e649f5",
+            "fieldLabel": "Brands",
+            "valueId": "default",
+            "valueLabel": "Canva"
+          },
+          {
+            "fieldId": "651ba22058759b40ab8abd46",
+            "fieldLabel": "Time type",
+            "valueId": "2ca83e80de45013371c1658ff3029500",
+            "valueLabel": "Full time"
+          },
+          {
+            "fieldId": "67db425d21ec03315da962cb",
+            "fieldLabel": "Org",
+            "valueId": "552b243cafd4100169ad594c750c0000",
+            "valueLabel": "Go To Market"
+          },
+          {
+            "fieldId": "651b8b8aaac0da4b9cbd91c9",
+            "fieldLabel": "Recruitment type",
+            "valueId": "2c2d396a-3d34-4286-8196-61a215221fd5",
+            "valueLabel": "Permanent"
+          },
+          {
+            "fieldId": "651b8bc23066d20abe111459",
+            "fieldLabel": "Supergroup",
+            "valueId": "d7055559fd68100169cd0af372c80000",
+            "valueLabel": "Sales & Success"
+          },
+          {
+            "fieldId": "651ba1c7aac0da4b9cbd91ca",
+            "fieldLabel": "Role level",
+            "valueId": "S4",
+            "valueLabel": "S4"
+          },
+          {
+            "fieldId": "651b99e25ddc3c31d9224321",
+            "fieldLabel": "Group",
+            "valueId": "552b243cafd4100169ad79b327b80000",
+            "valueLabel": "Customer Success"
+          },
+          {
+            "fieldId": "651b8a7b58759b40ab8abd45",
+            "fieldLabel": "Employment type",
+            "valueId": "01ca83be4eaa01d34208432ca5005301",
+            "valueLabel": "Permanent"
+          },
+          {
+            "fieldId": "651b8e51da1ddb62f488492c",
+            "fieldLabel": "Subgroup",
+            "valueId": "552b243cafd4100169adbd831d010000",
+            "valueLabel": "AMER Customer Success"
+          }
+        ],
+        "visibility": "PUBLIC",
+        "ref": "https://api.smartrecruiters.com/v1/companies/canva/postings/6000000001518828",
+        "language": {
+          "code": "en",
+          "label": "English",
+          "labelNative": "English (US)"
+        }
+      },
+      {
+        "id": "6000000001514890",
+        "name": "SMB Account Executive ",
+        "uuid": "4393b997-af70-4150-ad5d-a62565786b84",
+        "jobAdId": "57e1f1f6-0dd4-477e-ab42-72ebfc86ffed",
+        "defaultJobAd": true,
+        "refNumber": "R103073",
+        "company": {
+          "identifier": "Canva",
+          "name": "Canva"
+        },
+        "releasedDate": "2026-10-22T20:31:09.057Z",
+        "location": {
+          "city": "Austin",
+          "region": "TX",
+          "country": "us",
+          "remote": false,
+          "hybrid": true,
+          "hybridDescription": "3 days in office (Tue, Wed, Thursday) ",
+          "latitude": "30.267153",
+          "longitude": "-97.7430608",
+          "fullLocation": "Austin, TX, United States"
+        },
+        "industry": {
+          "id": "computer_software",
+          "label": "Computer Software"
+        },
+        "department": {},
+        "function": {
+          "id": "sales",
+          "label": "Sales"
+        },
+        "typeOfEmployment": {
+          "id": "permanent",
+          "label": "Full-time"
+        },
+        "experienceLevel": {
+          "id": "not_applicable",
+          "label": "Not Applicable"
+        },
+        "customField": [
+          {
+            "fieldId": "651ba508aac0da4b9cbd91cb",
+            "fieldLabel": "Worker type",
+            "valueId": "d588c41a446c11de98360015c5e6daf6",
+            "valueLabel": "Employee"
+          },
+          {
+            "fieldId": "651ba0b93066d20abe11145b",
+            "fieldLabel": "Specialty",
+            "valueId": "220b5c7e743d01c7acafdaa7b8008513",
+            "valueLabel": "Sales & Success"
+          },
+          {
+            "fieldId": "651ba171eec5b66729429433",
+            "fieldLabel": "Subspecialty",
+            "valueId": "220b5c7e743d01c4f25814f4b7000713",
+            "valueLabel": "Account Management"
+          },
+          {
+            "fieldId": "COUNTRY",
+            "fieldLabel": "Country/Region",
+            "valueId": "us",
+            "valueLabel": "United States"
+          },
+          {
+            "fieldId": "6514d94a9c140e09b2e649f5",
+            "fieldLabel": "Brands",
+            "valueId": "default",
+            "valueLabel": "Canva"
+          },
+          {
+            "fieldId": "651ba22058759b40ab8abd46",
+            "fieldLabel": "Time type",
+            "valueId": "2ca83e80de45013371c1658ff3029500",
+            "valueLabel": "Full time"
+          },
+          {
+            "fieldId": "67db425d21ec03315da962cb",
+            "fieldLabel": "Org",
+            "valueId": "552b243cafd4100169ad594c750c0000",
+            "valueLabel": "Go To Market"
+          },
+          {
+            "fieldId": "651b8b8aaac0da4b9cbd91c9",
+            "fieldLabel": "Recruitment type",
+            "valueId": "2c2d396a-3d34-4286-8196-61a215221fd5",
+            "valueLabel": "Permanent"
+          },
+          {
+            "fieldId": "651b8bc23066d20abe111459",
+            "fieldLabel": "Supergroup",
+            "valueId": "d7055559fd68100169cd0af372c80000",
+            "valueLabel": "Sales & Success"
+          },
+          {
+            "fieldId": "651ba1c7aac0da4b9cbd91ca",
+            "fieldLabel": "Role level",
+            "valueId": "S1",
+            "valueLabel": "S1"
+          },
+          {
+            "fieldId": "651b99e25ddc3c31d9224321",
+            "fieldLabel": "Group",
+            "valueId": "b276719ddbd11000e743383dd9c60000",
+            "valueLabel": "AMER Sales"
+          },
+          {
+            "fieldId": "651b8a7b58759b40ab8abd45",
+            "fieldLabel": "Employment type",
+            "valueId": "01ca83be4eaa01d34208432ca5005301",
+            "valueLabel": "Permanent"
+          },
+          {
+            "fieldId": "651b8e51da1ddb62f488492c",
+            "fieldLabel": "Subgroup",
+            "valueId": "d72904e5618a1000e76bb10bd5bf0000",
+            "valueLabel": "AMER Small Business Outbound Sales"
+          }
+        ],
+        "visibility": "PUBLIC",
+        "ref": "https://api.smartrecruiters.com/v1/companies/canva/postings/6000000001514890",
+        "language": {
+          "code": "en",
+          "label": "English",
+          "labelNative": "English (US)"
+        }
+      }
+    ]
+  }
+}
