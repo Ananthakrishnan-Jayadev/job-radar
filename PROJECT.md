@@ -44,9 +44,9 @@ recorded in [`docs/decisions/`](docs/decisions/).
 
 | Part | Choice | Why |
 |---|---|---|
-| Language | **Python** throughout | User's choice |
-| Web | FastAPI + Uvicorn | Same as the user's other projects |
-| Pages | **Jinja2 templates + htmx** (one vendored JS file, no build step) | Keeps the UI logic in Python; almost no hand-written JavaScript |
+| Language | **Python** for everything except the UI | User's choice |
+| Web API | FastAPI + Uvicorn, JSON under `/api` | Same as the user's other projects |
+| UI | **React + TypeScript**, built with Vite into `jobradar/web/static/` and served by FastAPI | User's choice; one server, one terminal |
 | HTTP | httpx (async), per-host concurrency limit and pause | Gentle on sources |
 | Storage | SQLite through the standard `sqlite3` module, FTS5 for search | One file, no server, full-text search built in |
 | Config | TOML (`config.toml`, read with `tomllib`) | No extra package; draft already in TOML |
@@ -54,8 +54,17 @@ recorded in [`docs/decisions/`](docs/decisions/).
 | Command line | `argparse`, entry point `jobradar` | No extra package |
 | Tests | pytest, recorded responses as fixtures, `httpx.MockTransport` | No network in tests |
 
-Runtime dependencies: `fastapi`, `uvicorn[standard]`, `httpx`, `jinja2`,
-`python-multipart` (form posts). Dev: `pytest`.
+Python runtime dependencies: `fastapi`, `uvicorn[standard]`, `httpx`.
+Dev: `pytest`. UI dependencies (in `frontend/package.json`): `react`,
+`react-dom`, `react-router-dom`; dev: `vite`, `@vitejs/plugin-react`,
+`typescript`, `@types/react`, `@types/react-dom`. No UI component or state
+libraries: plain CSS and React state are enough for one user.
+
+**One terminal.** `jobradar serve` runs Uvicorn, which serves both the API and
+the built UI at http://127.0.0.1:8000. The UI is built once with
+`npm run build` (in `frontend/`). `jobradar serve --dev` also starts
+`vite build --watch` as a child process, so UI edits rebuild on save, still
+in one terminal; it stops when the server stops.
 
 ## 5. Architecture
 
@@ -112,9 +121,15 @@ job-radar/
     export.py               # CSV
     cli.py
     web/
-      app.py                # FastAPI app and routes
-      templates/            # Jinja2 pages and htmx partials
-      static/               # styles.css, htmx.min.js (vendored)
+      app.py                # FastAPI app: /api routes + serves the built UI
+      scanner.py            # background "Scan now" (own thread and DB connection)
+      static/               # built UI from frontend/ (git-ignored, generated)
+  frontend/                 # React + TypeScript source (Vite)
+    package.json  vite.config.ts  tsconfig.json  index.html
+    src/
+      main.tsx  App.tsx  api.ts  types.ts  styles.css
+      pages/                # Jobs, JobDetail, Companies, CompanyDetail, Scans, Settings
+      components/           # Filters, JobTable, StatusSelect, ...
   tests/
     fixtures/               # recorded responses (from docs/research/samples)
     test_*.py
@@ -259,7 +274,7 @@ Schema changes go through numbered migrations applied on start
 
 - **Jobs** (home): search box, filters, results table (title, company,
   location, size band, posted, salary, status, new marker), inline status
-  change and notes (htmx), saved searches, CSV export of the current view.
+  change and notes, saved searches, CSV export of the current view.
 - **Job detail:** description, all locations, links (job page, company
   careers page, a LinkedIn search link), status history.
 - **Companies:** table with Canadian roles open, total roles open, size, job
@@ -272,8 +287,8 @@ Schema changes go through numbered migrations applied on start
 
 ## 13. Process rules for the coding agent
 
-- Python is the main language. Keep JavaScript to the vendored htmx file plus
-  tiny inline snippets if unavoidable.
+- Python is the main language. The UI is React + TypeScript in `frontend/`;
+  all data logic (search, filters, tracking rules) stays in the Python API.
 - **Tests:** every phase adds pytest tests. Tests never touch the network
   (`httpx.MockTransport` with fixtures from `tests/fixtures/`) and write only
   to temporary directories. The agent runs `pytest` and fixes failures before
@@ -282,10 +297,13 @@ Schema changes go through numbered migrations applied on start
   checks") in `TASKS.md` for the human to run: installs, live scans, clicking
   through the UI. The agent does not run live scans against real sources or
   install packages without asking.
-- **Nothing is installed outside the project's `.venv`.** Packages go in only
-  through `.venv/bin/pip`, never system-wide, `--user`, with `sudo`, or through
-  other package managers. Anything that needs a system install is the human's
-  job.
+- **The agent installs nothing.** The human runs every install (`pip` into
+  `.venv`, `npm install` inside `frontend/`) and every UI build after a phase.
+  Python packages only ever go into `.venv`, JavaScript packages only into
+  `frontend/node_modules`; never system-wide, `--user`, `sudo`, `npm -g`, or
+  other package managers. The agent lists new dependencies in
+  `pyproject.toml` / `frontend/package.json` and the install commands in the
+  phase's manual checks.
 - **One phase at a time.** Stop at the end of each phase for the human to test.
 - **Git:** local only for now. Conventional commits (`type(scope): subject`,
   imperative, under 50 characters). Commit at the end of each task group.
