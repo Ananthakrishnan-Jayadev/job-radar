@@ -143,6 +143,8 @@ def test_suggestion_accept(conn):
     ("https://apply.workable.com/borrowell/", "workable", "borrowell"),
     ("https://careers.smartrecruiters.com/Canva", "smartrecruiters", "Canva"),
     ("https://acme.breezy.hr/p/123", "breezy", "acme"),
+    ("https://xello.applytojob.com/", "jazzhr", "xello"),
+    ("https://apertera.applytojob.com/apply", "jazzhr", "apertera"),
 ])
 def test_from_url(url, system, slug):
     found = detect.from_url(url)

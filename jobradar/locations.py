@@ -409,6 +409,8 @@ def from_parts(
     enough on their own.
     """
     city = (city or "").strip() or None
+    if city and city.isupper() and len(city) > 3:
+        city = city.title()  # "TORONTO" -> "Toronto"
     region = (region or "").strip() or None
     country_code = normalize_country(country)
     raw = raw.strip() or ", ".join(p for p in (city, region, (country or "").strip() or None) if p)
