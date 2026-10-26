@@ -345,6 +345,14 @@ def search_jobs(conn: sqlite3.Connection, query: str, limit: int = 50) -> list[s
 
 REMOTE_CANADA = "REMOTE"  # province-filter value for remote jobs open across Canada
 
+_IN_CANADA = """
+    EXISTS (SELECT 1 FROM job_locations l WHERE l.job_id = {job} AND l.country = 'CA')
+    OR (EXISTS (SELECT 1 FROM job_locations l WHERE l.job_id = {job})
+        AND NOT EXISTS (SELECT 1 FROM job_locations l WHERE l.job_id = {job}
+                        AND (l.remote = 0 OR l.city IS NOT NULL OR l.province IS NOT NULL
+                             OR l.country IS NOT NULL)))
+"""
+
 
 def find_jobs(
     conn: sqlite3.Connection,
@@ -366,7 +374,9 @@ def find_jobs(
         JOIN boards b ON b.id = j.board_id
         JOIN companies c ON c.id = b.company_id
     """]
-    where, params = [], []
+    # Never show a job that isn't in Canada, whatever was stored: it needs a
+    # Canadian location, or only bare "Remote" locations (see is_canadian).
+    where, params = [f"({_IN_CANADA.format(job='j.id')})"], []
     if query and query.strip():
         sql.append("JOIN jobs_fts f ON f.rowid = j.id")
         where.append("jobs_fts MATCH ?")
@@ -377,14 +387,12 @@ def find_jobs(
         codes = [p.upper() for p in provinces if p.upper() != REMOTE_CANADA]
         place = []
         if codes:
-            place.append(f"l.province IN ({', '.join('?' * len(codes))})")
+            place.append(f"(l.country = 'CA' AND l.province IN ({', '.join('?' * len(codes))}))")
             params += codes
         if len(codes) < len(provinces):
-            place.append("(l.remote = 1 AND l.province IS NULL)")
-        where.append(
-            "EXISTS (SELECT 1 FROM job_locations l WHERE l.job_id = j.id AND l.country = 'CA' "
-            f"AND ({' OR '.join(place)}))"
-        )
+            place.append("(l.remote = 1 AND l.province IS NULL AND l.city IS NULL "
+                         "AND COALESCE(l.country, 'CA') = 'CA')")
+        where.append(f"EXISTS (SELECT 1 FROM job_locations l WHERE l.job_id = j.id AND ({' OR '.join(place)}))")
     if where:
         sql.append("WHERE " + " AND ".join(where))
     if query and query.strip():
@@ -413,9 +421,18 @@ def find_jobs(
 
 
 def location_label(locations: list[Location]) -> str:
-    """Canadian places first, then the rest: "Toronto, ON; Remote (Canada)"."""
-    ordered = sorted(locations, key=lambda l: not l.in_canada)
-    return "; ".join(dict.fromkeys(l.label() for l in ordered)) or "Unknown"
+    """The Canadian places only: "Toronto, ON; Remote (Canada)".
+
+    Places outside Canada are counted, not named: "Toronto, ON (+3 outside Canada)".
+    """
+    canadian = [l for l in locations if l.in_canada]
+    if not canadian:
+        bare = [l for l in locations if l.remote and not (l.city or l.province or l.country)]
+        return "Remote (country not stated)" if bare else "Unknown"
+    label = "; ".join(dict.fromkeys(l.label() for l in canadian))
+    elsewhere = len({(l.city, l.province, l.country) for l in locations if not l.in_canada
+                     and (l.city or l.province or l.country)})
+    return f"{label} (+{elsewhere} outside Canada)" if elsewhere else label
 
 
 # --- settings ----------------------------------------------------------------------

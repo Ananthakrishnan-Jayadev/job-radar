@@ -17,6 +17,7 @@ from __future__ import annotations
 import re
 import unicodedata
 from collections.abc import Iterable
+from dataclasses import replace
 
 from .models import Location
 
@@ -264,17 +265,18 @@ def _split_parts(place: str) -> list[str]:
     return [p.strip() for p in parts if p and p.strip()]
 
 
-def _parse_one(place: str, canadian_company: bool) -> Location:
+def _parse_one(place: str, canadian_company: bool) -> list[Location]:
     raw = place.strip()
     loc = Location(raw=raw, remote=_is_remote(raw))
     if _MULTI_LOCATIONS.match(raw):
-        return loc
+        return [loc]
 
     city_key: str | None = None
     city_province: str | None = None
     city_ambiguous = False
     unknown: list[str] = []
     codes: list[str] = []  # two-letter uppercase tokens, resolved at the end
+    extra_provinces: list[str] = []
     us_state = False
 
     parts = _split_parts(raw)
@@ -287,6 +289,11 @@ def _parse_one(place: str, canadian_company: bool) -> Location:
 
         if len(part) == 2 and part.isupper() and fold(part) not in CITY_ALIASES:
             codes.append(part)
+            continue
+        # "NS Only", "ON based": a code plus remarks.
+        real = [w for w in part.split() if fold(w) not in NOISE_WORDS]
+        if len(real) == 1 and len(real[0]) == 2 and real[0].isupper() and real[0] in PROVINCE_CODES:
+            codes.append(real[0])
             continue
 
         key = fold(part)
@@ -328,6 +335,8 @@ def _parse_one(place: str, canadian_company: bool) -> Location:
             else:
                 loc.country = loc.country or "CA"
         elif code in PROVINCE_CODES and not foreign_city:
+            if loc.province and loc.province != code and loc.city is None and city_key is None:
+                extra_provinces.append(code)
             loc.province = loc.province or code
         elif code in US_STATE_CODES:
             us_state = True
@@ -342,7 +351,9 @@ def _parse_one(place: str, canadian_company: bool) -> Location:
         loc.country = "US"
 
     _resolve_canada(loc, city_province, city_ambiguous, canadian_company)
-    return loc
+    if extra_provinces and loc.country == "CA":
+        return [loc] + [replace(loc, province=code) for code in dict.fromkeys(extra_provinces)]
+    return [loc]
 
 
 def _resolve_canada(
@@ -366,7 +377,15 @@ def parse_text(text: str | None, *, canadian_company: bool = False, remote: bool
     """Parse a location string into one Location per place it names."""
     if not text or not text.strip():
         return [Location(remote=remote)] if remote else []
-    locations = [_parse_one(place, canadian_company) for place in _split_places(text)]
+    locations = []
+    for place in _split_places(text):
+        # "Remote US & Canada": each side is its own place, all remote.
+        pieces = [p for p in re.split(r"\s*&\s*", place) if p.strip()]
+        found = [loc for piece in pieces for loc in _parse_one(piece, canadian_company)]
+        if len(pieces) > 1 and _is_remote(place):
+            for loc in found:
+                loc.remote = True
+        locations += found
     if remote:
         for loc in locations:
             loc.remote = True
@@ -437,10 +456,19 @@ def with_country(loc: Location, country: str | None, *, canadian_company: bool =
 def is_canadian(locations: Iterable[Location], canadian_company: bool) -> bool:
     """Should a job with these locations be stored?
 
-    Yes when any location is in Canada, or the job is remote with no country
-    and the company is Canadian.
+    Yes when any location is in Canada. Otherwise only when the company is
+    Canadian and the posting says nothing but "Remote" (no city, region or
+    country anywhere): Canadian companies' bare "Remote" means Canada.
+    A remote job that names any other place ("Remote - Dallas", "Dubai") is out.
     """
     locations = list(locations)
     if any(loc.in_canada for loc in locations):
         return True
-    return canadian_company and any(loc.remote and loc.country is None for loc in locations)
+    return canadian_company and bool(locations) and all(is_bare_remote(loc) for loc in locations)
+
+
+def is_bare_remote(loc: Location) -> bool:
+    """"Remote" and nothing else: no city, province, country or other words."""
+    if not loc.remote or loc.city or loc.province or loc.country:
+        return False
+    return _strip_noise(fold(loc.raw)) == ""

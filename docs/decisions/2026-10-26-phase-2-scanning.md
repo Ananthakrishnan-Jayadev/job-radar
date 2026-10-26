@@ -35,3 +35,15 @@
 8. **Rippling's page parameter is still unverified** (`?page=N` assumed, pages
    counted from 0). If a page repeats the previous one, the connector stops,
    warns, and marks the read partial. The first live scan settles it.
+
+## Correction after the first live scan
+
+9. **Canada only, strictly.** The first scan stored 36 jobs with no Canadian
+   location (Cohere in Dubai and Europe, Fable in US cities), let in by the
+   rule "a remote job with no country, from a Canadian company, is Canadian".
+   The rule is now: a job is stored only if a location is in Canada, or if
+   **every** location is a bare "Remote" (no city, region or country named)
+   and the company is Canadian, as with Jobber's "Remote" postings. On top of
+   that, search and export filter at query time, so a non-Canadian job never
+   shows even if one was stored earlier. Location labels name only the Canadian
+   places and count the rest ("Toronto, ON (+5 outside Canada)").

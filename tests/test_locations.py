@@ -230,6 +230,30 @@ def test_workday_detail_locations():
 
 # --- storing rule ----------------------------------------------------------------------
 
+def test_multiple_provinces_and_remark():
+    locs = parse_text("Canada - Remote (ON, AB, BC, | NS Only)")
+    assert [(l.province, l.country) for l in locs] == [("ON", "CA"), ("AB", "CA"), ("BC", "CA"), ("NS", "CA")]
+    assert all(l.remote for l in locs[:3])
+
+
+def test_ampersand_places():
+    locs = parse_text("Remote US & Canada")
+    assert [(l.country, l.remote) for l in locs] == [("US", True), ("CA", True)]
+
+
+@pytest.mark.parametrize("text,stored", [
+    ("Remote", True), ("Remote | Remote", True), ("Remote: NYC", False), ("Remote - Dallas", False),
+    ("Remote (LATAM)", False), ("Europe | London", False), ("Remote - Canada", True),
+])
+def test_storing_rule_for_canadian_company(text, stored):
+    assert is_canadian(parse_text(text), canadian_company=True) is stored
+
+
+def test_remote_city_abroad_is_not_canadian():
+    # Ashby marks Cohere's Dubai job remote; the city still rules it out.
+    assert not is_canadian(parse_text("Dubai", remote=True), canadian_company=True)
+
+
 def test_is_canadian():
     toronto = Location("Toronto", "ON", "CA")
     remote_unknown = Location(remote=True)
