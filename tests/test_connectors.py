@@ -1,4 +1,5 @@
 import asyncio
+import json
 import re
 from datetime import UTC, date, datetime
 
@@ -354,7 +355,7 @@ def test_workday_no_canada_facet(settings):
     sources = FakeSources({("POST", f"{WD_API}/jobs"): body})
     result = fetch(settings, sources, board("workday", WD))
     assert result.jobs == [] and result.total == 10
-    assert "no Canada" in result.warnings[0]
+    assert "no Canadian locations" in result.warnings[0]
 
 
 def test_workday_wrong_site_name(settings):
@@ -393,7 +394,7 @@ def test_successfactors_bad_feed(settings):
     with pytest.raises(FetchError, match="isn't valid XML"):
         fetch(settings, sf_sources("<html>not a feed"), board("successfactors", SF))
     with pytest.raises(FetchError, match="isn't a SuccessFactors job feed"):
-        fetch(settings, sf_sources("<urlset></urlset>"), board("successfactors", SF))
+        fetch(settings, sf_sources("<html><body>maintenance</body></html>"), board("successfactors", SF))
 
 
 def test_successfactors_drops_embedded_images_before_parsing(settings):
@@ -504,3 +505,78 @@ def test_humi_page_changed(settings):
     sources = FakeSources({("GET", "https://acme.applytojobs.ca/"): httpx.Response(200, text="<html>nothing</html>")})
     with pytest.raises(FetchError, match="doesn't look like a Humi"):
         fetch(settings, sources, board("humi", "acme"))
+
+
+
+# Facets shaped like real sites without a country filter (PwC, iA, Capital One).
+LOCATION_FACETS = [
+    {"facetParameter": "timeType", "values": [{"descriptor": "Full time", "id": "ft", "count": 9}]},
+    {"facetParameter": "locationMainGroup", "values": [
+        {"facetParameter": "locations", "descriptor": "Locations", "values": [
+            {"descriptor": "Toronto", "id": "tor", "count": 5},
+            {"descriptor": "Calgary, Alberta", "id": "cal", "count": 2},
+            {"descriptor": "AB - Campinas", "id": "camp", "count": 1},
+            {"descriptor": "New York, NY", "id": "nyc", "count": 7},
+            {"descriptor": "London", "id": "lon", "count": 3},
+        ]}]},
+]
+
+
+def test_workday_find_canada_locations():
+    assert workday.find_canada_locations(LOCATION_FACETS) == ("locations", ["tor", "cal"])
+    assert workday.find_canada_locations([]) is None
+
+
+def test_workday_falls_back_to_location_filter(settings):
+    def jobs(request):
+        body = json.loads(request.content)
+        if not body["appliedFacets"]:
+            return {"total": 18, "jobPostings": [], "facets": LOCATION_FACETS}
+        assert body["appliedFacets"] == {"locations": ["tor", "cal"]}
+        return {"total": 2, "jobPostings": [
+            {"title": "Data Analyst", "externalPath": "/job/Toronto/Data-Analyst_R1", "locationsText": "Toronto"},
+            # Listed under New York, but the filter says it's also open in Canada.
+            {"title": "AI Engineer", "externalPath": "/job/New-York-NY/AI-Engineer_R2", "locationsText": "3 Locations"},
+        ]}
+
+    sources = FakeSources({("POST", f"{WD_API}/jobs"): jobs})
+    settings.workday.max_details_per_scan = 0
+    result = fetch(settings, sources, board("workday", WD, canadian=False))
+    assert "filtered by 2 Canadian locations" in result.warnings[0]
+    analyst, engineer = result.jobs
+    assert (analyst.locations[0].city, analyst.locations[0].province) == ("Toronto", "ON")
+    assert engineer.locations[0].country == "US"
+    assert engineer.locations[-1].in_canada  # placeholder until the detail page is read
+
+
+def test_successfactors_search_pages_when_no_feed(settings):
+    site = "https://careers.ey.com"
+    urlset = '<?xml version="1.0"?><urlset xmlns="http://www.google.com/schemas/sitemap/0.9"><url><loc>x</loc></url></urlset>'
+    page = (FIXTURES / "successfactors_search_ey.html").read_text()
+    sources = FakeSources({
+        ("GET", f"{site}/sitemap.xml"): httpx.Response(200, text=urlset),
+        ("GET", f"{site}/search/"): httpx.Response(200, text=page),
+    })
+    result = fetch(settings, sources, board("successfactors", site))
+    assert result.total == 423
+    search = [r for r in sources.requests if "/search/" in str(r.url)]
+    assert search[0].url.params["locationsearch"] == "Canada"
+    assert search[1].url.params["startrow"] == "25"
+    job = result.jobs[0]
+    assert job.external_id == "1449196533"
+    assert job.title == "International Tax Advisory Services - Montréal - Senior Tax Staff"
+    assert job.url.startswith("https://careers.ey.com/ey/job/")
+    assert (job.locations[0].city, job.locations[0].province, job.locations[0].country) == ("Montréal", "QC", "CA")
+    # The fixture repeats the same 3 rows on every page: stops instead of looping forever.
+    assert len(result.jobs) == 3 and not result.complete
+
+
+def test_successfactors_script_only_site(settings):
+    site = "https://jobs.teck.com"
+    urlset = '<?xml version="1.0"?><urlset xmlns="http://www.google.com/schemas/sitemap/0.9"></urlset>'
+    sources = FakeSources({
+        ("GET", f"{site}/sitemap.xml"): httpx.Response(200, text=urlset),
+        ("GET", f"{site}/search/"): httpx.Response(200, text="<html><body>loading…</body></html>"),
+    })
+    with pytest.raises(FetchError, match="by script"):
+        fetch(settings, sources, board("successfactors", site))

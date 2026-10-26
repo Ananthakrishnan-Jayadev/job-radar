@@ -455,6 +455,22 @@ def with_country(loc: Location, country: str | None, *, canadian_company: bool =
     return loc
 
 
+def clearly_canadian(text: str) -> bool:
+    """A place name that is certainly in Canada, for choosing filter values.
+
+    Stricter than parsing: it must name Canada or a province in full, or be a
+    known Canadian city. "AB - Campinas" (a Brazilian state code) parses as
+    Alberta but isn't accepted; "Toronto" and "Calgary, Alberta" are.
+    """
+    locations = [loc for loc in parse_text(text) if loc.in_canada]
+    if not locations:
+        return False
+    key = f" {fold(text)} "
+    if " canada " in key or any(f" {name} " in key for name in PROVINCE_NAMES if len(name) > 3):
+        return True
+    return any(loc.city and (fold(loc.city) in CITIES or fold(loc.city) in CITY_ALIASES) for loc in locations)
+
+
 def is_canadian(locations: Iterable[Location], canadian_company: bool) -> bool:
     """Should a job with these locations be stored?
 

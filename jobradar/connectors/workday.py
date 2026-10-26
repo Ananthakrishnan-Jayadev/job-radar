@@ -20,7 +20,7 @@ import re
 from urllib.parse import urlsplit
 
 from ..http import FetchError, HttpClient
-from ..locations import parse_text, with_country
+from ..locations import clearly_canadian, parse_text, with_country
 from ..models import Board, Location, RawJob
 from ._common import FetchContext, FetchResult, clean_title, dedupe_locations, html_to_text, iso_date, relative_date, workplace
 
@@ -56,6 +56,25 @@ def find_country_facet(facets: list, country: str = "Canada") -> tuple[str, str]
     return None
 
 
+def find_canada_locations(facets: list) -> tuple[str, list[str]] | None:
+    """For sites with no country filter: (facet parameter, ids) of the Canadian
+    values in a "locations" filter, which lists cities ("Toronto, Ontario, Canada",
+    "Calgary, Alberta", or just "Toronto")."""
+    best: tuple[str, list[str]] | None = None
+    for facet in facets or []:
+        param = facet.get("facetParameter") or ""
+        values = facet.get("values") or []
+        nested = find_canada_locations([v for v in values if "values" in v])
+        if nested and (best is None or len(nested[1]) > len(best[1])):
+            best = nested
+        if "location" in param.lower():
+            ids = [v["id"] for v in values if "values" not in v and v.get("id")
+                   and clearly_canadian(v.get("descriptor") or "")]
+            if ids and (best is None or len(ids) > len(best[1])):
+                best = (param, ids)
+    return best
+
+
 async def fetch(board: Board, client: HttpClient, ctx: FetchContext) -> FetchResult:
     host, tenant, site = parse_site(board.slug_or_url)
     api = f"https://{host}/wday/cxs/{tenant}/{site}"
@@ -64,15 +83,22 @@ async def fetch(board: Board, client: HttpClient, ctx: FetchContext) -> FetchRes
 
     first = await client.post_json(f"{api}/jobs", _body({}, 0, ""))
     total = first.get("total") or 0
+    warnings: list[str] = []
     facet = find_country_facet(first.get("facets") or [])
-    if facet is None:
-        return FetchResult(jobs=[], total=total, warnings=["no Canada location facet: no Canadian jobs listed"])
-    applied = {facet[0]: [facet[1]]}
+    by_country = facet is not None
+    if facet is not None:
+        applied = {facet[0]: [facet[1]]}
+    else:
+        # No country filter: use the Canadian values of its locations filter.
+        places = find_canada_locations(first.get("facets") or [])
+        if places is None:
+            return FetchResult(jobs=[], total=total, warnings=["no Canadian locations listed on this site"])
+        applied = {places[0]: places[1]}
+        warnings.append(f"filtered by {len(places[1])} Canadian locations (the site has no country filter)")
 
     await client.pause(delay)
     canada = await client.post_json(f"{api}/jobs", _body(applied, 0, ""))
     canada_total = canada.get("total") or 0
-    warnings: list[str] = []
 
     if canada_total <= settings.max_list:
         postings = await _page_all(client, api, applied, "", canada, settings.max_list, delay)
@@ -94,7 +120,7 @@ async def fetch(board: Board, client: HttpClient, ctx: FetchContext) -> FetchRes
         warnings.append(f"{canada_total} Canadian jobs, read the first {len(postings)}; "
                         "add search terms to cover the rest")
 
-    jobs = [_from_list(p, host, site, board, ctx) for p in postings]
+    jobs = [_from_list(p, host, site, board, ctx, fill_country=by_country) for p in postings]
     details_done = 0
     for job, posting in zip(jobs, postings):
         if job.external_id in ctx.known_ids or details_done >= settings.max_details_per_scan:
@@ -134,12 +160,24 @@ async def _page_all(client, api, applied, search, first_page, cap, delay) -> lis
     return postings[:cap]
 
 
-def _canada(locations: list[Location], canadian: bool) -> list[Location]:
-    """The facet guarantees Canada; fill it in where the text didn't say."""
-    return [with_country(loc, "CA", canadian_company=canadian) for loc in locations]
+def _canada(locations: list[Location], canadian: bool, fill_country: bool) -> list[Location]:
+    """Workday's filter guarantees each job has a Canadian location.
+
+    With a country filter, places without a country are in Canada. With a
+    locations filter only the job's other places are known to include Canada,
+    so a placeholder "Canada" location is added when none of the listed ones
+    is Canadian (e.g. "/job/New-York-NY/..." for a job also open in Toronto);
+    the detail page later replaces it with the real places.
+    """
+    if fill_country:
+        locations = [with_country(loc, "CA", canadian_company=canadian) for loc in locations]
+    if not any(loc.in_canada for loc in locations):
+        locations = [*locations, Location(country="CA", raw="Canada (one of several locations)")]
+    return locations
 
 
-def _from_list(posting: dict, host: str, site: str, board: Board, ctx: FetchContext) -> RawJob:
+def _from_list(posting: dict, host: str, site: str, board: Board, ctx: FetchContext,
+               fill_country: bool = True) -> RawJob:
     path = posting["externalPath"]
     text = posting.get("locationsText") or ""
     canadian = board.company_canadian
@@ -149,7 +187,7 @@ def _from_list(posting: dict, host: str, site: str, board: Board, ctx: FetchCont
         # "/job/Toronto-Ontario/Data-Scientist_JR00128241" names the first location.
         segments = path.split("/")
         locations = parse_text(segments[2], canadian_company=canadian) if len(segments) > 3 else []
-    locations = _canada(locations, canadian) or [Location(country="CA", raw=text)]
+    locations = _canada(locations, canadian, fill_country)
     return RawJob(
         external_id=path.rsplit("/", 1)[-1],
         title=clean_title(posting.get("title")),
