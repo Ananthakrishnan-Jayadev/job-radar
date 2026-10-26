@@ -1,0 +1,269 @@
+# Starting company list, from docs/05-seed-companies.md (feeds verified 2026-10-26).
+#
+# Each company has one or more boards: { system, slug } where slug is the
+# board name on that system, or the full careers-site URL for Workday.
+# confirmed = false marks a slug match that may belong to a different company;
+# confirm it in the app before trusting its jobs.
+# enabled = false keeps a board on record without scanning it.
+#
+# Load with: jobradar seed   (safe to run again; nothing is duplicated)
+
+# --- Canadian companies --------------------------------------------------------
+
+[[company]]
+name = "Wealthsimple"
+canadian = true
+boards = [{ system = "ashby", slug = "wealthsimple" }]
+
+[[company]]
+name = "Cohere"
+canadian = true
+boards = [{ system = "ashby", slug = "cohere" }]
+
+[[company]]
+name = "KOHO"
+canadian = true
+boards = [{ system = "ashby", slug = "koho" }]
+
+[[company]]
+name = "1Password"
+canadian = true
+boards = [
+    { system = "ashby", slug = "1password" },
+    { system = "workable", slug = "1password", enabled = false },  # 1 job, probably stale
+]
+
+[[company]]
+name = "Benevity"
+canadian = true
+boards = [{ system = "ashby", slug = "benevity" }]
+
+[[company]]
+name = "Jobber"
+canadian = true
+boards = [{ system = "ashby", slug = "jobber" }]
+
+[[company]]
+name = "Neo Financial"
+canadian = true
+boards = [{ system = "ashby", slug = "neofinancial" }]
+
+[[company]]
+name = "Trulioo"
+canadian = true
+boards = [{ system = "ashby", slug = "trulioo" }]
+
+[[company]]
+name = "Top Hat"
+canadian = true
+boards = [{ system = "ashby", slug = "top-hat" }]
+
+[[company]]
+name = "Miovision"
+canadian = true
+boards = [{ system = "ashby", slug = "miovision" }]
+
+[[company]]
+name = "Hopper"
+canadian = true
+boards = [{ system = "ashby", slug = "hopper" }]
+
+[[company]]
+name = "Clearco"
+canadian = true
+boards = [{ system = "ashby", slug = "clearco" }]
+
+[[company]]
+name = "Thinkific"
+canadian = true
+boards = [{ system = "ashby", slug = "thinkific" }]
+
+[[company]]
+name = "Lightspeed"
+canadian = true
+boards = [{ system = "ashby", slug = "lightspeed", confirmed = false }]
+
+[[company]]
+name = "Maple"
+canadian = true
+boards = [{ system = "ashby", slug = "maple", confirmed = false }]
+
+[[company]]
+name = "Float"
+canadian = true
+boards = [{ system = "ashby", slug = "float", confirmed = false }]
+
+[[company]]
+name = "Rewind"
+canadian = true
+boards = [{ system = "ashby", slug = "rewind", confirmed = false }]
+
+[[company]]
+name = "Vector Institute"
+canadian = true
+boards = [{ system = "ashby", slug = "vector", confirmed = false }]
+
+[[company]]
+name = "Fable"
+canadian = true
+boards = [{ system = "ashby", slug = "fable", confirmed = false }]
+
+[[company]]
+name = "Wattpad"
+canadian = true
+boards = [{ system = "lever", slug = "wattpad" }]
+
+[[company]]
+name = "PointClickCare"
+canadian = true
+boards = [{ system = "lever", slug = "pointclickcare" }]
+
+[[company]]
+name = "Waabi"
+canadian = true
+boards = [{ system = "lever", slug = "waabi" }]  # its BambooHR board only has a "Test" posting
+
+[[company]]
+name = "Wave"
+canadian = true
+boards = [{ system = "lever", slug = "waveapps" }]
+
+[[company]]
+name = "D2L"
+canadian = true
+boards = [
+    { system = "greenhouse", slug = "d2l" },
+    { system = "lever", slug = "d2l" },  # check which one is current
+]
+
+[[company]]
+name = "Shakepay"
+canadian = true
+boards = [{ system = "greenhouse", slug = "shakepay" }]
+
+[[company]]
+name = "Hootsuite"
+canadian = true
+boards = [
+    { system = "greenhouse", slug = "hootsuite" },
+    { system = "smartrecruiters", slug = "hootsuite", enabled = false },  # postings from 2017
+]
+
+[[company]]
+name = "Ritual"
+canadian = true
+boards = [
+    { system = "greenhouse", slug = "ritual" },
+    { system = "rippling", slug = "ritual" },
+]
+
+[[company]]
+name = "nesto"
+canadian = true
+boards = [{ system = "rippling", slug = "nesto" }]
+
+[[company]]
+name = "Borrowell"
+canadian = true
+boards = [{ system = "workable", slug = "borrowell" }]
+
+[[company]]
+name = "TD Bank"
+canadian = true
+boards = [{ system = "workday", slug = "https://td.wd3.myworkdayjobs.com/TD_Bank_Careers" }]
+
+[[company]]
+name = "RBC"
+canadian = true
+boards = [{ system = "workday", slug = "https://rbc.wd3.myworkdayjobs.com/RBCGLOBAL1" }]
+
+[[company]]
+name = "CIBC"
+canadian = true
+boards = [{ system = "workday", slug = "https://cibc.wd3.myworkdayjobs.com/search" }]
+
+[[company]]
+name = "BMO"
+canadian = true
+boards = [{ system = "workday", slug = "https://bmo.wd3.myworkdayjobs.com/External" }]
+
+[[company]]
+name = "Sun Life"
+canadian = true
+boards = [{ system = "workday", slug = "https://sunlife.wd3.myworkdayjobs.com/Experienced-Jobs" }]
+
+[[company]]
+name = "Manulife"
+canadian = true
+boards = [{ system = "workday", slug = "https://manulife.wd3.myworkdayjobs.com/MFCJH_Jobs" }]
+
+# --- Global companies with Canadian offices -----------------------------------------
+
+[[company]]
+name = "Sonder"
+canadian = false
+boards = [{ system = "ashby", slug = "sonder", confirmed = false }]
+
+[[company]]
+name = "Faire"
+boards = [{ system = "greenhouse", slug = "faire" }]
+
+[[company]]
+name = "Databricks"
+boards = [{ system = "greenhouse", slug = "databricks" }]
+
+[[company]]
+name = "Stripe"
+boards = [{ system = "greenhouse", slug = "stripe" }]
+
+[[company]]
+name = "Cloudflare"
+boards = [{ system = "greenhouse", slug = "cloudflare" }]
+
+[[company]]
+name = "Okta"
+boards = [{ system = "greenhouse", slug = "okta" }]
+
+[[company]]
+name = "Affirm"
+boards = [{ system = "greenhouse", slug = "affirm" }]
+
+[[company]]
+name = "Lyft"
+boards = [{ system = "greenhouse", slug = "lyft" }]
+
+[[company]]
+name = "Pinterest"
+boards = [{ system = "greenhouse", slug = "pinterest" }]
+
+[[company]]
+name = "Figma"
+boards = [{ system = "greenhouse", slug = "figma" }]
+
+[[company]]
+name = "Instacart"
+boards = [{ system = "greenhouse", slug = "instacart" }]
+
+[[company]]
+name = "Dropbox"
+boards = [{ system = "greenhouse", slug = "dropbox" }]
+
+[[company]]
+name = "Airbnb"
+boards = [{ system = "greenhouse", slug = "airbnb" }]
+
+[[company]]
+name = "Snowflake"
+boards = [{ system = "ashby", slug = "snowflake" }]
+
+[[company]]
+name = "Canva"
+boards = [{ system = "smartrecruiters", slug = "canva" }]
+
+[[company]]
+name = "NVIDIA"
+boards = [{ system = "workday", slug = "https://nvidia.wd5.myworkdayjobs.com/NVIDIAExternalCareerSite" }]
+
+[[company]]
+name = "Uber"
+boards = [{ system = "smartrecruiters", slug = "uber", confirmed = false }]  # 1 job, probably not their real board
