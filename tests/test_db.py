@@ -26,6 +26,38 @@ def test_migrations_on_empty_file(tmp_path):
             "scan_results", "saved_searches", "settings"} <= tables
 
 
+def test_upgrade_from_version_2_keeps_data(tmp_path):
+    """The real database was created at version 2; migration 3 rebuilds companies."""
+    import sqlite3 as sq
+
+    path = tmp_path / "old.db"
+    old = sq.connect(path)
+    for number, script in enumerate(db.MIGRATIONS[:2], start=1):
+        old.executescript(f"BEGIN;\n{script}\nPRAGMA user_version = {number};\nCOMMIT;")
+    old.execute("PRAGMA foreign_keys = ON")
+    old.execute("INSERT INTO companies (id, name, canadian, status, notes, employee_count, size_source, created_at) "
+                "VALUES (1, 'Cohere', 1, 'target', 'dream', 500, 'manual', 'x')")
+    old.execute("INSERT INTO boards (id, company_id, system, slug_or_url) VALUES (1, 1, 'ashby', 'cohere')")
+    old.execute("INSERT INTO jobs (id, board_id, external_id, title, url, first_seen, last_seen) "
+                "VALUES (1, 1, 'a', 'ML Engineer', 'u', 'x', 'x')")
+    old.commit()
+    old.close()
+
+    conn = db.connect(path)
+    assert db.schema_version(conn) == len(db.MIGRATIONS)
+    row = conn.execute("SELECT * FROM companies").fetchone()
+    assert (row["name"], row["status"], row["notes"], row["employee_count"], row["size_source"]) == \
+        ("Cohere", "target", "dream", 500, "manual")
+    assert row["hq_country"] is None
+    # Triggers still work after the rebuild: new jobs are searchable, renames follow.
+    db.upsert_job(conn, 1, RawJob("b", "Data Analyst", "u2"))
+    assert [r["title"] for r in db.search_jobs(conn, "cohere")] == ["ML Engineer", "Data Analyst"]
+    conn.execute("UPDATE companies SET name = 'Cohere AI' WHERE id = 1")
+    assert len(db.search_jobs(conn, '"cohere ai"')) == 2
+    conn.execute("UPDATE companies SET size_source = 'stillhiring' WHERE id = 1")
+    assert conn.execute("PRAGMA foreign_keys").fetchone()[0] == 1
+
+
 def test_reconnect_does_not_rerun_migrations(tmp_path):
     path = tmp_path / "again.db"
     db.connect(path).close()

@@ -162,6 +162,77 @@ MIGRATIONS: list[str] = [
     );
     CREATE INDEX job_events_job ON job_events(job_id);
     """,
+    # 3: company size from stillhiring.today, HQ and website, size suggestions;
+    #    listings of candidate companies. SQLite can't change a CHECK in place,
+    #    so companies is rebuilt (the documented create-copy-drop-rename way).
+    """
+    DROP TRIGGER jobs_fts_insert;
+    CREATE TABLE companies_new (
+        id              INTEGER PRIMARY KEY,
+        name            TEXT NOT NULL UNIQUE COLLATE NOCASE,
+        canadian        INTEGER NOT NULL DEFAULT 0,
+        status          TEXT NOT NULL DEFAULT 'none'
+                        CHECK (status IN ('none', 'target', 'watching', 'ignored')),
+        notes           TEXT NOT NULL DEFAULT '',
+        careers_url     TEXT,
+        website         TEXT,
+        hq_city         TEXT,
+        hq_province     TEXT,
+        hq_country      TEXT,
+        employee_count  INTEGER,
+        size_source     TEXT CHECK (size_source IN ('manual', 'stillhiring', 'wikidata', 'estimate')),
+        size_updated_at TEXT,
+        size_suggestion TEXT,
+        wikidata_id     TEXT,
+        created_at      TEXT NOT NULL
+    );
+    INSERT INTO companies_new (id, name, canadian, status, notes, careers_url, employee_count,
+                               size_source, size_updated_at, created_at)
+    SELECT id, name, canadian, status, notes, careers_url, employee_count,
+           size_source, size_updated_at, created_at
+    FROM companies;
+    DROP TABLE companies;
+    ALTER TABLE companies_new RENAME TO companies;
+
+    CREATE TRIGGER jobs_fts_insert AFTER INSERT ON jobs BEGIN
+        INSERT INTO jobs_fts (rowid, title, company, department, description)
+        VALUES (
+            new.id, new.title,
+            (SELECT c.name FROM boards b JOIN companies c ON c.id = b.company_id
+             WHERE b.id = new.board_id),
+            new.department, new.description
+        );
+    END;
+    CREATE TRIGGER companies_fts_rename AFTER UPDATE OF name ON companies BEGIN
+        UPDATE jobs_fts SET company = new.name
+        WHERE rowid IN (SELECT j.id FROM jobs j JOIN boards b ON b.id = j.board_id
+                        WHERE b.company_id = new.id);
+    END;
+
+    CREATE TABLE listings (
+        id              INTEGER PRIMARY KEY,
+        source          TEXT NOT NULL,
+        external_id     TEXT NOT NULL,
+        name            TEXT NOT NULL,
+        tagline         TEXT,
+        employees       INTEGER,
+        hq_country      TEXT,
+        hq_province     TEXT,
+        hq_city         TEXT,
+        jobs_url        TEXT,
+        detected_system TEXT,
+        detected_slug   TEXT,
+        detect_note     TEXT,
+        company_id      INTEGER REFERENCES companies(id) ON DELETE SET NULL,
+        decision        TEXT NOT NULL DEFAULT 'pending'
+                        CHECK (decision IN ('pending', 'approved', 'rejected')),
+        first_seen      TEXT NOT NULL,
+        last_seen       TEXT NOT NULL,
+        gone_at         TEXT,
+        UNIQUE (source, external_id)
+    );
+    CREATE INDEX listings_decision ON listings(decision);
+    """,
 ]
 
 
@@ -191,8 +262,14 @@ def migrate(conn: sqlite3.Connection) -> int:
     """Apply pending migrations. Returns the new schema version."""
     version = schema_version(conn)
     for number, script in enumerate(MIGRATIONS[version:], start=version + 1):
+        # Foreign keys are off while a migration rebuilds tables, and checked after.
+        conn.execute("PRAGMA foreign_keys = OFF")
         # One transaction per migration: it applies completely or not at all.
         conn.executescript(f"BEGIN;\n{script}\nPRAGMA user_version = {number};\nCOMMIT;")
+        problems = conn.execute("PRAGMA foreign_key_check").fetchall()
+        conn.execute("PRAGMA foreign_keys = ON")
+        if problems:
+            raise RuntimeError(f"migration {number} broke foreign keys: {problems[:5]}")
     return schema_version(conn)
 
 
