@@ -4,10 +4,9 @@ A personal job-hunting tool. It finds Canadian roles in public company job
 feeds and job-search APIs, shows which companies are hiring and how big they
 are, and lets you track what you've applied to.
 
-**Status:** phases 1–3 of 5 done (database, location parser, company list,
-connectors for 10 job systems, scanning, search, CSV export, and the web app
-for searching and tracking). Next: phase 4, finding more companies. See
-[TASKS.md](TASKS.md).
+**Status:** phases 1–3 of 5 done, phase 4 part 1 done (company sizes,
+stillhiring.today candidates, job-board detection). Next: phase 4 part 2
+(Adzuna, needs a key). See [TASKS.md](TASKS.md).
 
 - [PROJECT.md](PROJECT.md): the specification
 - [TASKS.md](TASKS.md): the build plan in five phases
@@ -53,6 +52,10 @@ Run these from the project folder (or activate the venv with
 .venv/bin/jobradar search machine learning     # newest/most relevant matches
 .venv/bin/jobradar search '"data analyst"' --province ON,REMOTE
 .venv/bin/jobradar export --out ~/jobs.csv --province ON
+.venv/bin/jobradar enrich       # fill company sizes (Wikidata, then estimates)
+.venv/bin/jobradar candidates refresh   # read stillhiring.today
+.venv/bin/jobradar candidates list      # companies waiting for your decision
+.venv/bin/jobradar detect "Docebo" --url https://jobs.ashbyhq.com/docebo
 ```
 
 Search accepts words, `"exact phrases"`, `OR` and prefixes (`analy*`).
