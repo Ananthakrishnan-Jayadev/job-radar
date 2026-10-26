@@ -94,7 +94,15 @@ next page load, no rescan. `jobradar search` and `export` take `--all-roles`.
 | Humi | The careers page's HTML (no feed; the most fragile) | Ecopia.AI, Hypercare |
 
 Only jobs with a location in Canada are kept (or, for Canadian companies,
-postings that say nothing but "Remote"). Details and quirks of each source:
+postings that say nothing but "Remote"). Where a list has no job
+descriptions, each wanted role's own page is read during the scan, up to 60
+per board per scan (`[details]` in `config.toml`); the rest follow on the
+next scan.
+
+The jobs from the one-time Adzuna snapshot only have snippets. Once a
+company's confirmed board has been read in full, its Adzuna copies are
+replaced: matching jobs move your tracking over to the board's job, and the
+rest are closed. Details and quirks of each source:
 [docs/03-data-sources.md](docs/03-data-sources.md).
 
 ## Commands

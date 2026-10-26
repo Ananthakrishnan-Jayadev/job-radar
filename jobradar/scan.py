@@ -3,6 +3,7 @@
 Each board is fetched and stored on its own: one broken source is recorded in
 scan_results and the others carry on. Jobs missing from a complete, successful
 read of their board are marked closed; a failed or partial read closes nothing.
+A complete read also settles the company's Adzuna snapshot copies (snapshots.py).
 """
 
 from __future__ import annotations
@@ -24,6 +25,7 @@ from .http import HttpClient
 from .locations import is_canadian
 from .models import Board
 from .roles import rules_for, sync_roles
+from .snapshots import Retired, retire_copies
 
 BOARDS_AT_ONCE = 6  # different hosts in parallel; each host is still limited by http.max_per_host
 
@@ -37,6 +39,7 @@ class BoardOutcome:
     jobs_new: int = 0
     jobs_closed: int = 0
     total_open: int | None = None
+    complete: bool = False  # the whole board was read
     error: str | None = None
     warnings: list[str] = field(default_factory=list)
     ms: int = 0
@@ -46,6 +49,7 @@ class BoardOutcome:
 class ScanSummary:
     scan_id: int
     outcomes: list[BoardOutcome]
+    retired: Retired = field(default_factory=Retired)  # Adzuna snapshot copies settled
 
     @property
     def boards_ok(self) -> int:
@@ -121,7 +125,7 @@ async def _scan_board(conn, board: Board, client: HttpClient, settings: Settings
         return BoardOutcome(board=board, ok=False, error=message, ms=int((time.monotonic() - started) * 1000))
 
     outcome = BoardOutcome(board=board, ok=True, jobs_seen=len(result.jobs), total_open=result.total,
-                           warnings=list(result.warnings))
+                           complete=result.complete, warnings=list(result.warnings))
     seen_ids: list[int] = []
     for job in result.jobs:
         if not is_canadian(job.locations, board.company_canadian):
@@ -190,7 +194,8 @@ async def scan_async(
 
         await asyncio.gather(*(run(b) for b in boards))
 
-    summary = ScanSummary(scan_id=scan_id, outcomes=outcomes)
+    read_fully = [o.board.id for o in outcomes if o.ok and o.complete]
+    summary = ScanSummary(scan_id=scan_id, outcomes=outcomes, retired=retire_copies(conn, read_fully, seen_at))
     sync_roles(conn, settings.root)  # role categories for the new jobs
     with conn:
         conn.execute(

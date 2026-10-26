@@ -31,3 +31,24 @@ How they're kept:
   real job boards; once found, they are scanned like any other company.
 - The raw responses (without the key) are kept outside the repo, in the
   session's scratch folder, not as test fixtures.
+
+## Update, same day: the company's own board replaces the copies
+
+Instead of fetching Adzuna's own job pages for full descriptions (that's
+Adzuna's website, and its links record ad clicks), a scan now settles the
+copies itself (`jobradar/snapshots.py`). When a company's **confirmed** board
+is read completely and without error:
+
+- a copy whose title matches a board job (the same title, or the same title
+  plus Adzuna's extras: a Canadian place, "New", "Remote", the salary line)
+  hands over its status, notes, applied date and status history, and is
+  deleted;
+- a copy with no match is closed, since the board no longer lists that job in
+  Canada;
+- a snapshot board left with no jobs is removed.
+
+Matching is strict on purpose ("Senior Software Engineer" never matches
+"Senior Software Engineer, Data Infrastructure"): a miss only closes the copy,
+and the board's own job is there anyway. Guessed (unconfirmed) boards don't
+retire anything until you confirm them. Companies without a board of their own
+keep their snippets.
