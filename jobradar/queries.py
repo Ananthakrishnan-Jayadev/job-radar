@@ -154,6 +154,39 @@ def search_jobs(
     return total, rows
 
 
+def province_counts(conn: sqlite3.Connection, f: JobFilter) -> dict[str, int]:
+    """Open jobs per province (and REMOTE_CANADA) for a filter, ignoring its own province choice.
+
+    A job listed in two provinces counts in both.
+    """
+    from dataclasses import replace
+
+    where, params, joined_fts = _where(replace(f, provinces=[]))
+    joins = "JOIN boards b ON b.id = j.board_id JOIN companies c ON c.id = b.company_id"
+    if joined_fts:
+        joins += " JOIN jobs_fts ON jobs_fts.rowid = j.id"
+    conditions = " AND ".join(where)
+    counts = {row[0]: row[1] for row in conn.execute(
+        f"""
+        SELECT place.province, COUNT(DISTINCT j.id)
+        FROM jobs j {joins} JOIN job_locations place ON place.job_id = j.id
+        WHERE {conditions} AND place.country = 'CA' AND place.province IS NOT NULL
+        GROUP BY place.province
+        """,
+        params,
+    )}
+    counts[REMOTE_CANADA] = conn.execute(
+        f"""
+        SELECT COUNT(*) FROM jobs j {joins}
+        WHERE {conditions} AND EXISTS (
+            SELECT 1 FROM job_locations l WHERE l.job_id = j.id AND l.remote = 1 AND l.province IS NULL
+            AND l.city IS NULL AND COALESCE(l.country, 'CA') = 'CA')
+        """,
+        params,
+    ).fetchone()[0]
+    return counts
+
+
 def find_jobs(
     conn: sqlite3.Connection,
     query: str | None = None,

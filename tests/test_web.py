@@ -121,6 +121,14 @@ def test_job_filters(seeded, params, expected):
     assert titles(client.get(f"/api/jobs?{params}")) == expected
 
 
+def test_province_counts(seeded):
+    client, ids = seeded
+    counts = client.get("/api/jobs/provinces").json()
+    assert counts == {"ON": 2, "BC": 1, "REMOTE": 1}
+    # Counts follow the other filters but not the province choice itself.
+    assert client.get("/api/jobs/provinces?q=engineer&provinces=BC").json() == {"ON": 2, "REMOTE": 1}
+
+
 def test_company_filter_and_status_filter(seeded):
     client, ids = seeded
     assert titles(client.get(f"/api/jobs?company={ids['big']}")) == ["Data Engineer, analytics"]
