@@ -78,6 +78,9 @@ all its open jobs.**
 | Dayforce | No known public feed | – | ❌ | Common with Canadian employers (founded in Toronto) |
 | SAP SuccessFactors (Career Site Builder) | Public job feed at `/sitemap.xml` | No | ✅ | **Large enterprises, e.g. Scotiabank** |
 | JazzHR | Public XML job feed | No | ✅ | Small companies (careers pages at `*.applytojob.com`) |
+| Pinpoint | Public JSON (`/postings.json`) | No | ✅ | Mid-size, UK and North America |
+| Teamtailor | Public RSS (`/jobs.rss`) | No | ✅ | Startups and scale-ups |
+| Humi | HTML careers page only | No | ✅ (HTML) | Canadian small businesses (`*.applytojobs.ca`) |
 | iCIMS / Taleo (Oracle) | No public feed | – | ❌ | Large enterprises |
 | Jobvite, JazzHR, Teamtailor, Pinpoint, Comeet | Not investigated | – | – | – |
 
@@ -293,6 +296,28 @@ all its open jobs.**
 - Not usable: `{company}.applytojob.com/apply/jobs/feed` (404).
 - Tested: Xello (3 jobs), Apertera, formerly Alexa Translations (26 jobs,
   in Canada and abroad).
+
+### Pinpoint, Teamtailor, Humi ✅ (added 2026-10-26)
+
+- **Pinpoint:** `GET https://{company}.pinpointhq.com/postings.json` →
+  `{data: [...]}`. Fields: `id`, `title`, `url`, `workplace_type`
+  (remote/hybrid/onsite), `employment_type_text`, `location {city, province,
+  name}` (no country: the name says "Calgary, Canada" or "Remote U.S."),
+  `job.department.name`, `compensation_minimum/maximum/currency/frequency`
+  with `compensation_visible`, and HTML sections (`description`,
+  `key_responsibilities`, `skills_knowledge_expertise`, `benefits`). No date.
+  Tested: crawfordtech (3), alcumus (78, Veriforce's board).
+- **Teamtailor:** `GET {site}/jobs.rss`, where the site is
+  `https://{company}[.na|.eu].teamtailor.com` or a custom domain. Items:
+  `title`, `link`, `guid`, `pubDate`, `description`, `remoteStatus`
+  (fully/hybrid/temporary/none), `tt:locations/tt:location {name, city,
+  country, address, zip}`, `tt:department`. Tested: commonsku (6 jobs, Toronto).
+- **Humi:** no feed. `https://{company}.applytojobs.ca/` lists jobs as
+  `<article class="job-posting">` with a link (`/talent/50826`), an optional
+  workplace badge, and "City, Province, Country . type . Month D, YYYY".
+  Its `/sitemap` only lists department pages. Read as HTML, so it breaks if
+  Humi changes the page. `{company}.humi.ca/job-board` redirects there.
+  Tested: ecopiatech (1), hypercare (2, from 2022).
 
 ### Personio ✅ (mostly European companies)
 

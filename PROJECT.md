@@ -115,6 +115,7 @@ job-radar/
       __init__.py           # registry: system name -> connector
       greenhouse.py lever.py ashby.py smartrecruiters.py workable.py
       recruitee.py breezy.py rippling.py bamboohr.py workday.py successfactors.py jazzhr.py
+      pinpoint.py teamtailor.py humi.py
       adzuna.py             # phase 4
     detect.py               # job-system detection from URLs/HTML (phase 4)
     enrich.py               # company size (phase 4)
@@ -154,6 +155,9 @@ Per-company feeds (details and field lists in `docs/03-data-sources.md`):
 | Workday | `POST {host}/wday/cxs/{tenant}/{site}/jobs` | Undocumented; 20 per page; Canada facet; see below |
 | SAP SuccessFactors | `{site}/sitemap.xml` (an RSS feed of every job) | Added 2026-10-26 for Scotiabank; one large request; no posting date |
 | JazzHR | `app.jazz.co/feeds/export/jobs/{company}` (XML) | Added 2026-10-26; careers pages at `{company}.applytojob.com`; date from the job id |
+| Pinpoint | `{company}.pinpointhq.com/postings.json` | Added 2026-10-26; salary when shown; no posting date |
+| Teamtailor | `{site}/jobs.rss` | Added 2026-10-26; board is the site address (`*.teamtailor.com` or own domain) |
+| Humi | `{company}.applytojobs.ca` (HTML) | Added 2026-10-26; no feed, reads the careers page: the most fragile connector |
 
 Added in phase 4: **Adzuna** (Canada search, `top_companies`) and **Wikidata**
 (employee counts).
