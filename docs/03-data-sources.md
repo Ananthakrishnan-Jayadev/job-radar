@@ -76,7 +76,8 @@ all its open jobs.**
 | Workday | ❌ Undocumented careers JSON | No | ✅ | **Banks, insurers, telecoms, large enterprises** |
 | Personio | Public XML feed | No | ✅ | Mostly European companies |
 | Dayforce | No known public feed | – | ❌ | Common with Canadian employers (founded in Toronto) |
-| iCIMS / Taleo (Oracle) / SAP SuccessFactors | No public feed | – | ❌ | Large enterprises |
+| SAP SuccessFactors (Career Site Builder) | Public job feed at `/sitemap.xml` | No | ✅ | **Large enterprises, e.g. Scotiabank** |
+| iCIMS / Taleo (Oracle) | No public feed | – | ❌ | Large enterprises |
 | Jobvite, JazzHR, Teamtailor, Pinpoint, Comeet | Not investigated | – | – | – |
 
 ### Greenhouse ✅ official
@@ -250,11 +251,32 @@ all its open jobs.**
 - Tested working: `td.wd3/TD_Bank_Careers`, `rbc.wd3/RBCGLOBAL1`,
   `cibc.wd3/search`, `bmo.wd3/External`, `sunlife.wd3/Experienced-Jobs`,
   `manulife.wd3/MFCJH_Jobs`, `nvidia.wd5/NVIDIAExternalCareerSite`.
-- `scotiabank.wd3/External` and `telus.wd3/TELUS` returned **HTTP 422**: the
-  site name was guessed wrong. Find the real one from the company's careers page.
+- `scotiabank.wd3/External` and `telus.wd3/TELUS` returned **HTTP 422**. For
+  Scotiabank the reason turned out to be that it isn't on Workday at all (see
+  SAP SuccessFactors below). TELUS is still to check.
 - Be gentle: 20 per page, a short pause between pages, search per role.
 - Related: the user's `agentic_workday` project already automates Workday
   application pages (see 07).
+
+### SAP SuccessFactors ✅ (added 2026-10-26)
+
+- Career sites built with SuccessFactors' "Career Site Builder" live on the
+  company's own domain, e.g. `https://jobs.scotiabank.com`. Recognize them by
+  assets from `rmkcdn.successfactors.com` or a `j2w.init(` script in the page.
+- **List:** `GET {site}/sitemap.xml`. Despite the name it's an RSS 2.0 feed of
+  **every** open job, with Google job fields: `title` ("Software Engineer
+  (Toronto, ON, CA)"), `link`, `guid`, `g:id`, `g:location` ("Toronto, ON,
+  CA"), `g:job_function`, `g:employer`, `g:expiration_date`, and the full
+  `description` (HTML-escaped).
+- No posting date in the feed (only an expiry date).
+- Can be large: Scotiabank's was 38 MB for 1,471 jobs, almost all of it base64
+  images inside descriptions.
+- Not usable: the keyword RSS (`/services/rss/job/?keywords=...`) returns only
+  20 items and matches description text. The HTML search pages
+  (`/search/?q=&locationsearch=`, 25 per page) work but need many requests.
+- Tested: Scotiabank (1,471 jobs; 1,060 in Canada; 682 in Ontario, matching
+  the site's own Ontario search). Details in
+  `docs/decisions/2026-10-26-successfactors.md`.
 
 ### Personio ✅ (mostly European companies)
 

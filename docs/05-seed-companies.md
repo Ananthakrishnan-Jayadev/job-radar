@@ -57,8 +57,8 @@ OpenText, Kinaxis, Neo (as `neo`), Certn, Layer6 (part of TD), Mappedin, Swift
 Medical, Humi, Wave (as `wave`), Dialogue, Hootsuite on other systems, Zynga,
 Ubisoft, Amazon.
 
-Workday sites still to find: Scotiabank (`scotiabank.wd3/External` → 422),
-TELUS (`telus.wd3/TELUS` → 422). Others to look up: Bell, Rogers, Desjardins,
+Found later: **Scotiabank** is on SAP SuccessFactors (`https://jobs.scotiabank.com`),
+added to the seed list. Still to find: TELUS (`telus.wd3/TELUS` → 422). Others to look up: Bell, Rogers, Desjardins,
 Intact, Canada Life, OMERS, Ontario Teachers', CPP Investments, Loblaw, Thomson
 Reuters, CGI, Deloitte Canada, KPMG Canada, EY Canada, PwC Canada, Accenture,
 IBM Canada, Ontario Power Generation, Hydro One, Metrolinx.

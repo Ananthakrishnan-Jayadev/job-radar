@@ -57,9 +57,10 @@ Most company-data products are US-heavy. Two points that help:
 - **Toronto, Waterloo and Ottawa startups and scale-ups:** mostly **Ashby**, then
   Lever and Greenhouse (see 05).
 - **Banks and insurers:** **Workday**. TD, RBC, CIBC, BMO, Sun Life and Manulife
-  were all confirmed. Scotiabank's site name is still to find.
+  were all confirmed. **Scotiabank is on SAP SuccessFactors** instead
+  (`jobs.scotiabank.com`), now readable too.
 - **Many mid-size and traditional Canadian employers:** **Dayforce** (no public
-  feed), iCIMS, Taleo, SuccessFactors. These are **gaps** to cover with
+  feed), iCIMS, Taleo. These are **gaps** to cover with
   aggregators (Adzuna), Job Bank, or a manual look-up.
 
 ## Location parsing: needed for any Canadian source
