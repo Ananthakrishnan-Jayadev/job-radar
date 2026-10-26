@@ -277,7 +277,8 @@ def _parse_one(place: str, canadian_company: bool) -> Location:
     codes: list[str] = []  # two-letter uppercase tokens, resolved at the end
     us_state = False
 
-    for part in _split_parts(raw):
+    parts = _split_parts(raw)
+    for index, part in enumerate(parts):
         # "Toronto ON" without a comma: peel off a trailing code.
         words = part.split()
         if len(words) > 1 and len(words[-1]) == 2 and words[-1].isupper():
@@ -305,6 +306,9 @@ def _parse_one(place: str, canadian_company: bool) -> Location:
                     loc.city = _display_city(part, candidate)
             elif candidate in US_STATE_NAMES:
                 us_state = True
+                if index == 0 and len(parts) > 1:
+                    # "New York, New York, United States": the first one is the city.
+                    unknown.append(part)
             else:
                 continue
             matched = True
@@ -416,6 +420,17 @@ def from_parts(
         key = fold(loc.city)
         _, city_province, ambiguous = _known_city(key)
         _resolve_canada(loc, city_province, ambiguous, canadian_company)
+    return loc
+
+
+def with_country(loc: Location, country: str | None, *, canadian_company: bool = False) -> Location:
+    """Fill a missing country from another field (Lever's `country`, a Workday facet)."""
+    code = normalize_country(country)
+    if code and loc.country is None:
+        loc.country = code
+        if code == "CA" and loc.city and loc.province is None:
+            _, city_province, ambiguous = _known_city(fold(loc.city))
+            _resolve_canada(loc, city_province, ambiguous, canadian_company=True)
     return loc
 
 

@@ -99,6 +99,9 @@ class RawJob:
     currency: str | None = None
     description: str | None = None  # plain text
     company_name: str | None = None  # set by aggregators; feeds know their company
+    # False when the source gave only a summary (a Workday list entry without
+    # its detail page): stored locations and description are then kept.
+    details_fetched: bool = True
 
 
 @dataclass
