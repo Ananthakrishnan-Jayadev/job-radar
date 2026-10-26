@@ -282,6 +282,10 @@ Schema changes go through numbered migrations applied on start
   checks") in `TASKS.md` for the human to run: installs, live scans, clicking
   through the UI. The agent does not run live scans against real sources or
   install packages without asking.
+- **Nothing is installed outside the project's `.venv`.** Packages go in only
+  through `.venv/bin/pip`, never system-wide, `--user`, with `sudo`, or through
+  other package managers. Anything that needs a system install is the human's
+  job.
 - **One phase at a time.** Stop at the end of each phase for the human to test.
 - **Git:** local only for now. Conventional commits (`type(scope): subject`,
   imperative, under 50 characters). Commit at the end of each task group.

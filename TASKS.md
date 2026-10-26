@@ -13,6 +13,13 @@ Five phases. Each one ends with something you can run and check. Read
 - Do not install packages, run live scans against real sites, or start
   long-running servers without asking. Put those steps in the phase's
   "Your manual checks" list instead.
+- **Never install anything outside the project's `.venv`.** Python packages
+  go in only through `.venv/bin/pip` (or `python -m pip` with the venv
+  active), and only when listed in `pyproject.toml`. Never use `sudo`,
+  `pip install --user`, the system `pip`/`python3 -m pip`,
+  `--break-system-packages`, `apt`, `snap`, `pipx`, `npm -g`, or
+  `curl ... | sh` installers. If something outside the venv seems needed,
+  stop and ask the human to install it.
 - Commit locally with conventional commits after each task group. No remote.
 - If something in `PROJECT.md` turns out wrong, say so, write a decision
   record in `docs/decisions/`, and update the spec.
