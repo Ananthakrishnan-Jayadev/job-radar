@@ -81,7 +81,7 @@ parser handles every Canadian form we know of. No network yet.
 
 ---
 
-## Phase 2: Connectors and scanning
+## Phase 2: Connectors and scanning ✅ done 2026-10-26
 
 **Goal:** `jobradar scan` pulls real jobs from every seeded company, stores
 Canadian ones, and tracks open/closed over time. CSV export works.
