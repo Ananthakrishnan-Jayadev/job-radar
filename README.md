@@ -56,7 +56,18 @@ Run these from the project folder (or activate the venv with
 .venv/bin/jobradar candidates refresh   # read stillhiring.today
 .venv/bin/jobradar candidates list      # companies waiting for your decision
 .venv/bin/jobradar detect "Docebo" --url https://jobs.ashbyhq.com/docebo
+.venv/bin/jobradar import-companies mylist.xlsx  # add companies from your own list
+.venv/bin/jobradar find-boards  # find job boards for companies that have none
 ```
+
+**Importing your own company list** (`.xlsx` or `.csv`): a sheet with a
+"Company" column, where the first real link in each row is taken as the careers
+page (Google and LinkedIn search links are skipped); and/or lines like
+"Acme (51-200)" under headings, which set the size and go into the notes.
+Existing companies are never overwritten, only filled in. `find-boards` then
+reads careers pages and tries each company's name on the common job systems;
+boards found by name only are added as *unconfirmed*: check them on the company
+page.
 
 Search accepts words, `"exact phrases"`, `OR` and prefixes (`analy*`).
 `--province` takes codes (ON, BC, QC...) and `REMOTE` for jobs open
