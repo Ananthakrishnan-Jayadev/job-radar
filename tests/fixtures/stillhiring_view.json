@@ -1,0 +1,516 @@
+{
+ "_request": {
+  "url": "https://airtable.com/v0.3/view/viwpPe6EkDqbE7Q2o/readSharedViewData?...",
+  "method": "GET",
+  "body": null,
+  "note": "Recorded 2026-10-26, trimmed to the columns job-radar reads and a few rows."
+ },
+ "response": {
+  "msg": "SUCCESS",
+  "data": {
+   "table": {
+    "id": "tblKU0jQiyIX182uU",
+    "name": "Shared view table",
+    "columns": [
+     {
+      "id": "fldekrsjTIcqFNlgA",
+      "name": "Company Name",
+      "description": null,
+      "type": "text",
+      "typeOptions": null,
+      "default": null,
+      "initialCreatedTime": null,
+      "initialCreatedByUserId": null,
+      "lastModifiedTime": "2024-03-07T02:49:04.000Z",
+      "lastModifiedByUserId": "usr1KEUz4s9MoZgT3",
+      "isEditableFromSync": false
+     },
+     {
+      "id": "fldGCLdaFPaVoUGNa",
+      "name": "Jobs Page",
+      "description": null,
+      "type": "button",
+      "typeOptions": {
+       "label": {
+        "staticText": "Open",
+        "type": "static"
+       },
+       "variant": {
+        "staticVariant": "solidPurple",
+        "type": "static"
+       },
+       "actionType": "openUrl",
+       "formulaTextParsed": "IF({column_value_fldOM6RhJWA3qbNr2}=\"\", {column_value_fldlTaGuEHal6zqGa}&\"/jobs\", {column_value_fldOM6RhJWA3qbNr2})",
+       "dependencies": {
+        "referencedColumnIdsForValue": [
+         "fldOM6RhJWA3qbNr2",
+         "fldlTaGuEHal6zqGa"
+        ],
+        "referencedFormulaFunctions": [
+         "equal",
+         "CONCATENATE"
+        ],
+        "dependsOnCurrentRow": true
+       },
+       "resultType": "text",
+       "resultIsArray": false
+      },
+      "default": null,
+      "initialCreatedTime": null,
+      "initialCreatedByUserId": null,
+      "lastModifiedTime": "2023-01-29T19:22:33.000Z",
+      "lastModifiedByUserId": "usr1KEUz4s9MoZgT3",
+      "isEditableFromSync": false
+     },
+     {
+      "id": "fld2uBkEnCJlWJh4Q",
+      "name": "Employees",
+      "description": null,
+      "type": "number",
+      "typeOptions": {
+       "format": "integer",
+       "negative": true
+      },
+      "default": null,
+      "initialCreatedTime": null,
+      "initialCreatedByUserId": null,
+      "lastModifiedTime": null,
+      "lastModifiedByUserId": null,
+      "isEditableFromSync": false
+     },
+     {
+      "id": "fldF4Zl4TjyURN6uT",
+      "name": "HQ Country",
+      "description": null,
+      "type": "text",
+      "typeOptions": null,
+      "default": null,
+      "initialCreatedTime": null,
+      "initialCreatedByUserId": null,
+      "lastModifiedTime": null,
+      "lastModifiedByUserId": null,
+      "isEditableFromSync": false
+     },
+     {
+      "id": "fldS9muQ0Ku3DApqy",
+      "name": "HQ State",
+      "description": null,
+      "type": "text",
+      "typeOptions": null,
+      "default": null,
+      "initialCreatedTime": null,
+      "initialCreatedByUserId": null,
+      "lastModifiedTime": null,
+      "lastModifiedByUserId": null,
+      "isEditableFromSync": false
+     },
+     {
+      "id": "fldbMzTGRHlOGk6kj",
+      "name": "HQ City",
+      "description": null,
+      "type": "text",
+      "typeOptions": null,
+      "default": null,
+      "initialCreatedTime": null,
+      "initialCreatedByUserId": null,
+      "lastModifiedTime": null,
+      "lastModifiedByUserId": null,
+      "isEditableFromSync": false
+     },
+     {
+      "id": "fldkvZ1oX1bRficKI",
+      "name": "Tagline",
+      "description": null,
+      "type": "text",
+      "typeOptions": null,
+      "default": null,
+      "initialCreatedTime": null,
+      "initialCreatedByUserId": null,
+      "lastModifiedTime": null,
+      "lastModifiedByUserId": null,
+      "isEditableFromSync": false
+     },
+     {
+      "id": "fldom25Esjr0mos9E",
+      "name": "Remote Hiring?",
+      "description": null,
+      "type": "lookup",
+      "typeOptions": {
+       "relationColumnId": "fldlBxHn2eYC2YEHC",
+       "foreignTableRollupColumnId": "fldw0OYP7EELmCWLo",
+       "canUseSelectResultType": true,
+       "choices": {
+        "selHDKyvrFLzqS9Yr": {
+         "id": "selHDKyvrFLzqS9Yr",
+         "color": "greenMedium",
+         "name": "Yes"
+        },
+        "selYSpdWSN4BKPTTO": {
+         "id": "selYSpdWSN4BKPTTO",
+         "color": "redMedium",
+         "name": "No"
+        },
+        "selqd9ghjI1lZ1DdD": {
+         "id": "selqd9ghjI1lZ1DdD",
+         "color": "grayMedium",
+         "name": "Not sure"
+        }
+       },
+       "choiceOrder": [
+        "selHDKyvrFLzqS9Yr",
+        "selYSpdWSN4BKPTTO",
+        "selqd9ghjI1lZ1DdD"
+       ],
+       "disableColors": false,
+       "dependencies": {
+        "referencedColumnIdsForValue": [
+         "fldlBxHn2eYC2YEHC",
+         "fldw0OYP7EELmCWLo"
+        ]
+       },
+       "resultType": "select",
+       "resultIsArray": true,
+       "foreignTableRollupColumnType": "select"
+      },
+      "default": null,
+      "initialCreatedTime": "2023-02-01T04:42:34.000Z",
+      "initialCreatedByUserId": "usr1KEUz4s9MoZgT3",
+      "lastModifiedTime": "2023-02-06T04:45:32.000Z",
+      "lastModifiedByUserId": "usr1KEUz4s9MoZgT3",
+      "isEditableFromSync": false
+     }
+    ],
+    "rows": [
+     {
+      "id": "recRm2wApwyDqDwpl",
+      "createdTime": "2026-02-01T16:30:48.000Z",
+      "cellValuesByColumnId": {
+       "fldekrsjTIcqFNlgA": "EDB",
+       "fldkvZ1oX1bRficKI": "Enterprise-grade database solutions leveraging open-source PostgreSQL for various needs.",
+       "fld2uBkEnCJlWJh4Q": 1526,
+       "fldF4Zl4TjyURN6uT": "US",
+       "fldS9muQ0Ku3DApqy": "US-DE",
+       "fldbMzTGRHlOGk6kj": "Wilmington",
+       "fldGCLdaFPaVoUGNa": {
+        "label": "Open",
+        "url": "https://www.enterprisedb.com/careers/job-openings"
+       },
+       "fldom25Esjr0mos9E": {
+        "valuesByForeignRowId": {
+         "recm2qfYN0KP4h2l0": [
+          "selHDKyvrFLzqS9Yr"
+         ]
+        },
+        "foreignRowIdOrder": [
+         "recm2qfYN0KP4h2l0"
+        ]
+       }
+      }
+     },
+     {
+      "id": "recPxM0K5DCkJB3th",
+      "createdTime": "2026-02-01T16:30:43.000Z",
+      "cellValuesByColumnId": {
+       "fldekrsjTIcqFNlgA": "Asana",
+       "fldkvZ1oX1bRficKI": "Work management platform for organizing, tracking, and managing team tasks.",
+       "fld2uBkEnCJlWJh4Q": 4416,
+       "fldF4Zl4TjyURN6uT": "US",
+       "fldS9muQ0Ku3DApqy": "US-CA",
+       "fldbMzTGRHlOGk6kj": "San Francisco",
+       "fldGCLdaFPaVoUGNa": {
+        "label": "Open",
+        "url": "https://asana.com/jobs/all"
+       },
+       "fldom25Esjr0mos9E": {
+        "valuesByForeignRowId": {
+         "recRFJQMt9byOebIJ": [
+          "selYSpdWSN4BKPTTO"
+         ]
+        },
+        "foreignRowIdOrder": [
+         "recRFJQMt9byOebIJ"
+        ]
+       }
+      }
+     },
+     {
+      "id": "rec8jW9GdmYr9C2Bg",
+      "createdTime": "2026-02-01T16:30:44.000Z",
+      "cellValuesByColumnId": {
+       "fldekrsjTIcqFNlgA": "1Password",
+       "fldkvZ1oX1bRficKI": "Password management solutions for individuals, families, teams, and enterprises.",
+       "fld2uBkEnCJlWJh4Q": 2958,
+       "fldF4Zl4TjyURN6uT": "CA",
+       "fldS9muQ0Ku3DApqy": "CA-ON",
+       "fldbMzTGRHlOGk6kj": "Toronto",
+       "fldGCLdaFPaVoUGNa": {
+        "label": "Open",
+        "url": "https://www.linkedin.com/company/1password/jobs/"
+       },
+       "fldom25Esjr0mos9E": {
+        "valuesByForeignRowId": {
+         "recilBeWxPDAMEg8s": [
+          "selHDKyvrFLzqS9Yr"
+         ]
+        },
+        "foreignRowIdOrder": [
+         "recilBeWxPDAMEg8s"
+        ]
+       }
+      }
+     },
+     {
+      "id": "recPxJXQG5t0ed3wQ",
+      "createdTime": "2026-02-01T16:30:48.000Z",
+      "cellValuesByColumnId": {
+       "fldekrsjTIcqFNlgA": "Docebo",
+       "fldkvZ1oX1bRficKI": "Provider of AI-driven learning management systems for enterprises.",
+       "fld2uBkEnCJlWJh4Q": 1009,
+       "fldF4Zl4TjyURN6uT": "CA",
+       "fldS9muQ0Ku3DApqy": "CA-ON",
+       "fldbMzTGRHlOGk6kj": "Toronto",
+       "fldGCLdaFPaVoUGNa": {
+        "label": "Open",
+        "url": "https://jobs.ashbyhq.com/docebo"
+       },
+       "fldom25Esjr0mos9E": {
+        "valuesByForeignRowId": {
+         "rec4ZFRaebciU174N": [
+          "selHDKyvrFLzqS9Yr"
+         ],
+         "recE2F9acVD2MltEP": [
+          "selHDKyvrFLzqS9Yr"
+         ],
+         "reciDKJynWz4GHZ3w": [
+          "selHDKyvrFLzqS9Yr"
+         ],
+         "reck9JJg8dN0Jb2Ur": [
+          "selHDKyvrFLzqS9Yr"
+         ]
+        },
+        "foreignRowIdOrder": [
+         "rec4ZFRaebciU174N",
+         "recE2F9acVD2MltEP",
+         "reciDKJynWz4GHZ3w",
+         "reck9JJg8dN0Jb2Ur"
+        ]
+       }
+      }
+     },
+     {
+      "id": "recM8o8muheEQ7aRO",
+      "createdTime": "2026-02-01T16:30:53.000Z",
+      "cellValuesByColumnId": {
+       "fldekrsjTIcqFNlgA": "Cority",
+       "fldkvZ1oX1bRficKI": "Platform for EHS & ESG management, improving compliance and performance.",
+       "fld2uBkEnCJlWJh4Q": 860,
+       "fldF4Zl4TjyURN6uT": "CA",
+       "fldS9muQ0Ku3DApqy": "CA-ON",
+       "fldbMzTGRHlOGk6kj": "Toronto",
+       "fldGCLdaFPaVoUGNa": {
+        "label": "Open",
+        "url": "https://jobs.lever.co/cority"
+       },
+       "fldom25Esjr0mos9E": {
+        "valuesByForeignRowId": {
+         "recSFmMYbjZlE5jHl": [
+          "selHDKyvrFLzqS9Yr"
+         ]
+        },
+        "foreignRowIdOrder": [
+         "recSFmMYbjZlE5jHl"
+        ]
+       }
+      }
+     },
+     {
+      "id": "recPcfUfZBxiRmCOJ",
+      "createdTime": "2026-02-01T16:30:56.000Z",
+      "cellValuesByColumnId": {
+       "fldekrsjTIcqFNlgA": "Hootsuite",
+       "fldkvZ1oX1bRficKI": "Social media management platform for businesses with comprehensive tools.",
+       "fld2uBkEnCJlWJh4Q": 1752,
+       "fldF4Zl4TjyURN6uT": "CA",
+       "fldS9muQ0Ku3DApqy": "CA-BC",
+       "fldbMzTGRHlOGk6kj": "Vancouver",
+       "fldGCLdaFPaVoUGNa": {
+        "label": "Open",
+        "url": "https://job-boards.greenhouse.io/embed/job_board?for=hootsuite"
+       },
+       "fldom25Esjr0mos9E": {
+        "valuesByForeignRowId": {
+         "reccFhwqmFxEhIkEC": [
+          "selYSpdWSN4BKPTTO"
+         ]
+        },
+        "foreignRowIdOrder": [
+         "reccFhwqmFxEhIkEC"
+        ]
+       }
+      }
+     },
+     {
+      "id": "rec5TstXaRc9tSohU",
+      "createdTime": "2026-02-01T16:30:52.000Z",
+      "cellValuesByColumnId": {
+       "fldekrsjTIcqFNlgA": "BlackBerry",
+       "fldkvZ1oX1bRficKI": "Suite of AI-driven cybersecurity and IoT software and services",
+       "fld2uBkEnCJlWJh4Q": 2007,
+       "fldF4Zl4TjyURN6uT": "CA",
+       "fldS9muQ0Ku3DApqy": "CA-ON",
+       "fldbMzTGRHlOGk6kj": "Waterloo",
+       "fldGCLdaFPaVoUGNa": {
+        "label": "Open",
+        "url": "https://bb.wd3.myworkdayjobs.com/BlackBerry"
+       },
+       "fldom25Esjr0mos9E": {
+        "valuesByForeignRowId": {
+         "recNzWOgP1yl51Zwy": [
+          "selHDKyvrFLzqS9Yr"
+         ]
+        },
+        "foreignRowIdOrder": [
+         "recNzWOgP1yl51Zwy"
+        ]
+       }
+      }
+     },
+     {
+      "id": "reciWs9jgwmGHObwy",
+      "createdTime": "2026-02-01T16:30:47.000Z",
+      "cellValuesByColumnId": {
+       "fldekrsjTIcqFNlgA": "Shopify",
+       "fldkvZ1oX1bRficKI": "Comprehensive e-commerce platform enabling businesses to create and manage stores.",
+       "fld2uBkEnCJlWJh4Q": 28531,
+       "fldF4Zl4TjyURN6uT": "CA",
+       "fldS9muQ0Ku3DApqy": "CA-ON",
+       "fldbMzTGRHlOGk6kj": "Ottawa",
+       "fldGCLdaFPaVoUGNa": {
+        "label": "Open",
+        "url": "https://www.shopify.com/careers"
+       },
+       "fldom25Esjr0mos9E": {
+        "valuesByForeignRowId": {
+         "recaItvWmhm0HMl84": [
+          "selHDKyvrFLzqS9Yr"
+         ]
+        },
+        "foreignRowIdOrder": [
+         "recaItvWmhm0HMl84"
+        ]
+       }
+      }
+     },
+     {
+      "id": "recXLrfmmdf0hako4",
+      "createdTime": "2026-02-01T16:31:13.000Z",
+      "cellValuesByColumnId": {
+       "fldekrsjTIcqFNlgA": "Avidbots Corp.",
+       "fldkvZ1oX1bRficKI": "Company in commercial cleaning robotics market with autonomous floor scrubbing robots",
+       "fld2uBkEnCJlWJh4Q": 190,
+       "fldF4Zl4TjyURN6uT": "CA",
+       "fldS9muQ0Ku3DApqy": "CA-ON",
+       "fldbMzTGRHlOGk6kj": "Kitchener",
+       "fldGCLdaFPaVoUGNa": {
+        "label": "Open",
+        "url": "https://avidbots.bamboohr.com/careers"
+       },
+       "fldom25Esjr0mos9E": {
+        "valuesByForeignRowId": {
+         "rec9fsNKtkc8H0aPL": [
+          "selHDKyvrFLzqS9Yr"
+         ]
+        },
+        "foreignRowIdOrder": [
+         "rec9fsNKtkc8H0aPL"
+        ]
+       }
+      }
+     },
+     {
+      "id": "recTOwFOcl57dzg5I",
+      "createdTime": "2026-02-01T16:31:05.000Z",
+      "cellValuesByColumnId": {
+       "fldekrsjTIcqFNlgA": "Petal",
+       "fldkvZ1oX1bRficKI": "Data-driven platform for real-time patient care delivery workflows.",
+       "fld2uBkEnCJlWJh4Q": 293,
+       "fldF4Zl4TjyURN6uT": "CA",
+       "fldS9muQ0Ku3DApqy": "CA-QC",
+       "fldbMzTGRHlOGk6kj": "Qu\u00e9bec",
+       "fldGCLdaFPaVoUGNa": {
+        "label": "Open",
+        "url": "https://petalmd.recruitee.com/"
+       },
+       "fldom25Esjr0mos9E": {
+        "valuesByForeignRowId": {
+         "recJ8PXfGpSMbOhrr": [
+          "selqd9ghjI1lZ1DdD"
+         ]
+        },
+        "foreignRowIdOrder": [
+         "recJ8PXfGpSMbOhrr"
+        ]
+       }
+      }
+     },
+     {
+      "id": "recdrnD529vs7sKSB",
+      "createdTime": "2026-02-01T16:31:03.000Z",
+      "cellValuesByColumnId": {
+       "fldekrsjTIcqFNlgA": "Paper",
+       "fldkvZ1oX1bRficKI": "Subscription-based Educational Support System for K-12 students and districts",
+       "fld2uBkEnCJlWJh4Q": 944,
+       "fldF4Zl4TjyURN6uT": "CA",
+       "fldS9muQ0Ku3DApqy": "CA-QC",
+       "fldbMzTGRHlOGk6kj": "Montreal",
+       "fldGCLdaFPaVoUGNa": {
+        "label": "Open",
+        "url": "https://ats.rippling.com/paper-careers/jobs"
+       },
+       "fldom25Esjr0mos9E": {
+        "valuesByForeignRowId": {
+         "reckesVp0lVHveIG6": [
+          "selHDKyvrFLzqS9Yr"
+         ]
+        },
+        "foreignRowIdOrder": [
+         "reckesVp0lVHveIG6"
+        ]
+       }
+      }
+     },
+     {
+      "id": "recHz5WUF00Z52Cjd",
+      "createdTime": "2026-02-01T16:30:45.000Z",
+      "cellValuesByColumnId": {
+       "fldekrsjTIcqFNlgA": "LaunchDarkly",
+       "fldkvZ1oX1bRficKI": "SaaS platform for feature management and experimentation in software development",
+       "fld2uBkEnCJlWJh4Q": 640,
+       "fldF4Zl4TjyURN6uT": "US",
+       "fldS9muQ0Ku3DApqy": "US-CA",
+       "fldbMzTGRHlOGk6kj": "Oakland",
+       "fldGCLdaFPaVoUGNa": {
+        "label": "Open",
+        "url": "https://job-boards.greenhouse.io/launchdarkly"
+       },
+       "fldom25Esjr0mos9E": {
+        "valuesByForeignRowId": {
+         "recancv9Bg6fkS34U": [
+          "selHDKyvrFLzqS9Yr"
+         ],
+         "recjNIll1ZsqLHLIB": [
+          "selHDKyvrFLzqS9Yr"
+         ]
+        },
+        "foreignRowIdOrder": [
+         "recancv9Bg6fkS34U",
+         "recjNIll1ZsqLHLIB"
+        ]
+       }
+      }
+     }
+    ]
+   }
+  }
+ }
+}
