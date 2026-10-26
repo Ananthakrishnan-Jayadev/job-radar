@@ -224,7 +224,14 @@ a size without manual entry.
 6. **Deduplication:** an Adzuna job that matches a feed job (same company,
    similar title, same province, or same apply URL) is linked and hidden
    behind the feed job.
-7. `jobradar/enrich.py`: Wikidata SPARQL lookup of employee count (P1128) by
+7. **stillhiring.today source** (`docs/decisions/2026-10-26-stillhiring-source.md`):
+   `jobradar/sources/stillhiring.py` reads the shared Airtable view (two
+   requests, at most daily), keeps Canadian-HQ rows by default (opt-in for
+   others with a supported Jobs Page), maps Jobs Page → board via detection,
+   Employees → company size; results go to the Candidates page with
+   new / still listed / no longer listed. `jobradar candidates refresh`
+   command and a button. Test from a trimmed recorded response.
+8. `jobradar/enrich.py`: Wikidata SPARQL lookup of employee count (P1128) by
    company name/website, with a confirmation step for uncertain matches;
    estimate from job system + open roles when nothing else exists; manual
    always wins. `jobradar enrich` command and a button per company.
