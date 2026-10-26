@@ -151,6 +151,14 @@ def test_find_missing_boards(conn, settings):
     assert not [r for r in sources.requests if "done" in str(r.url)]  # companies with a board are skipped
 
 
+def test_find_boards_ignores_adzuna_snapshots(conn, settings):
+    company = db.upsert_company(conn, "Nudge", canadian=True)
+    db.upsert_board(conn, company, "adzuna", "nudge")
+    sources = FakeSources({("GET", "https://api.ashbyhq.com/posting-api/job-board/nudge"): ashby_board()})
+    summary = asyncio.run(find_missing_boards(conn, settings, transport=sources.transport()))
+    assert (summary.checked, summary.found) == (1, 1)
+
+
 def test_find_boards_none_found(conn, settings):
     db.upsert_company(conn, "Nobody Inc", canadian=True)
     summary = asyncio.run(find_missing_boards(conn, settings, transport=FakeSources().transport()))

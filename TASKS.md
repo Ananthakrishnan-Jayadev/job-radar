@@ -204,6 +204,13 @@ stillhiring.today candidates, detection (task 2), the Candidates page (task 3)
 and add company by careers link (task 4). Part 2 waits for an Adzuna key:
 Adzuna (task 1), add job by URL (task 5), deduplication (task 6).
 
+**Update (2026-10-26):** Adzuna's free tier is only 25 test calls, and the
+user won't pay, so tasks 1 and 6 are dropped. The test calls were used once
+for a snapshot (`docs/decisions/2026-10-26-adzuna-snapshot.md`). Added
+instead, outside the plan: SAP SuccessFactors, JazzHR, Pinpoint, Teamtailor
+and Humi connectors, and importing the user's own company lists. Task 5
+(add a single job by URL) is still open.
+
 **Goal:** the company list grows beyond the seed list, and most companies get
 a size without manual entry.
 
