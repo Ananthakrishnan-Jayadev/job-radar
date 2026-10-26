@@ -221,7 +221,8 @@ def create_app(settings: Settings, db_path: Path | None = None,
             "job_statuses": list(JOB_STATUSES),
             "company_statuses": list(COMPANY_STATUSES),
             "size_bands": [label for label, _, _ in SIZE_BANDS] + [UNKNOWN_SIZE],
-            "systems": sorted(CONNECTORS),
+            "systems": sorted(CONNECTORS),  # every system a board can use
+            "systems_in_use": queries.systems_in_use(conn),  # the ones with jobs, for filtering
             "workplaces": list(WORKPLACES),
             "open_jobs": open_jobs,
             "companies": conn.execute("SELECT COUNT(*) FROM companies").fetchone()[0],

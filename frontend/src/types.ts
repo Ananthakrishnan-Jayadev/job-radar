@@ -18,7 +18,10 @@ export interface Meta {
   job_statuses: JobStatus[];
   company_statuses: CompanyStatus[];
   size_bands: string[];
+  /** Every job system a board can use. */
   systems: string[];
+  /** Job systems that currently have jobs: the ones worth filtering by. */
+  systems_in_use: string[];
   workplaces: Workplace[];
   open_jobs: number;
   companies: number;

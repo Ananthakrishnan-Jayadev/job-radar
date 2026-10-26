@@ -25,6 +25,10 @@ interface Props {
 
 export default function JobFilters({ meta, params, setParams, provinceCounts, previousVisit }: Props) {
   const [query, setQuery] = useState(params.get("q") ?? "");
+  // Remember whether "More filters" is open; start open if one of its filters is on.
+  const [moreOpen, setMoreOpen] = useState(
+    () => params.has("systems") || ["has_salary", "include_closed", "include_ignored"].some((k) => isOn(params, k)),
+  );
   useEffect(() => setQuery(params.get("q") ?? ""), [params]);
 
   const names = Object.fromEntries(meta.provinces.map((p) => [p.code, p.name]));
@@ -111,11 +115,11 @@ export default function JobFilters({ meta, params, setParams, provinceCounts, pr
         onToggle={(v) => setParams(toggleInList(params, "workplaces", v))}
       />
 
-      <details className="more" open={params.has("systems") || isOn(params, "has_salary") || isOn(params, "include_closed") || isOn(params, "include_ignored")}>
+      <details className="more" open={moreOpen} onToggle={(e) => setMoreOpen(e.currentTarget.open)}>
         <summary>More filters</summary>
         <Chips
           legend="Job system"
-          options={meta.systems.map((s) => ({ value: s, label: SYSTEM_LABEL[s] ?? s }))}
+          options={meta.systems_in_use.map((s) => ({ value: s, label: SYSTEM_LABEL[s] ?? s }))}
           selected={getList(params, "systems")}
           onToggle={(v) => setParams(toggleInList(params, "systems", v))}
         />
