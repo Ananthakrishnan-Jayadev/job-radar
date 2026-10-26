@@ -26,6 +26,12 @@ delay_seconds = 1.0
 # "use for sources" replace this list once the web UI has them (phase 3).
 search_terms = ["data", "machine learning", "artificial intelligence", "analyst", "analytics"]
 
+[details]
+# Job systems whose list has no descriptions (SmartRecruiters, Rippling,
+# BambooHR, some SuccessFactors sites) fetch each job's page once, only for
+# roles roles.toml wants, at most this many per board per scan.
+max_per_board = 60
+
 [smartrecruiters]
 # Postings older than this are skipped (some boards keep 2017 postings).
 max_age_days = 180

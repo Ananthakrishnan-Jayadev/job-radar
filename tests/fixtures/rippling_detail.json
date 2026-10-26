@@ -1,0 +1,26 @@
+{
+ "_request": {
+  "url": "https://ats.rippling.com/api/v2/board/axya-inc/jobs/6f66c7ed-7735-406f-b936-ef6018ed5071",
+  "note": "Recorded 2026-10-26, trimmed."
+ },
+ "response": {
+  "uuid": "6f66c7ed-7735-406f-b936-ef6018ed5071",
+  "name": "Data & AI Product Analyst",
+  "description": {
+   "company": "<div><body><p style='font-family:\"Basel Grotesk\",Arial,sans-serif;font-size:11pt;font-weight:400;line-height:1.6;letter-spacing:0.25px;margin:4px 0px;padding:0px;'><b><strong style=\"white-space:pre-wrap;\">About Axya</strong></b></p><p style='font-family:\"Basel Grotesk\",Arial,sans-serif;font-size:11pt;font-weight:400;line-height:1.6;letter-spacing:0.25px;margin:4px 0px;padding:0px;'><span style=\"wh\u2026</p>",
+   "role": "<div><body><p style='font-family:\"Basel Grotesk\",Arial,sans-serif;font-size:11pt;font-weight:400;line-height:1.6;letter-spacing:0.25px;margin:4px 0px;padding:0px;'><br></p><p style='font-family:\"Basel Grotesk\",Arial,sans-serif;font-size:12pt;font-weight:400;line-height:1.6;letter-spacing:0.25px;margin:4px 0px;padding:0px;'><b><strong style=\"color:rgb(0,0,0);font-size:12pt;white-space:pre-wrap;\">Ro\u2026</p>"
+  },
+  "createdOn": "2026-08-26T13:52:34.411000-07:00",
+  "workLocations": [
+   "Montreal, Canada"
+  ],
+  "department": {
+   "name": "Customer Success",
+   "base_department": "Customer Operations",
+   "department_tree": [
+    "Customer Operations",
+    "Customer Success"
+   ]
+  }
+ }
+}

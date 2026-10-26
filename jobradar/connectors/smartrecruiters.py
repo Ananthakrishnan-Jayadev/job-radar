@@ -1,6 +1,7 @@
 """SmartRecruiters Posting API (official, public). Paged by 100.
 
 GET https://api.smartrecruiters.com/v1/companies/{id}/postings?limit=100&offset=N
+GET .../postings/{posting id}   (one job: jobAd.sections hold the description; wanted roles only)
 Postings older than smartrecruiters.max_age_days are skipped: some boards keep
 postings from years ago.
 """
@@ -12,7 +13,7 @@ from datetime import date, timedelta
 from ..http import HttpClient
 from ..locations import from_parts
 from ..models import Board, RawJob
-from ._common import FetchContext, FetchResult, clean_title, iso_date, workplace
+from ._common import FetchContext, FetchResult, clean_title, fill_details, html_to_text, iso_date, join_text, workplace
 
 API = "https://api.smartrecruiters.com/v1/companies/{slug}/postings"
 PAGE = 100
@@ -36,6 +37,15 @@ async def fetch(board: Board, client: HttpClient, ctx: FetchContext) -> FetchRes
     jobs = [_job(i, board) for i in items]
     fresh = [j for j in jobs if j.posted_at is None or j.posted_at >= cutoff]
     warnings = [f"skipped {len(jobs) - len(fresh)} postings older than {cutoff}"] if len(fresh) < len(jobs) else []
+
+    async def detail(job: RawJob) -> None:
+        data = await client.get_json(f"{url}/{job.external_id}")
+        sections = (data.get("jobAd") or {}).get("sections") or {}
+        job.description = join_text(*(html_to_text((sections.get(k) or {}).get("text"))
+                                       for k in ("jobDescription", "qualifications", "additionalInformation",
+                                                 "companyDescription")))
+
+    warnings += await fill_details(fresh, ctx, client, detail)
     return FetchResult(jobs=fresh, total=total, warnings=warnings)
 
 

@@ -123,7 +123,7 @@ async def fetch(board: Board, client: HttpClient, ctx: FetchContext) -> FetchRes
     jobs = [_from_list(p, host, site, board, ctx, fill_country=by_country) for p in postings]
     details_done = 0
     for job, posting in zip(jobs, postings):
-        if job.external_id in ctx.known_ids or details_done >= settings.max_details_per_scan:
+        if job.external_id in ctx.known_ids or not ctx.wanted(job.title) or details_done >= settings.max_details_per_scan:
             continue
         await client.pause(delay)
         try:
@@ -133,7 +133,8 @@ async def fetch(board: Board, client: HttpClient, ctx: FetchContext) -> FetchRes
             continue
         _apply_detail(job, detail, board)
         details_done += 1
-    pending = sum(1 for j in jobs if not j.details_fetched and j.external_id not in ctx.known_ids)
+    pending = sum(1 for j in jobs if not j.details_fetched and j.external_id not in ctx.known_ids
+                  and ctx.wanted(j.title))
     if pending:
         warnings.append(f"{pending} job details left for the next scan")
     return FetchResult(jobs=jobs, total=total, complete=complete, warnings=warnings)

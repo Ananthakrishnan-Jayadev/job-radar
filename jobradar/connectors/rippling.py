@@ -11,7 +11,9 @@ from __future__ import annotations
 from ..http import HttpClient
 from ..locations import from_parts
 from ..models import Board, RawJob
-from ._common import FetchContext, FetchResult, clean_title, dedupe_locations, workplace
+from ._common import (
+    FetchContext, FetchResult, clean_title, dedupe_locations, fill_details, html_to_text, iso_date, join_text, workplace,
+)
 
 API = "https://ats.rippling.com/api/v2/board/{slug}/jobs"
 MAX_PAGES = 50
@@ -33,8 +35,19 @@ async def fetch(board: Board, client: HttpClient, ctx: FetchContext) -> FetchRes
             break
         items += more
     complete = not warnings and len(items) >= total
-    return FetchResult(jobs=_merge(_job(i, board.company_canadian) for i in items), total=total,
-                       complete=complete, warnings=warnings)
+    jobs = _merge(_job(i, board.company_canadian) for i in items)
+
+    async def detail(job: RawJob) -> None:
+        data = await client.get_json(f"{url}/{job.external_id}")
+        parts = data.get("description") or {}
+        if isinstance(parts, dict):
+            job.description = join_text(html_to_text(parts.get("role")), html_to_text(parts.get("company")))
+        else:
+            job.description = html_to_text(parts)
+        job.posted_at = iso_date(data.get("createdOn")) or job.posted_at
+
+    warnings += await fill_details(jobs, ctx, client, detail)
+    return FetchResult(jobs=jobs, total=total, complete=complete, warnings=warnings)
 
 
 def _merge(jobs) -> list[RawJob]:

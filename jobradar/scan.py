@@ -23,7 +23,7 @@ from .connectors import CONNECTORS, FetchContext
 from .http import HttpClient
 from .locations import is_canadian
 from .models import Board
-from .roles import sync_roles
+from .roles import rules_for, sync_roles
 
 BOARDS_AT_ONCE = 6  # different hosts in parallel; each host is still limited by http.max_per_host
 
@@ -111,7 +111,9 @@ def _known_ids(conn: sqlite3.Connection, board_id: int) -> set[str]:
 async def _scan_board(conn, board: Board, client: HttpClient, settings: Settings,
                       terms: list[str], seen_at: str, today) -> BoardOutcome:
     started = time.monotonic()
-    ctx = FetchContext(settings=settings, search_terms=terms, known_ids=_known_ids(conn, board.id), today=today)
+    rules = rules_for(settings.root)
+    ctx = FetchContext(settings=settings, search_terms=terms, known_ids=_known_ids(conn, board.id), today=today,
+                       wants=rules.wanted if rules else None)
     try:
         result = await CONNECTORS[board.system](board, client, ctx)
     except Exception as exc:  # noqa: BLE001 - any failure is this board's error, never the scan's
