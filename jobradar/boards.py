@@ -7,7 +7,7 @@ job system's own URLs.
 from __future__ import annotations
 
 import re
-from urllib.parse import urlsplit
+from urllib.parse import unquote, urlsplit
 
 from .connectors import CONNECTORS
 
@@ -62,7 +62,9 @@ def normalize_board(system: str, value: str) -> str:
         raise BoardError(f"{host} is not a {system} address")
     if where == "sub":
         return match.group(1)
-    segments = [s for s in parts.path.split("/") if s]
+    segments = [unquote(s) for s in parts.path.split("/") if s]
+    if segments and re.fullmatch(r"[a-z]{2}-[A-Z]{2}", segments[0]):
+        segments = segments[1:]  # a language prefix such as /en-GB/
     if system == "greenhouse" and segments[:2] == ["embed", "job_board"]:
         query = dict(p.split("=", 1) for p in parts.query.split("&") if "=" in p)
         if query.get("for"):

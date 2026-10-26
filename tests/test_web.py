@@ -368,6 +368,8 @@ def test_ui_serves_files_and_falls_back_to_index(client, tmp_path, monkeypatch):
     ("bamboohr", "https://avidbots.bamboohr.com/careers", "avidbots"),
     ("recruitee", "https://petalmd.recruitee.com/", "petalmd"),
     ("rippling", "https://ats.rippling.com/paper-careers/jobs", "paper-careers"),
+    ("rippling", "https://ats.rippling.com/en-GB/netwrix-corporation/jobs", "netwrix-corporation"),
+    ("ashby", "https://jobs.ashbyhq.com/Rose%20Rocket", "Rose Rocket"),
     ("workday", "https://bb.wd3.myworkdayjobs.com/en-US/BlackBerry/", "https://bb.wd3.myworkdayjobs.com/BlackBerry"),
     ("successfactors", "https://jobs.scotiabank.com/search/?q=&locationsearch=ontario", "https://jobs.scotiabank.com"),
     ("successfactors", "jobs.scotiabank.com", "https://jobs.scotiabank.com"),
