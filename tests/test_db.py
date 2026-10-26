@@ -168,3 +168,24 @@ def test_settings_roundtrip(conn):
     db.set_setting(conn, "last_visit_at", "2026-10-26T10:00:00+00:00")
     db.set_setting(conn, "last_visit_at", "2026-10-27T10:00:00+00:00")
     assert db.get_setting(conn, "last_visit_at") == "2026-10-27T10:00:00+00:00"
+
+
+def test_connection_can_be_closed_from_another_thread(tmp_path):
+    """The web app opens a request's connection on one worker thread and FastAPI
+    may close it on another; that must not raise."""
+    import threading
+
+    conn = db.connect(tmp_path / "threads.db")
+    errors = []
+
+    def close():
+        try:
+            conn.execute("SELECT 1").fetchone()
+            conn.close()
+        except Exception as exc:  # noqa: BLE001
+            errors.append(exc)
+
+    worker = threading.Thread(target=close)
+    worker.start()
+    worker.join()
+    assert errors == []
