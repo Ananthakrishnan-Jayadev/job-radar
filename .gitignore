@@ -9,3 +9,5 @@ data/
 config.local.toml
 *.egg-info/
 build/
+frontend/node_modules/
+jobradar/web/static/

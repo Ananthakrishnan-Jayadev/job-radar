@@ -13,13 +13,14 @@ Five phases. Each one ends with something you can run and check. Read
 - Do not install packages, run live scans against real sites, or start
   long-running servers without asking. Put those steps in the phase's
   "Your manual checks" list instead.
-- **Never install anything outside the project's `.venv`.** Python packages
-  go in only through `.venv/bin/pip` (or `python -m pip` with the venv
-  active), and only when listed in `pyproject.toml`. Never use `sudo`,
-  `pip install --user`, the system `pip`/`python3 -m pip`,
-  `--break-system-packages`, `apt`, `snap`, `pipx`, `npm -g`, or
-  `curl ... | sh` installers. If something outside the venv seems needed,
-  stop and ask the human to install it.
+- **The agent installs and builds nothing.** No `pip install`, no
+  `npm install`, no `npm run build`. Add dependencies to `pyproject.toml` or
+  `frontend/package.json` and put the install/build commands in the phase's
+  "Your manual checks"; the human runs them after the phase.
+- When the human installs: Python packages only into `.venv`, JavaScript
+  packages only into `frontend/node_modules`. Never `sudo`,
+  `pip install --user`, the system `pip`, `--break-system-packages`, `apt`,
+  `snap`, `pipx`, `npm -g`, or `curl ... | sh` installers.
 - Commit locally with conventional commits after each task group. No remote.
 - If something in `PROJECT.md` turns out wrong, say so, write a decision
   record in `docs/decisions/`, and update the spec.
@@ -137,29 +138,39 @@ Canadian ones, and tracks open/closed over time. CSV export works.
 statuses, notes, companies, Scan now.
 
 **Tasks**
-1. `jobradar/web/app.py`: FastAPI app, Jinja2 templates, static files,
-   vendored `htmx.min.js`. `jobradar serve` starts Uvicorn on 127.0.0.1:8000.
-2. **Jobs page:** keyword search (FTS5, "title only" switch), filters
+1. **API** (`jobradar/web/app.py`): FastAPI JSON endpoints under `/api` for
+   jobs (search + filters + paging), one job, status/notes updates,
+   companies, one company, size/status/notes updates, boards (add, enable,
+   confirm), saved searches, scans (start, progress, history), CSV export,
+   and "last visit". Serves the built UI from `jobradar/web/static/` for every
+   other path; a clear page if the UI isn't built yet.
+   `jobradar serve [--dev] [--port]` starts Uvicorn on 127.0.0.1:8000;
+   `--dev` also runs `npm run watch` in `frontend/` as a child process.
+   Remove the unused `jinja2` and `python-multipart` dependencies.
+2. **UI scaffold** (`frontend/`): Vite + React + TypeScript, build output to
+   `../jobradar/web/static`, typed API client (`api.ts`, `types.ts`) mirroring
+   the API, routing, layout, plain CSS (light and dark).
+3. **Jobs page:** keyword search (FTS5, "title only" switch), filters
    (province multi-select + Remote Canada-wide, size band, company, job
    status, company status with ignored hidden, posted within N days, job
    system, workplace, has salary), sortable results, pagination, "new since
    last visit" marker, closed label.
-3. **Tracking:** inline status change and notes via htmx; `applied_at` set
+4. **Tracking:** inline status change and notes; `applied_at` set
    automatically, editable; `status_changed_at`.
-4. **Job detail page:** description, locations, links (job page, careers
+5. **Job detail page:** description, locations, links (job page, careers
    page, LinkedIn search link built per `docs/02-linkedin-mcp-evaluation.md`).
-5. **Companies page and company detail:** Canadian vs total open roles, size
+6. **Companies page and company detail:** Canadian vs total open roles, size
    band, boards and last scan result, status, notes, **manual employee-count
-   entry**, enable/disable a board.
-6. **Add company** form (name, Canadian yes/no, system, slug or Workday URL).
-7. **Scan now:** runs the scan in the background, page polls for progress;
-   **Scans** page with per-board errors.
-8. **Saved searches:** save the current query + filters under a name; mark
+   entry**, enable/disable and confirm a board (unconfirmed boards flagged).
+7. **Add company** form (name, Canadian yes/no, system, slug or Workday URL).
+8. **Scan now:** runs the scan in a background thread, the UI polls for
+   progress; **Scans** page with per-board errors and notes.
+9. **Saved searches:** save the current query + filters under a name; mark
    which ones feed Workday/Adzuna searches.
-9. CSV export of the current filtered view.
+10. CSV export of the current filtered view.
 
-**Tests**
-- FastAPI `TestClient`: each page renders on an empty and a seeded database.
+**Tests** (pytest, API only; the agent can't build or run the UI)
+- FastAPI `TestClient`: every endpoint on an empty and a seeded database.
 - Filters: province, size band, status, ignored companies, date window each
   narrow results correctly.
 - Status changes persist; `applied_at` set on first `applied`.
@@ -167,7 +178,13 @@ statuses, notes, companies, Scan now.
 - Export of a filtered view contains only those rows.
 
 **Your manual checks**
-- `jobradar serve`, open http://127.0.0.1:8000.
+- Install and build:
+  ```bash
+  .venv/bin/pip install -e ".[dev]"
+  cd frontend && npm install && npm run build && cd ..
+  .venv/bin/pytest
+  ```
+- `.venv/bin/jobradar serve`, open http://127.0.0.1:8000.
 - Search "ai engineer", filter to Ontario, then to "Remote (Canada-wide)".
 - Mark a few jobs saved/applied with notes; restart the server; they're
   still there.
