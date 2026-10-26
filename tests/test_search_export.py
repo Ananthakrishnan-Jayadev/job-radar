@@ -2,7 +2,7 @@ import csv
 
 import pytest
 
-from jobradar import cli, db
+from jobradar import cli, db, queries
 from jobradar.export import export_jobs
 from jobradar.models import Location, RawJob
 
@@ -38,43 +38,43 @@ def test_never_shows_jobs_outside_canada(jobs):
     add(jobs, "9", "Dubai Sales", [Location("Dubai", None, None, remote=True, raw="Dubai")])
     add(jobs, "10", "NYC Sales", [Location("New York", "NY", "US")])
     add(jobs, "11", "Bare Remote", [Location(remote=True, raw="Remote")])
-    found = titles(db.find_jobs(jobs, include_closed=True))
+    found = titles(queries.find_jobs(jobs, include_closed=True))
     assert "Dubai Sales" not in found and "NYC Sales" not in found
     assert "Bare Remote" in found
-    assert "Bare Remote" in titles(db.find_jobs(jobs, provinces=["REMOTE"]))
-    assert "Bare Remote" not in titles(db.find_jobs(jobs, provinces=["ON"]))
+    assert "Bare Remote" in titles(queries.find_jobs(jobs, provinces=["REMOTE"]))
+    assert "Bare Remote" not in titles(queries.find_jobs(jobs, provinces=["ON"]))
 
 
 def test_label_names_only_canadian_places():
     locs = [Location("Toronto", "ON", "CA"), Location("Dallas", "TX", "US"), Location("Phoenix", "AZ", "US")]
-    assert db.location_label(locs) == "Toronto, ON (+2 outside Canada)"
-    assert db.location_label([Location(remote=True, raw="Remote")]) == "Remote (country not stated)"
+    assert queries.location_label(locs) == "Toronto, ON (+2 outside Canada)"
+    assert queries.location_label([Location(remote=True, raw="Remote")]) == "Remote (country not stated)"
 
 
 def test_find_all_open_newest_first(jobs):
-    assert titles(db.find_jobs(jobs)) == ["Data Scientist", "Applied AI Engineer", "Machine Learning Engineer"]
+    assert titles(queries.find_jobs(jobs)) == ["Data Scientist", "Applied AI Engineer", "Machine Learning Engineer"]
 
 
 def test_find_include_closed(jobs):
-    assert "Data Analyst" in titles(db.find_jobs(jobs, include_closed=True))
+    assert "Data Analyst" in titles(queries.find_jobs(jobs, include_closed=True))
 
 
 def test_find_by_province(jobs):
-    assert sorted(titles(db.find_jobs(jobs, provinces=["ON"]))) == ["Data Scientist", "Machine Learning Engineer"]
-    assert titles(db.find_jobs(jobs, provinces=["qc"])) == ["Data Scientist"]
-    assert titles(db.find_jobs(jobs, provinces=["REMOTE"])) == ["Applied AI Engineer"]
-    assert len(db.find_jobs(jobs, provinces=["ON", "REMOTE"])) == 3
-    assert db.find_jobs(jobs, provinces=["BC"]) == []  # the BC job is closed
+    assert sorted(titles(queries.find_jobs(jobs, provinces=["ON"]))) == ["Data Scientist", "Machine Learning Engineer"]
+    assert titles(queries.find_jobs(jobs, provinces=["qc"])) == ["Data Scientist"]
+    assert titles(queries.find_jobs(jobs, provinces=["REMOTE"])) == ["Applied AI Engineer"]
+    assert len(queries.find_jobs(jobs, provinces=["ON", "REMOTE"])) == 3
+    assert queries.find_jobs(jobs, provinces=["BC"]) == []  # the BC job is closed
 
 
 def test_find_by_query_and_province(jobs):
-    assert titles(db.find_jobs(jobs, "engineer", provinces=["ON"])) == ["Machine Learning Engineer"]
-    assert titles(db.find_jobs(jobs, "data", provinces=["QC"])) == ["Data Scientist"]
+    assert titles(queries.find_jobs(jobs, "engineer", provinces=["ON"])) == ["Machine Learning Engineer"]
+    assert titles(queries.find_jobs(jobs, "data", provinces=["QC"])) == ["Data Scientist"]
 
 
 def test_locations_attached(jobs):
-    row = next(r for r in db.find_jobs(jobs) if r["title"] == "Data Scientist")
-    assert db.location_label(row["locations"]) == "Montréal, QC; Toronto, ON"
+    row = next(r for r in queries.find_jobs(jobs) if r["title"] == "Data Scientist")
+    assert queries.location_label(row["locations"]) == "Montréal, QC; Toronto, ON"
 
 
 def test_export_csv(jobs, tmp_path):

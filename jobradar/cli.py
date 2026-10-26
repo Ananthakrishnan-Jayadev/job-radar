@@ -6,7 +6,7 @@ import argparse
 import sys
 from pathlib import Path
 
-from . import db
+from . import db, queries
 from .config import load_settings
 from .export import export_jobs
 from .models import size_band
@@ -91,14 +91,14 @@ def cmd_search(args) -> int:
     conn, _ = _open_db(args)
     query = " ".join(args.query) or None
     try:
-        rows = db.find_jobs(conn, query, provinces=_provinces(args.province),
+        rows = queries.find_jobs(conn, query, provinces=_provinces(args.province),
                             include_closed=args.include_closed, limit=args.limit)
     except Exception as exc:  # bad FTS syntax, e.g. an unclosed quote
         print(f"Search failed: {exc}", file=sys.stderr)
         return 1
     for r in rows:
         closed = "  [closed]" if r["closed_at"] else ""
-        print(f"{r['title']}  |  {r['company']}  |  {db.location_label(r['locations'])}"
+        print(f"{r['title']}  |  {r['company']}  |  {queries.location_label(r['locations'])}"
               f"  |  {r['posted_at'] or 'date unknown'}{closed}")
         print(f"    {r['url']}")
     print(f"\n{len(rows)} jobs{' (limit reached)' if args.limit and len(rows) == args.limit else ''}.")
@@ -110,6 +110,37 @@ def cmd_export(args) -> int:
     count = export_jobs(conn, args.out, query=args.query, provinces=_provinces(args.province),
                         include_closed=args.include_closed)
     print(f"Wrote {count} jobs to {args.out}.")
+    return 0
+
+
+def cmd_serve(args) -> int:
+    import shutil
+    import subprocess
+
+    import uvicorn
+
+    from .web.app import STATIC_DIR, create_app
+
+    settings = load_settings(args.root)
+    db_path = Path(args.db) if args.db else settings.database
+    watcher = None
+    if args.dev:
+        frontend = settings.root / "frontend"
+        npm = shutil.which("npm")
+        if npm is None or not (frontend / "node_modules").is_dir():
+            print("--dev needs Node and the UI packages: cd frontend && npm install", file=sys.stderr)
+            return 1
+        # Rebuilds the UI into jobradar/web/static on every save; stops with the server.
+        watcher = subprocess.Popen([npm, "run", "watch"], cwd=frontend)
+    elif not (STATIC_DIR / "index.html").is_file():
+        print("Note: the web UI isn't built yet (cd frontend && npm install && npm run build).")
+    print(f"Job Radar on http://{args.host}:{args.port}  (Ctrl+C to stop)")
+    try:
+        uvicorn.run(create_app(settings, db_path), host=args.host, port=args.port, log_level="warning")
+    finally:
+        if watcher:
+            watcher.terminate()
+            watcher.wait(timeout=10)
     return 0
 
 
@@ -145,6 +176,12 @@ def build_parser() -> argparse.ArgumentParser:
     export.add_argument("--province", help=province_help)
     export.add_argument("--include-closed", action="store_true")
     export.set_defaults(func=cmd_export)
+
+    serve = sub.add_parser("serve", help="run the web app")
+    serve.add_argument("--host", default="127.0.0.1", help="default 127.0.0.1 (this computer only)")
+    serve.add_argument("--port", type=int, default=8000)
+    serve.add_argument("--dev", action="store_true", help="also rebuild the UI on every save (needs npm)")
+    serve.set_defaults(func=cmd_serve)
     return parser
 
 
