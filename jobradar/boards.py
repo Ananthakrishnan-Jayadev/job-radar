@@ -23,6 +23,8 @@ _URL_FORMS = {
     "rippling": (r"ats\.rippling\.com$", "path"),
     "bamboohr": (r"^([\w-]+)\.bamboohr\.com$", "sub"),
     "jazzhr": (r"^([\w-]+)\.applytojob\.com$", "sub"),
+    "pinpoint": (r"^([\w-]+)\.pinpointhq\.com$", "sub"),
+    "humi": (r"^([\w-]+)\.(?:applytojobs\.ca|humi\.ca)$", "sub"),
 }
 
 
@@ -46,11 +48,13 @@ def normalize_board(system: str, value: str) -> str:
         except FetchError as exc:
             raise BoardError(str(exc)) from exc
         return f"https://{host}/{site}"
-    if system == "successfactors":
+    if system in ("successfactors", "teamtailor"):
         # A career site on the company's own domain: the board is the site itself.
         parts = urlsplit(value if value.startswith("http") else f"https://{value}")
         if not parts.netloc or "." not in parts.netloc:
             raise BoardError("enter the career site's address, e.g. https://jobs.scotiabank.com")
+        if system == "teamtailor" and parts.netloc.endswith("teamtailor.com") and parts.netloc.count(".") < 2:
+            raise BoardError("enter the company's Teamtailor address, e.g. https://acme.teamtailor.com")
         return f"https://{parts.netloc.lower()}"
     if not re.match(r"^(https?://|[\w.-]+\.\w+/)", value):
         return value  # already a slug

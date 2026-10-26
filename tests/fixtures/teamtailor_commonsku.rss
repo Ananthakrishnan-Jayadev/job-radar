@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Trimmed from https://commonsku.na.teamtailor.com/jobs.rss (2026-10-26): descriptions cut. -->
+<rss version="2.0" xmlns:tt="https://teamtailor.com/locations">
+  <channel>
+    <title>commonsku</title>
+    <description>…</description>
+    <link>https://commonsku.na.teamtailor.com/jobs</link>
+    <item>
+      <title>Engineering Manager, Data</title>
+      <description>…</description>
+      <pubDate>Tue, 20 Oct 2026 11:39:39 -0400</pubDate>
+      <link>https://commonsku.na.teamtailor.com/jobs/723521-engineering-manager-data</link>
+      <remoteStatus>fully</remoteStatus>
+      <guid>edd6b0b5-bc7c-48d3-876c-c209d263fdb7</guid>
+      <tt:locations>
+        <tt:location>
+          <tt:name>Remote, Canada</tt:name>
+          <tt:address>250 Merton St</tt:address>
+          <tt:zip>M4S 1B1</tt:zip>
+          <tt:city>Toronto</tt:city>
+          <tt:country>Canada</tt:country>
+        </tt:location>
+        <tt:location>
+          <tt:name>Remote - Toronto, ON or Greater Toronto Area</tt:name>
+          <tt:address>250 Merton St</tt:address>
+          <tt:zip>M4S 1B1</tt:zip>
+          <tt:city>Toronto</tt:city>
+          <tt:country>Canada</tt:country>
+        </tt:location>
+      </tt:locations>
+      <tt:department>Research &amp; Development</tt:department>
+      <tt:role/>
+    </item>
+    <item>
+      <title>Marketing Coordinator Coop (Jan-Aug 2027)</title>
+      <description>…</description>
+      <pubDate>Wed, 14 Oct 2026 09:47:04 -0400</pubDate>
+      <link>https://commonsku.na.teamtailor.com/jobs/719771-marketing-coordinator-coop-jan-aug-2027</link>
+      <remoteStatus>fully</remoteStatus>
+      <guid>173edc3c-607c-4ffd-9828-cfcc904a0d88</guid>
+      <tt:locations>
+        <tt:location>
+          <tt:name>Remote - Toronto, ON or Greater Toronto Area</tt:name>
+          <tt:address>250 Merton St</tt:address>
+          <tt:zip>M4S 1B1</tt:zip>
+          <tt:city>Toronto</tt:city>
+          <tt:country>Canada</tt:country>
+        </tt:location>
+      </tt:locations>
+      <tt:department>Marketing</tt:department>
+      <tt:role/>
+    </item>
+    <item>
+      <title>DevOps Engineer II</title>
+      <description>…</description>
+      <pubDate>Tue, 29 Sep 2026 09:39:16 -0400</pubDate>
+      <link>https://commonsku.na.teamtailor.com/jobs/709083-devops-engineer-ii</link>
+      <remoteStatus>fully</remoteStatus>
+      <guid>68fc85b3-9d14-47c3-9cc5-43a2c3ae330b</guid>
+      <tt:locations>
+        <tt:location>
+          <tt:name>Remote, Canada</tt:name>
+          <tt:address>250 Merton St</tt:address>
+          <tt:zip>M4S 1B1</tt:zip>
+          <tt:city>Toronto</tt:city>
+          <tt:country>Canada</tt:country>
+        </tt:location>
+      </tt:locations>
+      <tt:department>Research &amp; Development</tt:department>
+      <tt:role/>
+    </item>
+    <item>
+      <title>Staff Data Engineer</title>
+      <description>…</description>
+      <pubDate>Mon, 21 Sep 2026 13:23:44 -0400</pubDate>
+      <link>https://commonsku.na.teamtailor.com/jobs/704550-staff-data-engineer</link>
+      <remoteStatus>fully</remoteStatus>
+      <guid>d0cc46bc-b81f-4018-bc6d-9a2c1294423d</guid>
+      <tt:locations>
+        <tt:location>
+          <tt:name>Remote, Canada</tt:name>
+          <tt:address>250 Merton St</tt:address>
+          <tt:zip>M4S 1B1</tt:zip>
+          <tt:city>Toronto</tt:city>
+          <tt:country>Canada</tt:country>
+        </tt:location>
+      </tt:locations>
+      <tt:department>Research &amp; Development</tt:department>
+      <tt:role/>
+    </item>
+    <item>
+      <title>Software Development Co-op</title>
+      <description>…</description>
+      <pubDate>Mon, 31 Aug 2026 09:53:04 -0400</pubDate>
+      <link>https://commonsku.na.teamtailor.com/jobs/691110-software-development-co-op</link>
+      <remoteStatus>fully</remoteStatus>
+      <guid>ef34e911-3be3-41c6-b0e2-4374d8775ef9</guid>
+      <tt:locations>
+        <tt:location>
+          <tt:name>Remote - Toronto, ON or Greater Toronto Area</tt:name>
+          <tt:address>250 Merton St</tt:address>
+          <tt:zip>M4S 1B1</tt:zip>
+          <tt:city>Toronto</tt:city>
+          <tt:country>Canada</tt:country>
+        </tt:location>
+      </tt:locations>
+      <tt:department>Research &amp; Development</tt:department>
+      <tt:role/>
+    </item>
+    <item>
+      <title>Staff Product Manager, AI Agents &amp; Intelligence</title>
+      <description>…</description>
+      <pubDate>Wed, 22 Jul 2026 14:23:48 -0400</pubDate>
+      <link>https://commonsku.na.teamtailor.com/jobs/666538-staff-product-manager-ai-agents-intelligence</link>
+      <remoteStatus>fully</remoteStatus>
+      <guid>336ea307-6d1e-4b80-8736-1c5355c3d0b5</guid>
+      <tt:locations>
+        <tt:location>
+          <tt:name>Remote, Canada</tt:name>
+          <tt:address>250 Merton St</tt:address>
+          <tt:zip>M4S 1B1</tt:zip>
+          <tt:city>Toronto</tt:city>
+          <tt:country>Canada</tt:country>
+        </tt:location>
+      </tt:locations>
+      <tt:department>Product Management</tt:department>
+      <tt:role/>
+    </item>
+  </channel>
+</rss>

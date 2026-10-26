@@ -40,6 +40,10 @@ LINK_PATTERNS: list[tuple[str, str]] = [
     ("bamboohr", r"([\w-]+)\.bamboohr\.com/(?:careers|jobs)"),
     ("workday", r"(https?://[\w-]+\.wd\d+\.myworkdayjobs\.com/(?:[a-z]{2}-[A-Z]{2}/)?[\w-]+)"),
     ("jazzhr", r"([\w-]+)\.applytojob\.com"),
+    ("pinpoint", r"([\w-]+)\.pinpointhq\.com"),
+    ("teamtailor", r"(https?://[\w-]+(?:\.[a-z]{2})?\.teamtailor\.com)"),
+    ("humi", r"([\w-]+)\.applytojobs\.ca"),
+    ("humi", r"([\w-]+)\.humi\.ca/job-board"),
     ("jazzhr", r"app\.jazz\.co/(?:feeds/export/jobs|widgets/[\w/]+?)/([\w-]+)"),
 ]
 _COMPILED = [(system, re.compile(pattern)) for system, pattern in LINK_PATTERNS]
@@ -121,7 +125,7 @@ async def check_board(client: HttpClient, settings: Settings, system: str, slug:
 async def guess_boards(client: HttpClient, settings: Settings, name: str, canadian: bool,
                        systems: tuple[str, ...] = ("greenhouse", "lever", "ashby", "smartrecruiters", "workable",
                                                    "recruitee", "breezy", "rippling", "bamboohr",
-                                                   "jazzhr")) -> list[Detected]:
+                                                   "jazzhr", "pinpoint", "humi")) -> list[Detected]:
     """Try the name's slug guesses on each feed. Boards with no Canadian jobs are left out:
     for a job hunt in Canada they're useless, and they're the likeliest name collisions."""
     hits: list[Detected] = []

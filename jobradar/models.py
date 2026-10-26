@@ -18,6 +18,9 @@ SYSTEMS = (
     "workday",
     "successfactors",
     "jazzhr",
+    "pinpoint",
+    "teamtailor",
+    "humi",
     "adzuna",
     "manual",
 )
