@@ -1,0 +1,129 @@
+{
+  "_request": {
+    "url": "https://boards-api.greenhouse.io/v1/boards/faire/jobs?content=true",
+    "method": "GET",
+    "body": null
+  },
+  "response": {
+    "jobs": [
+      {
+        "absolute_url": "https://boards.greenhouse.io/faire/jobs/8876236002?gh_jid=8876236002",
+        "data_compliance": [
+          {
+            "type": "gdpr",
+            "requires_consent": false,
+            "requires_processing_consent": false,
+            "requires_retention_consent": false,
+            "retention_period": null,
+            "demographic_data_consent_applies": false
+          }
+        ],
+        "internal_job_id": 6554338002,
+        "location": {
+          "name": "New York City, NY; San Francisco, CA"
+        },
+        "metadata": [
+          {
+            "id": 4008562002,
+            "name": "Employment Type",
+            "value": "Regular",
+            "value_type": "single_select"
+          }
+        ],
+        "id": 8876236002,
+        "updated_at": "2026-10-13T09:36:24-04:00",
+        "requisition_id": "1530",
+        "title": "Account Executive",
+        "company_name": "Faire",
+        "first_published": "2026-10-07T15:23:54-04:00",
+        "language": "en",
+        "application_deadline": null,
+        "content": "&lt;div class=&quot;content-intro&quot;&gt;&lt;p&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;&lt;strong&gt;About Faire&lt;/strong&gt;&lt;/span&gt;&lt;/p&gt;\n&lt;p&gt;Faire is a technology wholesale platform built on the belief that the future is local. Independent retailers around the globe c...[trimmed]",
+        "departments": [
+          {
+            "id": 4095740002,
+            "name": "Brand Partnerships",
+            "child_ids": [],
+            "parent_id": 4018940002
+          }
+        ],
+        "offices": [
+          {
+            "id": 4043067002,
+            "name": "New York City, NY",
+            "location": "New York, New York, United States",
+            "child_ids": [],
+            "parent_id": 4049474002
+          },
+          {
+            "id": 4000970002,
+            "name": "San Francisco, CA",
+            "location": "San Francisco, California, United States",
+            "child_ids": [],
+            "parent_id": 4049474002
+          }
+        ],
+        "ai_disclaimer": null,
+        "include_ai_disclaimer": false,
+        "ai_opt_out_request_url": "http://app2.greenhouse.io/ai_opt_out_request/job_post/8876236002/ai_opt_out"
+      },
+      {
+        "absolute_url": "https://boards.greenhouse.io/faire/jobs/8870975002?gh_jid=8870975002",
+        "data_compliance": [
+          {
+            "type": "gdpr",
+            "requires_consent": false,
+            "requires_processing_consent": false,
+            "requires_retention_consent": false,
+            "retention_period": null,
+            "demographic_data_consent_applies": false
+          }
+        ],
+        "internal_job_id": 6552010002,
+        "location": {
+          "name": "San Francisco, CA"
+        },
+        "metadata": [
+          {
+            "id": 4008562002,
+            "name": "Employment Type",
+            "value": "Intern",
+            "value_type": "single_select"
+          }
+        ],
+        "id": 8870975002,
+        "updated_at": "2026-10-23T11:39:33-04:00",
+        "requisition_id": "1525",
+        "title": "Applied AI/ML Scientist, Intern - Winter 2027",
+        "company_name": "Faire",
+        "first_published": "2026-10-06T16:16:58-04:00",
+        "language": "en",
+        "application_deadline": null,
+        "content": "&lt;div class=&quot;content-intro&quot;&gt;&lt;p&gt;&lt;span style=&quot;font-weight: 400;&quot;&gt;&lt;strong&gt;About Faire&lt;/strong&gt;&lt;/span&gt;&lt;/p&gt;\n&lt;p&gt;Faire is a technology wholesale platform built on the belief that the future is local. Independent retailers around the globe c...[trimmed]",
+        "departments": [
+          {
+            "id": 4002179002,
+            "name": "Algorithms & Data",
+            "child_ids": [],
+            "parent_id": null
+          }
+        ],
+        "offices": [
+          {
+            "id": 4000970002,
+            "name": "San Francisco, CA",
+            "location": "San Francisco, California, United States",
+            "child_ids": [],
+            "parent_id": 4049474002
+          }
+        ],
+        "ai_disclaimer": null,
+        "include_ai_disclaimer": false,
+        "ai_opt_out_request_url": "http://app2.greenhouse.io/ai_opt_out_request/job_post/8870975002/ai_opt_out"
+      }
+    ],
+    "meta": {
+      "total": 72
+    }
+  }
+}

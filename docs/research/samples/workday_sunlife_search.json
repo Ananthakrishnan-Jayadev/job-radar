@@ -1,0 +1,143 @@
+{
+  "_request": {
+    "url": "https://sunlife.wd3.myworkdayjobs.com/wday/cxs/sunlife/Experienced-Jobs/jobs",
+    "method": "POST",
+    "body": {
+      "appliedFacets": {},
+      "limit": 2,
+      "offset": 0,
+      "searchText": "data scientist"
+    }
+  },
+  "response": {
+    "total": 6,
+    "jobPostings": [
+      {
+        "title": "Data Scientist",
+        "externalPath": "/job/Toronto-Ontario/Data-Scientist_JR00128241",
+        "locationsText": "2 Locations",
+        "postedOn": "Posted 2 Days Ago",
+        "bulletFields": [
+          "JR00128241"
+        ]
+      },
+      {
+        "title": "Senior Data Scientist",
+        "externalPath": "/job/Toronto-Ontario/Senior-Data-Scientist_JR00125593",
+        "locationsText": "2 Locations",
+        "postedOn": "Posted 4 Days Ago",
+        "bulletFields": [
+          "JR00125593"
+        ]
+      }
+    ],
+    "facets": [
+      {
+        "facetParameter": "Location_Country",
+        "descriptor": "Country",
+        "values": [
+          {
+            "descriptor": "Canada",
+            "id": "a30a87ed25634629aa6c3958aa2b91ea",
+            "count": 4
+          },
+          {
+            "descriptor": "Philippines",
+            "id": "e56f1daf83e04bacae794ba5c5593560",
+            "count": 1
+          },
+          {
+            "descriptor": "United States of America",
+            "id": "bc33aa3152ec42d4995f4791a106ed09",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "facetParameter": "jobFamily",
+        "descriptor": "Job Category",
+        "values": [
+          {
+            "descriptor": "Advanced Analytics",
+            "id": "e3d0150f040210589473d239f729eb8f",
+            "count": 4
+          },
+          {
+            "descriptor": "Temporary Employee",
+            "id": "715a3a68003244208bcad9ce50643f83",
+            "count": 1
+          },
+          {
+            "descriptor": "IT - Technology Services",
+            "id": "fc46f3fb6ab24457be62e0b15c2c0101",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "facetParameter": "timeType",
+        "descriptor": "Time Type",
+        "values": [
+          {
+            "descriptor": "Full time",
+            "id": "902e0bbe2cc64592936970c0054c6369",
+            "count": 5
+          },
+          {
+            "descriptor": "Part time",
+            "id": "66f1da8c26eb401798ac7b9677e23f1f",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "facetParameter": "workerSubType",
+        "descriptor": "Job Type",
+        "values": [
+          {
+            "descriptor": "Regular",
+            "id": "43e0be45707e429082a9936c2e7179e9",
+            "count": 3
+          },
+          {
+            "descriptor": "Fixed Term (Fixed Term)",
+            "id": "fbafde9c07d2465682766b195083aadb",
+            "count": 2
+          },
+          {
+            "descriptor": "Casual (Fixed Term)",
+            "id": "8ed08b990fb94ddcbe7ee8791772a89b",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "facetParameter": "locationMainGroup",
+        "values": [
+          {
+            "facetParameter": "primaryLocation",
+            "descriptor": "City",
+            "values": [
+              {
+                "descriptor": "Taguig City, National Capital Region (Manila)",
+                "id": "07092c6e50bc0198b71e8808192d4e11",
+                "count": 1
+              },
+              {
+                "descriptor": "Toronto, Ontario",
+                "id": "07092c6e50bc0196a39a9c09192d5a12",
+                "count": 4
+              },
+              {
+                "descriptor": "Wellesley Hills, Massachusetts",
+                "id": "07092c6e50bc01d6e9ae1d0c192dee14",
+                "count": 1
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "userAuthenticated": false
+  }
+}

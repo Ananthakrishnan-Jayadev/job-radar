@@ -1,0 +1,71 @@
+{
+  "_request": {
+    "url": "https://apply.workable.com/api/v1/widget/accounts/borrowell",
+    "method": "GET",
+    "body": null
+  },
+  "response": {
+    "name": "Borrowell",
+    "description": "<p>At Borrowell, we\u2019re on a mission to help Canadians feel confident about their money. We empower individuals to take control of their financial futures by providing the tools and insights needed to understand, build, and use their credit effectively.</p><p>With over four million members, Borrowell...[trimmed]",
+    "jobs": [
+      {
+        "title": "Full Stack Developer",
+        "shortcode": "E01BFED460",
+        "code": "",
+        "employment_type": "Full-time",
+        "telecommuting": true,
+        "department": "Engineering",
+        "url": "https://apply.workable.com/j/E01BFED460",
+        "shortlink": "https://apply.workable.com/j/E01BFED460",
+        "application_url": "https://apply.workable.com/j/E01BFED460/apply",
+        "published_on": "2026-05-08",
+        "created_at": "2026-05-06",
+        "country": "Canada",
+        "city": "Toronto",
+        "state": "Ontario",
+        "education": "",
+        "experience": "",
+        "function": "Engineering",
+        "industry": "Computer Software",
+        "locations": [
+          {
+            "country": "Canada",
+            "countryCode": "CA",
+            "city": "Toronto",
+            "region": "Ontario",
+            "hidden": false
+          }
+        ]
+      },
+      {
+        "title": "Sr. DevOps Engineer",
+        "shortcode": "7C7A06A37F",
+        "code": "",
+        "employment_type": "Full-time",
+        "telecommuting": true,
+        "department": "Engineering",
+        "url": "https://apply.workable.com/j/7C7A06A37F",
+        "shortlink": "https://apply.workable.com/j/7C7A06A37F",
+        "application_url": "https://apply.workable.com/j/7C7A06A37F/apply",
+        "published_on": "2026-09-04",
+        "created_at": "2026-06-03",
+        "country": "Canada",
+        "city": "Toronto",
+        "state": "Ontario",
+        "education": "",
+        "experience": "",
+        "function": "Engineering",
+        "industry": "Computer Software",
+        "locations": [
+          {
+            "country": "Canada",
+            "countryCode": "CA",
+            "city": "Toronto",
+            "region": "Ontario",
+            "hidden": false
+          }
+        ]
+      }
+    ]
+  }
+}

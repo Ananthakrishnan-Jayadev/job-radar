@@ -1,0 +1,43 @@
+# What you are looking for. Edit freely; changes apply on the next scan.
+
+# Which jobs are kept: "ontario" keeps Ontario jobs plus Canada-wide remote,
+# "canada" keeps anything in Canada.
+location_scope = "ontario"
+
+# Each role profile matches a job title when any `include` pattern matches and
+# no `exclude` pattern does. Patterns are case-insensitive regular expressions.
+# `search` terms are sent to sources that search server-side (Workday, Adzuna).
+
+[roles.ai_engineer]
+label = "AI / ML Engineer"
+include = [
+    '\b(ai|a\.i\.|ml|machine learning|llm|genai|gen ai|generative ai|applied ai|deep learning|nlp|computer vision)\b.*\b(engineer|developer|scientist|specialist)\b',
+    '\b(engineer|developer|scientist)\b.*\b(ai|ml|machine learning|llm|genai|generative ai|nlp)\b',
+    '\bmlops\b',
+    '\bingénieur\b.*\b(ia|ml)\b',
+]
+exclude = []
+search = ["machine learning", "AI engineer", "LLM"]
+
+[roles.data_analyst]
+label = "Data Analyst"
+include = [
+    '\b(data|business intelligence|bi|analytics|reporting|insights?|product|marketing|financial|risk)\s+analyst\b',
+    '\banalyst\b.*\b(data|analytics|bi)\b',
+    '\banalytics (engineer|specialist|associate)\b',
+]
+exclude = []
+search = ["data analyst", "analytics"]
+
+[roles.data_scientist]
+label = "Data Scientist"
+include = ['\bdata scien(ce|tist)\b', '\bapplied scientist\b', '\bresearch scientist\b']
+exclude = []
+search = ["data scientist"]
+
+# Titles dropped from every profile. Remove a line to see those roles again.
+[global]
+exclude = [
+    '\b(director|vp|vice president|head of|chief|principal)\b',
+    '\b(manager|mgr)\b',
+]
