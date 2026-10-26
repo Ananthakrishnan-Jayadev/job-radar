@@ -46,6 +46,7 @@ export const SYSTEM_LABEL: Record<string, string> = {
   smartrecruiters: "SmartRecruiters",
   workable: "Workable",
   workday: "Workday",
+  successfactors: "SAP SuccessFactors",
 };
 
 export const SIZE_SOURCE_LABEL: Record<string, string> = {

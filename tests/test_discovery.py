@@ -216,6 +216,15 @@ def test_detect_guess_keeps_only_boards_with_canadian_jobs(settings):
         ("ashby", "maplehealth", "possible", 1)]
 
 
+def test_detect_successfactors_career_site(settings):
+    sources = FakeSources({("GET", "https://jobs.scotiabank.com/search/"): httpx.Response(
+        200, text=(FIXTURES / "successfactors_careers.html").read_text())})
+    found = detect_company(settings, sources, "Scotiabank",
+                           "https://jobs.scotiabank.com/search/?createNewAlert=false&q=&locationsearch=ontario")
+    assert [(d.system, d.slug_or_url, d.confidence) for d in found] == [
+        ("successfactors", "https://jobs.scotiabank.com", "likely")]
+
+
 def test_detect_unreadable_page_falls_back_to_guess(settings):
     sources = FakeSources({("GET", "https://acme.example/careers"): httpx.Response(500)})
     assert detect_company(settings, sources, "Acme", "https://acme.example/careers") == []

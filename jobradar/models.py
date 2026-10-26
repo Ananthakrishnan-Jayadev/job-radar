@@ -16,6 +16,7 @@ SYSTEMS = (
     "rippling",
     "bamboohr",
     "workday",
+    "successfactors",
     "adzuna",
     "manual",
 )

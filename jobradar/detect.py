@@ -14,7 +14,7 @@ from __future__ import annotations
 import asyncio
 import re
 from dataclasses import dataclass
-from urllib.parse import urljoin
+from urllib.parse import urljoin, urlsplit
 
 from .boards import BoardError, normalize_board
 from .config import Settings
@@ -41,6 +41,13 @@ LINK_PATTERNS: list[tuple[str, str]] = [
     ("workday", r"(https?://[\w-]+\.wd\d+\.myworkdayjobs\.com/(?:[a-z]{2}-[A-Z]{2}/)?[\w-]+)"),
 ]
 _COMPILED = [(system, re.compile(pattern)) for system, pattern in LINK_PATTERNS]
+_SUCCESSFACTORS_MARKERS = ("rmkcdn.successfactors.com", "j2w.init(")
+
+
+def _is_successfactors(html: str) -> bool:
+    return any(marker in html for marker in _SUCCESSFACTORS_MARKERS)
+
+
 _IGNORED_SLUGS = {"www", "api", "app", "jobs", "careers", "embed", "static", "assets", "boards", "cdn"}
 
 
@@ -151,6 +158,10 @@ async def _from_careers_page(client: HttpClient, url: str) -> list[Detected]:
         redirected.how, redirected.note = "page", f"{url} redirects there"
         return [redirected]
     found = from_text(response.text, "page")
+    if not found and _is_successfactors(response.text):
+        # SuccessFactors career sites live on the company's own domain.
+        found = [Detected("successfactors", f"https://{urlsplit(final).netloc.lower()}", "page", "likely",
+                          note=f"{urlsplit(final).netloc} is a SAP SuccessFactors career site")]
     if not found:
         more = re.search(r'href="([^"]*(?:jobs|openings|positions|opportunities)[^"]*)"', response.text, re.I)
         if more and urljoin(final, more.group(1)) != final:
