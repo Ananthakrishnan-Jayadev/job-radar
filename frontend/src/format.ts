@@ -51,6 +51,7 @@ export const SYSTEM_LABEL: Record<string, string> = {
   pinpoint: "Pinpoint",
   teamtailor: "Teamtailor",
   humi: "Humi",
+  adzuna: "Adzuna (one-time snapshot)",
 };
 
 export const SIZE_SOURCE_LABEL: Record<string, string> = {

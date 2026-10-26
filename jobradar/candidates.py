@@ -182,7 +182,8 @@ def list_candidates(conn: sqlite3.Connection, *, decision: str = "pending", scop
     job board we can read (US companies with Canadian offices are common)."""
     where, params = ["l.decision = ?"], [decision]
     if scope == "canada":
-        where.append("l.hq_country = 'CA'")
+        # Adzuna's employers have no HQ, but they were found hiring in Canada.
+        where.append("(l.hq_country = 'CA' OR l.source = 'adzuna')")
     elif scope == "readable":
         where.append("(l.hq_country = 'CA' OR l.detected_system IS NOT NULL)")
     if query and query.strip():
