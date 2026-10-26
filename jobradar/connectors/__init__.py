@@ -8,7 +8,19 @@ locations; the scanner decides which ones to store.
 
 from __future__ import annotations
 
-from . import ashby, bamboohr, breezy, greenhouse, lever, recruitee, rippling, smartrecruiters, workable, workday
+from . import (
+    ashby,
+    bamboohr,
+    breezy,
+    greenhouse,
+    lever,
+    recruitee,
+    rippling,
+    smartrecruiters,
+    successfactors,
+    workable,
+    workday,
+)
 from ._common import FetchContext, FetchResult
 
 CONNECTORS = {
@@ -22,6 +34,7 @@ CONNECTORS = {
     "rippling": rippling.fetch,
     "bamboohr": bamboohr.fetch,
     "workday": workday.fetch,
+    "successfactors": successfactors.fetch,
 }
 
 __all__ = ["CONNECTORS", "FetchContext", "FetchResult"]

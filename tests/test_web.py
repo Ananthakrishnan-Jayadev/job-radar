@@ -369,6 +369,8 @@ def test_ui_serves_files_and_falls_back_to_index(client, tmp_path, monkeypatch):
     ("recruitee", "https://petalmd.recruitee.com/", "petalmd"),
     ("rippling", "https://ats.rippling.com/paper-careers/jobs", "paper-careers"),
     ("workday", "https://bb.wd3.myworkdayjobs.com/en-US/BlackBerry/", "https://bb.wd3.myworkdayjobs.com/BlackBerry"),
+    ("successfactors", "https://jobs.scotiabank.com/search/?q=&locationsearch=ontario", "https://jobs.scotiabank.com"),
+    ("successfactors", "jobs.scotiabank.com", "https://jobs.scotiabank.com"),
 ])
 def test_normalize_board(system, value, slug):
     assert normalize_board(system, value) == slug

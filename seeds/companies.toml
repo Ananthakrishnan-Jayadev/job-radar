@@ -193,6 +193,12 @@ canadian = true
 boards = [{ system = "workday", slug = "https://sunlife.wd3.myworkdayjobs.com/Experienced-Jobs" }]
 
 [[company]]
+name = "Scotiabank"
+canadian = true
+# A SAP SuccessFactors career site (scotiabank.wd3 on Workday returned 422).
+boards = [{ system = "successfactors", slug = "https://jobs.scotiabank.com" }]
+
+[[company]]
 name = "Manulife"
 canadian = true
 boards = [{ system = "workday", slug = "https://manulife.wd3.myworkdayjobs.com/MFCJH_Jobs" }]

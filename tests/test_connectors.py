@@ -9,7 +9,7 @@ from jobradar.connectors import workday
 from jobradar.http import FetchError, HttpClient, NotFound
 from jobradar.models import Board
 
-from conftest import FakeSources, Seq, fixture_json
+from conftest import FIXTURES, FakeSources, Seq, fixture_json
 
 TODAY = date(2026, 10, 26)
 
@@ -360,3 +360,43 @@ def test_workday_wrong_site_name(settings):
     sources = FakeSources({("POST", f"{WD_API}/jobs"): httpx.Response(422)})
     with pytest.raises(NotFound, match="site name"):
         fetch(settings, sources, board("workday", WD))
+
+
+# --- SAP SuccessFactors ---------------------------------------------------------------
+
+SF = "https://jobs.scotiabank.com"
+
+
+def sf_sources(text=None):
+    body = text if text is not None else (FIXTURES / "successfactors_scotiabank.xml").read_text()
+    return FakeSources({("GET", f"{SF}/sitemap.xml"): httpx.Response(200, text=body)})
+
+
+def test_successfactors_fixture(settings):
+    result = fetch(settings, sf_sources(), board("successfactors", SF))
+    assert result.total == 5
+    by_place = {j.locations[0].raw: j for j in result.jobs}
+    ajax = by_place["Ajax, ON, CA"]
+    assert (ajax.locations[0].city, ajax.locations[0].province, ajax.locations[0].country) == ("Ajax", "ON", "CA")
+    assert "(" not in ajax.title  # the "(Ajax, ON, CA)" suffix is removed
+    assert ajax.url.startswith("https://jobs.scotiabank.com/job/")
+    assert ajax.department
+    assert ajax.description and "<p>" not in ajax.description and "base64" not in ajax.description
+    assert by_place["New York City, NY, US"].locations[0].country == "US"
+    assert by_place["Bogota, DC, CO"].locations[0].country == "CO"
+    software = [j for j in result.jobs if "Software" in j.title]
+    assert software and software[0].locations[0].province == "ON"
+
+
+def test_successfactors_bad_feed(settings):
+    with pytest.raises(FetchError, match="isn't valid XML"):
+        fetch(settings, sf_sources("<html>not a feed"), board("successfactors", SF))
+    with pytest.raises(FetchError, match="isn't a SuccessFactors job feed"):
+        fetch(settings, sf_sources("<urlset></urlset>"), board("successfactors", SF))
+
+
+def test_successfactors_drops_embedded_images_before_parsing(settings):
+    text = (FIXTURES / "successfactors_scotiabank.xml").read_text()
+    huge = text.replace("data:image/png;base64,TRIMMED", "data:image/png;base64," + "A" * 200_000)
+    result = fetch(settings, sf_sources(huge), board("successfactors", SF))
+    assert all("AAAA" not in (j.description or "") for j in result.jobs)

@@ -36,8 +36,8 @@ def load_seed_file(path: Path | str) -> list[dict]:
                 raise SeedError(f"{name}: unknown system {system!r}")
             if not slug:
                 raise SeedError(f"{name}: a {system} board has no slug")
-            if system == "workday" and not slug.startswith("https://"):
-                raise SeedError(f"{name}: a Workday board needs the full careers-site URL")
+            if system in ("workday", "successfactors") and not slug.startswith("https://"):
+                raise SeedError(f"{name}: a {system} board needs the full careers-site URL")
     return companies
 
 
