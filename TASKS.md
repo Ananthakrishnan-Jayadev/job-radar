@@ -199,6 +199,11 @@ statuses, notes, companies, Scan now.
 
 ## Phase 4: Discovering companies and company size
 
+**Split in two (2026-10-26):** part 1 is built: sizes (tasks 7 and 8),
+stillhiring.today candidates, detection (task 2), the Candidates page (task 3)
+and add company by careers link (task 4). Part 2 waits for an Adzuna key:
+Adzuna (task 1), add job by URL (task 5), deduplication (task 6).
+
 **Goal:** the company list grows beyond the seed list, and most companies get
 a size without manual entry.
 

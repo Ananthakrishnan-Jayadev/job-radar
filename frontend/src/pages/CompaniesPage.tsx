@@ -11,6 +11,14 @@ import type { Company, CompanyStatus, DetectedBoard } from "../types";
 export default function CompaniesPage() {
   const { meta, dataVersion, task, watchTask } = useApp();
   const [taskError, setTaskError] = useState<string | null>(null);
+  const [params, setParams] = useSearchParams();
+  const companies = useLoad(() => api.companies(params), `${params}|${dataVersion}`);
+  const [query, setQuery] = useState(params.get("q") ?? "");
+  const [sortByRoles, setSortByRoles] = useState(true);
+
+  const rows = [...(companies.data ?? [])].sort((a, b) =>
+    sortByRoles ? b.canada_open - a.canada_open || a.name.localeCompare(b.name) : a.name.localeCompare(b.name),
+  );
 
   async function fillSizes() {
     setTaskError(null);
@@ -20,14 +28,6 @@ export default function CompaniesPage() {
       setTaskError(err instanceof Error ? err.message : String(err));
     }
   }
-  const [params, setParams] = useSearchParams();
-  const companies = useLoad(() => api.companies(params), `${params}|${dataVersion}`);
-  const [query, setQuery] = useState(params.get("q") ?? "");
-  const [sortByRoles, setSortByRoles] = useState(true);
-
-  const rows = [...(companies.data ?? [])].sort((a, b) =>
-    sortByRoles ? b.canada_open - a.canada_open || a.name.localeCompare(b.name) : a.name.localeCompare(b.name),
-  );
 
   async function setStatus(company: Company, status: CompanyStatus) {
     const updated = await api.patchCompany(company.id, { status });
