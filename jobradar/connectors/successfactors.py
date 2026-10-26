@@ -121,7 +121,7 @@ async def _from_search_pages(client: HttpClient, site: str, canadian: bool, ctx:
         job.description = description_from_page(await client.get_text(job.url))
 
     found = list(jobs.values())
-    warnings += await fill_details(found, ctx, client, detail)
+    warnings += await fill_details(found, ctx, client, detail, canadian_company=canadian)
     return FetchResult(jobs=found, total=total or 0, complete=complete, warnings=warnings)
 
 

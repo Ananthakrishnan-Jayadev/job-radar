@@ -45,7 +45,7 @@ async def fetch(board: Board, client: HttpClient, ctx: FetchContext) -> FetchRes
                                        for k in ("jobDescription", "qualifications", "additionalInformation",
                                                  "companyDescription")))
 
-    warnings += await fill_details(fresh, ctx, client, detail)
+    warnings += await fill_details(fresh, ctx, client, detail, canadian_company=board.company_canadian)
     return FetchResult(jobs=fresh, total=total, warnings=warnings)
 
 

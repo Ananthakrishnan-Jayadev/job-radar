@@ -46,7 +46,7 @@ async def fetch(board: Board, client: HttpClient, ctx: FetchContext) -> FetchRes
             job.description = html_to_text(parts)
         job.posted_at = iso_date(data.get("createdOn")) or job.posted_at
 
-    warnings += await fill_details(jobs, ctx, client, detail)
+    warnings += await fill_details(jobs, ctx, client, detail, canadian_company=board.company_canadian)
     return FetchResult(jobs=jobs, total=total, complete=complete, warnings=warnings)
 
 

@@ -32,7 +32,7 @@ async def fetch(board: Board, client: HttpClient, ctx: FetchContext) -> FetchRes
         if opening.get("compensation"):
             job.salary_text = str(opening["compensation"])
 
-    warnings = await fill_details(jobs, ctx, client, detail)
+    warnings = await fill_details(jobs, ctx, client, detail, canadian_company=board.company_canadian)
     return FetchResult(jobs=jobs, total=total, warnings=warnings)
 
 
