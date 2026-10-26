@@ -11,3 +11,6 @@ config.local.toml
 build/
 frontend/node_modules/
 jobradar/web/static/
+# Your own company lists and exports in the project folder (personal data)
+/*.xlsx
+/*.csv
