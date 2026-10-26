@@ -216,21 +216,24 @@ def upsert_board(
     slug_or_url: str,
     *,
     confirmed: bool = True,
-    enabled: bool = True,
+    enabled: bool | None = None,
 ) -> int:
     """Insert a board or return the existing one.
 
     Re-adding a board never un-confirms it: once confirmed, it stays confirmed.
+    *enabled* None leaves an existing board as it is (new boards are enabled).
     """
     with conn:
         conn.execute(
             """
             INSERT INTO boards (company_id, system, slug_or_url, confirmed, enabled)
-            VALUES (?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, COALESCE(?, 1))
             ON CONFLICT (system, slug_or_url) DO UPDATE
-            SET confirmed = MAX(boards.confirmed, excluded.confirmed)
+            SET confirmed = MAX(boards.confirmed, excluded.confirmed),
+                enabled = COALESCE(?, boards.enabled)
             """,
-            (company_id, system, slug_or_url, int(confirmed), int(enabled)),
+            (company_id, system, slug_or_url, int(confirmed),
+             None if enabled is None else int(enabled), None if enabled is None else int(enabled)),
         )
     row = conn.execute(
         "SELECT id FROM boards WHERE system = ? AND slug_or_url = ?", (system, slug_or_url)
@@ -299,7 +302,8 @@ def upsert_job(
                 """,
                 (*values, seen_at, job_id),
             )
-        _replace_locations(conn, job_id, job.locations)
+        if is_new or job.details_fetched or not job_locations(conn, job_id):
+            _replace_locations(conn, job_id, job.locations)
     return job_id, is_new
 
 
@@ -337,6 +341,81 @@ def search_jobs(conn: sqlite3.Connection, query: str, limit: int = 50) -> list[s
         """,
         (query, limit),
     ).fetchall()
+
+
+REMOTE_CANADA = "REMOTE"  # province-filter value for remote jobs open across Canada
+
+
+def find_jobs(
+    conn: sqlite3.Connection,
+    query: str | None = None,
+    *,
+    provinces: list[str] | None = None,
+    include_closed: bool = False,
+    limit: int | None = None,
+) -> list[dict]:
+    """Jobs matching a full-text query and a province filter, with their locations.
+
+    *provinces* are codes ("ON", "BC") and/or REMOTE_CANADA; empty means all of
+    Canada. Results are ranked by relevance with a query, newest first without.
+    """
+    sql = ["""
+        SELECT j.*, c.id AS company_id, c.name AS company, c.employee_count, c.status AS company_status,
+               b.system, b.confirmed AS board_confirmed
+        FROM jobs j
+        JOIN boards b ON b.id = j.board_id
+        JOIN companies c ON c.id = b.company_id
+    """]
+    where, params = [], []
+    if query and query.strip():
+        sql.append("JOIN jobs_fts f ON f.rowid = j.id")
+        where.append("jobs_fts MATCH ?")
+        params.append(query)
+    if not include_closed:
+        where.append("j.closed_at IS NULL")
+    if provinces:
+        codes = [p.upper() for p in provinces if p.upper() != REMOTE_CANADA]
+        place = []
+        if codes:
+            place.append(f"l.province IN ({', '.join('?' * len(codes))})")
+            params += codes
+        if len(codes) < len(provinces):
+            place.append("(l.remote = 1 AND l.province IS NULL)")
+        where.append(
+            "EXISTS (SELECT 1 FROM job_locations l WHERE l.job_id = j.id AND l.country = 'CA' "
+            f"AND ({' OR '.join(place)}))"
+        )
+    if where:
+        sql.append("WHERE " + " AND ".join(where))
+    if query and query.strip():
+        sql.append("ORDER BY f.rank")
+    else:
+        sql.append("ORDER BY COALESCE(j.posted_at, substr(j.first_seen, 1, 10)) DESC, j.id DESC")
+    if limit:
+        sql.append("LIMIT ?")
+        params.append(limit)
+
+    rows = [dict(r) for r in conn.execute("\n".join(sql), params).fetchall()]
+    if rows:
+        ids = [r["id"] for r in rows]
+        locations: dict[int, list[Location]] = {i: [] for i in ids}
+        for chunk in range(0, len(ids), 500):
+            part = ids[chunk:chunk + 500]
+            for l in conn.execute(
+                f"SELECT * FROM job_locations WHERE job_id IN ({', '.join('?' * len(part))}) ORDER BY id", part
+            ):
+                locations[l["job_id"]].append(
+                    Location(l["city"], l["province"], l["country"], bool(l["remote"]), l["raw"])
+                )
+        for row in rows:
+            row["locations"] = locations[row["id"]]
+    return rows
+
+
+def location_label(locations: list[Location]) -> str:
+    """Canadian places first, then the rest: "Toronto, ON; Remote (Canada)"."""
+    ordered = sorted(locations, key=lambda l: not l.in_canada)
+    return "; ".join(dict.fromkeys(l.label() for l in ordered)) or "Unknown"
 
 
 # --- settings ----------------------------------------------------------------------

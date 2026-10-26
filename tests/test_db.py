@@ -56,6 +56,15 @@ def test_upsert_board_never_unconfirms(conn):
     assert conn.execute("SELECT confirmed FROM boards").fetchone()[0] == 1
 
 
+def test_upsert_board_enabled_only_when_given(conn):
+    company_id = db.upsert_company(conn, "Acme")
+    board_id = db.upsert_board(conn, company_id, "lever", "acme")
+    db.upsert_board(conn, company_id, "lever", "acme", enabled=False)
+    assert conn.execute("SELECT enabled FROM boards WHERE id = ?", (board_id,)).fetchone()[0] == 0
+    db.upsert_board(conn, company_id, "lever", "acme")  # not given: unchanged
+    assert conn.execute("SELECT enabled FROM boards WHERE id = ?", (board_id,)).fetchone()[0] == 0
+
+
 def test_status_check_constraint(conn, board):
     job_id, _ = db.upsert_job(conn, board, make_job())
     with pytest.raises(sqlite3.IntegrityError):

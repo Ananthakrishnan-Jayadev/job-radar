@@ -19,11 +19,16 @@ class HttpSettings:
     page_delay_seconds: float = 0.5
 
 
+DEFAULT_SEARCH_TERMS = ["data", "machine learning", "artificial intelligence", "analyst", "analytics"]
+
+
 @dataclass
 class WorkdaySettings:
     max_list: int = 400
     max_details_per_scan: int = 60
     delay_seconds: float = 1.0
+    # Used for big Workday boards until saved searches exist (phase 3).
+    search_terms: list[str] = field(default_factory=lambda: list(DEFAULT_SEARCH_TERMS))
 
 
 @dataclass
