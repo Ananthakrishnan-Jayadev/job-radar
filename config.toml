@@ -22,6 +22,9 @@ page_delay_seconds = 0.5
 max_list = 400
 max_details_per_scan = 60
 delay_seconds = 1.0
+# Searched on boards over max_list (TD, RBC, BMO...). Saved searches marked
+# "use for sources" replace this list once the web UI has them (phase 3).
+search_terms = ["data", "machine learning", "artificial intelligence", "analyst", "analytics"]
 
 [smartrecruiters]
 # Postings older than this are skipped (some boards keep 2017 postings).

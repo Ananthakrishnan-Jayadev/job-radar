@@ -59,7 +59,7 @@ def apply_seed(conn: sqlite3.Connection, companies: list[dict]) -> SeedResult:
                 board["system"],
                 board["slug"],
                 confirmed=board.get("confirmed", True),
-                enabled=board.get("enabled", True),
+                enabled=board.get("enabled"),
             )
             result.boards += 1
     return result
