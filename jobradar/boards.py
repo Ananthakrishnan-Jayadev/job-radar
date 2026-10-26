@@ -22,6 +22,7 @@ _URL_FORMS = {
     "breezy": (r"^([\w-]+)\.breezy\.hr$", "sub"),
     "rippling": (r"ats\.rippling\.com$", "path"),
     "bamboohr": (r"^([\w-]+)\.bamboohr\.com$", "sub"),
+    "jazzhr": (r"^([\w-]+)\.applytojob\.com$", "sub"),
 }
 
 

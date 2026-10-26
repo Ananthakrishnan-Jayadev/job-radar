@@ -13,6 +13,7 @@ from . import (
     bamboohr,
     breezy,
     greenhouse,
+    jazzhr,
     lever,
     recruitee,
     rippling,
@@ -35,6 +36,7 @@ CONNECTORS = {
     "bamboohr": bamboohr.fetch,
     "workday": workday.fetch,
     "successfactors": successfactors.fetch,
+    "jazzhr": jazzhr.fetch,
 }
 
 __all__ = ["CONNECTORS", "FetchContext", "FetchResult"]

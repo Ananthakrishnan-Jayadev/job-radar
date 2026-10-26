@@ -1,4 +1,5 @@
 import asyncio
+import re
 from datetime import UTC, date, datetime
 
 import httpx
@@ -400,3 +401,37 @@ def test_successfactors_drops_embedded_images_before_parsing(settings):
     huge = text.replace("data:image/png;base64,TRIMMED", "data:image/png;base64," + "A" * 200_000)
     result = fetch(settings, sf_sources(huge), board("successfactors", SF))
     assert all("AAAA" not in (j.description or "") for j in result.jobs)
+
+
+# --- JazzHR -----------------------------------------------------------------------
+
+def jazz_sources(slug, fixture):
+    return FakeSources({("GET", f"https://app.jazz.co/feeds/export/jobs/{slug}"):
+                        httpx.Response(200, text=(FIXTURES / fixture).read_text())})
+
+
+def test_jazzhr_remote_in_city_field(settings):
+    result = fetch(settings, jazz_sources("xello", "jazzhr_xello.xml"), board("jazzhr", "xello"))
+    assert result.total == 3
+    by_title = {j.title: j for j in result.jobs}
+    sales = by_title["Sales Manager"].locations[0]
+    # "Remote – Canada & United States" in the city field: remote, no city.
+    assert (sales.city, sales.province, sales.country, sales.remote) == (None, "ON", "CA", True)
+    engineer = by_title["Principal Software Engineer"]
+    assert (engineer.locations[0].city, engineer.locations[0].remote) == ("Toronto", True)
+    assert engineer.workplace == "remote"
+    assert engineer.url.startswith("https://xello.applytojob.com/apply/")
+    assert engineer.department == "Engineering"
+    assert re.match(r"\d{4}-\d{2}-\d{2}$", engineer.posted_at)  # from the id
+    assert engineer.description and "<" not in engineer.description
+
+
+def test_jazzhr_locations(settings):
+    result = fetch(settings, jazz_sources("apertera", "jazzhr_apertera.xml"), board("jazzhr", "apertera"))
+    places = {(j.locations[0].city, j.locations[0].province, j.locations[0].country) for j in result.jobs}
+    assert places == {(None, None, "CA"), (None, None, "ES"), ("Montreal", "QC", "CA"), ("Toronto", "ON", "CA")}
+
+
+def test_jazzhr_unknown_company(settings):
+    with pytest.raises(NotFound):
+        fetch(settings, FakeSources(), board("jazzhr", "nobody"))

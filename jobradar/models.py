@@ -17,6 +17,7 @@ SYSTEMS = (
     "bamboohr",
     "workday",
     "successfactors",
+    "jazzhr",
     "adzuna",
     "manual",
 )
