@@ -1,0 +1,46 @@
+{
+ "_request": {
+  "url": "https://api.smartrecruiters.com/v1/companies/GDMSI/postings/744000138709868",
+  "note": "Recorded 2026-10-26, trimmed."
+ },
+ "response": {
+  "id": "744000138709868",
+  "name": " Software Engineering Developer,  Air & Naval Sonar ",
+  "jobAd": {
+   "sections": {
+    "companyDescription": {
+     "title": "Company Description",
+     "text": "<p><em>Build bold. Deliver impact. Win together.</em><br>\n<br>\nAt General Dynamics Mission Systems\u2013Canada, we\u2019re not just engineering technology \u2014 we\u2019re shaping the future of defence and security. Our teams design and deliver advanced, mission-critical solutions that enhance national security, strengthen communities, and protect the people we serve.<br>\n<br>\nIf you\u2019re looking for meaningful work t\u2026</p>"
+    },
+    "jobDescription": {
+     "title": "Job Description",
+     "text": "<p>General Dynamics Mission Systems-Canada is hiring for a current vacancy but also future Software Engineering openings for upcoming projects in our&#xa0; Air &amp; Naval (A&amp;N) Sonar division. Join a team developing&#xa0;software solutions that support mission-critical functions.&#xa0; These systems contribute directly to improving operational effectiveness, situational awareness, and decisio\u2026</p>"
+    },
+    "qualifications": {
+     "title": "Qualifications",
+     "text": "<ul><li>Bachelor's degree in Engineering, Computer Science, or a related technical/scientific discipline</li><li>3+ years of relevant experience with software development</li><li>Proficiency in one or more modern programming languages (e.g. C++, java)</li><li>Experience with Agile software development, object-oriented design tools, and UML</li><li>Familiarity with Linux as a host environment and s\u2026</p>"
+    },
+    "additionalInformation": {
+     "title": "Additional Information",
+     "text": "<p>The hiring range for this position is $78,000-$115,000.Our goal is to provide a fair and competitive offer based on an assessment of internal equity and your qualifications, including:</p><ul><li>Relevant experience</li><li>Technical and non-technical skills</li><li>Education and certifications</li></ul><p><strong>Benefits</strong><br>\nAs a full-time employee at General Dynamics Mission Systems\u2026</p>"
+    }
+   }
+  },
+  "releasedDate": "2026-07-20T18:21:07.906Z",
+  "location": {
+   "city": "Ottawa",
+   "region": "ON",
+   "country": "ca",
+   "address": "1941 Robertson Road",
+   "postalCode": "K2H 5B7",
+   "remote": false,
+   "hybrid": true,
+   "hybridDescription": "3 days on site a week",
+   "fullLocation": "Ottawa, ON, Canada"
+  },
+  "company": {
+   "name": "General Dynamics Missions System International",
+   "identifier": "GDMSI"
+  }
+ }
+}

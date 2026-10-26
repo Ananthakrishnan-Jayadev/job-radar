@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import html
 import re
+from collections.abc import Awaitable, Callable
 from dataclasses import dataclass, field
 from datetime import UTC, date, datetime, timedelta
 from html.parser import HTMLParser
@@ -22,6 +23,11 @@ class FetchContext:
     # External ids already stored with full details (Workday skips their detail page).
     known_ids: set[str] = field(default_factory=set)
     today: date | None = None  # for relative dates; tests pin it
+    # Should this title get a detail page fetched? (roles.toml; None: every title)
+    wants: Callable[[str], bool] | None = None
+
+    def wanted(self, title: str) -> bool:
+        return self.wants is None or self.wants(title)
 
 
 @dataclass
@@ -81,6 +87,32 @@ def join_text(*parts: str | None) -> str | None:
 
 def clean_title(value: str | None) -> str:
     return " ".join((value or "").split())
+
+
+# --- detail pages ------------------------------------------------------------------
+
+async def fill_details(jobs: list[RawJob], ctx: FetchContext, client, fetch_one: Callable[[RawJob], Awaitable[None]],
+                       *, limit: int | None = None) -> list[str]:
+    """Fetch detail pages for jobs that need them; returns warnings.
+
+    Only wanted roles (roles.toml), only jobs not already stored with a
+    description, at most `limit` per board per scan (default: settings), with a
+    pause between requests. A failed detail never fails the board.
+    """
+    limit = ctx.settings.details_per_board if limit is None else limit
+    todo = [j for j in jobs if j.external_id not in ctx.known_ids and ctx.wanted(j.title)]
+    warnings, failures = [], 0
+    for job in todo[:limit]:
+        try:
+            await fetch_one(job)
+        except Exception as exc:  # noqa: BLE001 - one detail page must not fail the board
+            failures += 1
+            if failures <= 3:
+                warnings.append(f"detail for {job.external_id} failed: {exc}")
+        await client.pause()
+    if len(todo) > limit:
+        warnings.append(f"{len(todo) - limit} job descriptions left for the next scan")
+    return warnings
 
 
 # --- dates ----------------------------------------------------------------------

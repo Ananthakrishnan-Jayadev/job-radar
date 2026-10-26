@@ -1,0 +1,29 @@
+{
+ "_request": {
+  "url": "https://arcadion.bamboohr.com/careers/52/detail",
+  "note": "Recorded 2026-10-26, trimmed."
+ },
+ "response": {
+  "result": {
+   "jobOpening": {
+    "jobOpeningName": "Junior AI Developer",
+    "jobOpeningStatus": "Open",
+    "description": "<p>\ud83d\udccd About Arcadion</p>\n<p>Arcadion is a leading full-stack enterprise IT services and AI development firm headquartered in Ottawa. We specialize in delivering cutting-edge solutions across cloud infrastructure, cybersecurity, digital transformation, and AI automation. Our AI division is at the forefront of building intelligent systems, enterprise AI agents, and next-generation tools using advance\u2026</p>",
+    "datePosted": "2025-05-01",
+    "compensation": null,
+    "location": {
+     "city": "Ottawa",
+     "state": "Ontario",
+     "postalCode": "K1N 5W4",
+     "addressCountry": "Canada"
+    },
+    "atsLocation": {
+     "country": null,
+     "countryId": null,
+     "state": null,
+     "city": null
+    }
+   }
+  }
+ }
+}

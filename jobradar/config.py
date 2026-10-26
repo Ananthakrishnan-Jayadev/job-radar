@@ -49,6 +49,7 @@ class Settings:
     http: HttpSettings = field(default_factory=HttpSettings)
     workday: WorkdaySettings = field(default_factory=WorkdaySettings)
     smartrecruiters_max_age_days: int = 180
+    details_per_board: int = 60  # detail pages fetched per board per scan
     adzuna: AdzunaSettings = field(default_factory=AdzunaSettings)
 
     @property
@@ -97,5 +98,6 @@ def load_settings(root: Path | str | None = None) -> Settings:
         http=_pick(HttpSettings, data.get("http", {})),
         workday=_pick(WorkdaySettings, data.get("workday", {})),
         smartrecruiters_max_age_days=data.get("smartrecruiters", {}).get("max_age_days", 180),
+        details_per_board=data.get("details", {}).get("max_per_board", 60),
         adzuna=_pick(AdzunaSettings, data.get("adzuna", {})),
     )

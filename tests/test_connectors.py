@@ -140,8 +140,9 @@ def test_smartrecruiters_pages_and_drops_old_postings(settings):
              + [sr_posting(999, released="2017-01-01T00:00:00Z")]}
     sources = FakeSources({("GET", "https://api.smartrecruiters.com/"): Seq([page1, page2])})
     result = fetch(settings, sources, board("smartrecruiters", "acme"))
-    assert len(sources.requests) == 2
-    assert sources.requests[1].url.params["offset"] == "100"
+    pages = [r for r in sources.requests if r.url.path.endswith("/postings")]
+    assert len(pages) == 2
+    assert pages[1].url.params["offset"] == "100"
     assert result.total == 150
     assert len(result.jobs) == 149
     assert "older than" in result.warnings[0]
@@ -580,3 +581,107 @@ def test_successfactors_script_only_site(settings):
     })
     with pytest.raises(FetchError, match="by script"):
         fetch(settings, sources, board("successfactors", site))
+
+
+# --- Job descriptions from detail pages (wanted roles only) ------------------------------
+
+def only_engineers(title):
+    return "engineer" in title.lower() or "developer" in title.lower()
+
+
+def test_smartrecruiters_detail_description(settings):
+    post = sr_posting(1)
+    post["id"], post["name"] = "744000138709868", "Software Engineering Developer"
+    other = {**sr_posting(2), "name": "Payroll Clerk"}
+    api = "https://api.smartrecruiters.com/v1/companies/acme/postings"
+    sources = FakeSources({("GET", api): {"totalFound": 2, "content": [post, other]},
+                           ("GET", f"{api}/744000138709868"): fixture_json("smartrecruiters_detail.json")})
+    jobs = fetch(settings, sources, board("smartrecruiters", "acme"), wants=only_engineers).jobs
+    assert "Air & Naval (A&N) Sonar division" in jobs[0].description
+    assert "Company Description" not in jobs[0].description and "<p>" not in jobs[0].description
+    assert jobs[1].description is None  # not a wanted role: no detail request
+    assert [r.url.path.rsplit("/", 1)[-1] for r in sources.requests] == ["postings", "744000138709868"]
+
+
+def test_details_skip_known_jobs_and_respect_the_cap(settings):
+    settings.details_per_board = 2
+    page = {"totalFound": 4, "content": [{**sr_posting(i), "name": f"Developer {i}"} for i in range(4)]}
+    api = "https://api.smartrecruiters.com/v1/companies/acme/postings"
+    sources = FakeSources({("GET", api): page, ("GET", f"{api}/"): {"jobAd": {"sections": {
+        "jobDescription": {"text": "<p>Build things.</p>"}}}}})
+    result = fetch(settings, sources, board("smartrecruiters", "acme"), known_ids={"0"})
+    assert [j.description for j in result.jobs] == [None, "Build things.", "Build things.", None]
+    assert "1 job descriptions left for the next scan" in result.warnings
+
+
+def test_detail_failure_does_not_fail_the_board(settings):
+    api = "https://api.smartrecruiters.com/v1/companies/acme/postings"
+    sources = FakeSources({("GET", api): {"totalFound": 1, "content": [sr_posting(1)]},
+                           ("GET", f"{api}/1"): httpx.Response(500)})
+    result = fetch(settings, sources, board("smartrecruiters", "acme"))
+    assert len(result.jobs) == 1 and result.jobs[0].description is None
+    assert "detail for 1 failed" in result.warnings[0]
+
+
+def test_workable_descriptions_in_one_request(settings):
+    sources = FakeSources({("GET", "https://apply.workable.com/"): fixture_json("workable_borrowell_details.json")})
+    job = fetch(settings, sources, board("workable", "borrowell")).jobs[0]
+    assert sources.requests[0].url.params["details"] == "true"
+    assert len(sources.requests) == 1
+    assert job.description.startswith("About Borrowell:\n")
+
+
+def test_rippling_detail_description(settings):
+    page = {"page": 0, "totalPages": 1, "totalItems": 1, "items": [
+        {"id": "6f66c7ed-7735-406f-b936-ef6018ed5071", "name": "Data & AI Product Analyst", "url": "u",
+         "locations": [{"name": "Montreal, Canada", "city": "Montreal", "countryCode": "CA"}]}]}
+    api = "https://ats.rippling.com/api/v2/board/axya-inc/jobs"
+    sources = FakeSources({("GET", api): page,
+                           ("GET", f"{api}/6f66c7ed"): fixture_json("rippling_detail.json")})
+    job = fetch(settings, sources, board("rippling", "axya-inc")).jobs[0]
+    assert job.posted_at == "2026-08-26"
+    assert "About Axya" in job.description and "style=" not in job.description
+
+
+def test_bamboohr_detail_description(settings):
+    body = {"meta": {"totalCount": 1}, "result": [
+        {"id": "52", "jobOpeningName": "Junior AI Developer", "location": {"city": "Ottawa", "state": "Ontario"},
+         "atsLocation": {"country": "Canada", "province": "Ontario", "city": "Ottawa"}}]}
+    sources = FakeSources({("GET", "https://arcadion.bamboohr.com/careers/list"): body,
+                           ("GET", "https://arcadion.bamboohr.com/careers/52/detail"):
+                               fixture_json("bamboohr_detail.json")})
+    job = fetch(settings, sources, board("bamboohr", "arcadion")).jobs[0]
+    assert job.description.startswith("📍 About Arcadion\n")
+    assert job.posted_at == "2025-05-01"
+    assert job.salary_text is None
+
+
+def test_successfactors_description_from_job_page():
+    from jobradar.connectors.successfactors import description_from_page
+
+    text = description_from_page((FIXTURES / "successfactors_job_ey.html").read_text())
+    assert text.startswith("At EY, you’ll have the chance to build a career")
+    assert "Apply now" not in text and "Finance Transformation" not in text
+    assert description_from_page("<html><body>nothing here</body></html>") is None
+
+
+def test_successfactors_search_mode_fetches_wanted_descriptions(settings):
+    site = "https://careers.ey.com"
+    urlset = '<?xml version="1.0"?><urlset xmlns="http://www.google.com/schemas/sitemap/0.9"></urlset>'
+    sources = FakeSources({
+        ("GET", f"{site}/sitemap.xml"): httpx.Response(200, text=urlset),
+        ("GET", f"{site}/search/"): httpx.Response(200, text=(FIXTURES / "successfactors_search_ey.html").read_text()),
+        ("GET", f"{site}/ey/job/"): httpx.Response(200, text=(FIXTURES / "successfactors_job_ey.html").read_text()),
+    })
+    result = fetch(settings, sources, board("successfactors", site), wants=lambda t: "Tax" in t)
+    wanted = [j for j in result.jobs if "Tax" in j.title]
+    assert wanted and all(j.description.startswith("At EY") for j in wanted)
+    assert all(j.description is None for j in result.jobs if "Tax" not in j.title)
+
+
+def test_workday_details_for_wanted_roles_only(settings):
+    sources = workday_sources()
+    result = fetch(settings, sources, board("workday", WD), wants=lambda t: False)
+    assert not any("/job/" in str(r.url) for r in sources.requests if r.method == "GET")
+    assert not any(j.details_fetched for j in result.jobs)
+    assert not any("left for the next scan" in w for w in result.warnings)

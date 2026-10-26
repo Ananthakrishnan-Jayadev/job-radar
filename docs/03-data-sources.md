@@ -139,7 +139,11 @@ all its open jobs.**
   (paged; `totalFound` gives the total). It also accepts query filters (for
   example `q=`, `country=`, `city=`); check the docs before relying on them.
 - **One job:** the `ref` field, for example
-  `https://api.smartrecruiters.com/v1/companies/canva/postings/{id}`.
+  `https://api.smartrecruiters.com/v1/companies/canva/postings/{id}`. The list
+  has no description; this one does, as HTML in `jobAd.sections
+  {companyDescription, jobDescription, qualifications, additionalInformation}`
+  (each `{title, text}`). Fetched for wanted roles only (see "Descriptions"
+  below).
 - **Public page:** `https://jobs.smartrecruiters.com/{Company}/{id}` (returned
   HTTP 200 when tested).
 - Fields: `id`, `name` (the title), `uuid`, `refNumber`, `releasedDate` (ISO),
@@ -160,6 +164,8 @@ all its open jobs.**
   `city`, `telecommuting` (remote, true/false), `department`, `function`,
   `industry`, `employment_type`, `experience`, `education`, and
   `locations[] {country, countryCode, region, city, hidden}`.
+- **`?details=true`** adds each job's `description` (HTML) to the same
+  response: every description in one request.
 - The v3 endpoint (`POST /api/v3/accounts/{x}/jobs`) returned "Not Found" when
   tried; use v1.
 - Tested: huggingface, borrowell (Toronto, 2 jobs), 1password (1).
@@ -196,7 +202,9 @@ all its open jobs.**
   and in French for Quebec employers), `url`, `department.name`, `language`,
   `locations[] {name, country, countryCode, state, stateCode, city,
   workplaceType ("REMOTE" ...)}`.
-- No posted date in the list.
+- No posted date or description in the list. **One job:**
+  `GET .../jobs/{id}` → `description {company, role}` (HTML), `createdOn`
+  (ISO), `workLocations`, `department`.
 - Tested: rippling, nesto (39 items, including "Senior Applied AI Engineer",
   remote in Canada).
 
@@ -210,7 +218,9 @@ all its open jobs.**
   `isRemote`, `locationType`.
 - **One job:** `GET https://{company}.bamboohr.com/careers/{id}/detail` →
   `result.jobOpening {jobOpeningShareUrl, jobOpeningName, jobOpeningStatus,
-  location {city, state, postalCode, addressCountry}, ...}`.
+  location {city, state, postalCode, addressCountry}, description (HTML),
+  datePosted, compensation, ...}`. The list has no description, so this is
+  fetched for wanted roles.
 - **Public page:** `https://{company}.bamboohr.com/careers/{id}`
 - A company that doesn't use BambooHR **redirects (302) to `https://www.bamboohr.com/`**.
   Treat that as "not found". zapier returned an empty list; waabi returned one
@@ -248,8 +258,9 @@ all its open jobs.**
   ["Waterloo, Ontario"], startDate ("2026-10-23", the actual posting date),
   postedOn, timeType, jobReqId, externalUrl, country {descriptor, id},
   remoteType, jobDescription}`, plus `hiringOrganization` and `similarJobs`.
-  Fetch details only for jobs that matched a role, to get the exact date and all
-  locations.
+  Fetched only for wanted roles (roles.toml), at most `[workday]
+  max_details_per_scan` per board per scan, to get the description, the exact
+  date and all locations.
 - **Public page:** `jobPostingInfo.externalUrl`, or
   `https://{tenant}.wd{N}.myworkdayjobs.com/{site}{externalPath}`.
 - Tested working: `td.wd3/TD_Bank_Careers`, `rbc.wd3/RBCGLOBAL1`,
@@ -286,7 +297,8 @@ all its open jobs.**
 - **Not every site publishes the feed**: EY's and Teck's `/sitemap.xml` is a
   plain list of job links. Those are read from the search pages instead,
   `{site}/search/?q=&locationsearch=Canada&startrow=N` (25 rows: title, link,
-  location; EY: 423 Canadian jobs), without descriptions. Teck's search page
+  location; EY: 423 Canadian jobs). Descriptions then come from each job's
+  page, the element marked `itemprop="description"`. Teck's search page
   builds its rows by script, so Teck can't be read.
 - Not usable: the keyword RSS (`/services/rss/job/?keywords=...`) returns only
   20 items and matches description text. The HTML search pages
@@ -339,6 +351,19 @@ all its open jobs.**
 - Only useful for European companies with Canadian offices.
 
 ---
+
+### Descriptions
+
+Greenhouse, Lever, Ashby, Recruitee, Workable (`details=true`),
+SuccessFactors feeds, JazzHR, Pinpoint and Teamtailor include descriptions in
+the list. Breezy and Humi don't, and aren't fetched yet (no wanted jobs on
+either as of 2026-10-26). SmartRecruiters, Rippling, BambooHR, Workday and SuccessFactors
+search pages need one request per job. Those are fetched during the scan only
+for roles roles.toml wants, only for jobs not already stored with a
+description, at most `[details] max_per_board` (60) per board per scan (Workday:
+its own `max_details_per_scan`), with the usual pause between requests. The
+rest follow on the next scan. A failed detail request is a warning, never a
+failed board.
 
 ## 3. Job-search aggregators: searching across companies
 

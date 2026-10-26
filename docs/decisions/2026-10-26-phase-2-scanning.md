@@ -23,6 +23,9 @@
    Workable, Breezy, Rippling and BambooHR lists have none; fetching one page
    per job would multiply requests. Keyword search still covers their titles,
    company and department.
+   *Superseded 2026-10-26 (after roles.toml):* descriptions are now fetched
+   for wanted roles only, capped per board per scan; Workable gets them in the
+   list with `details=true`. See docs/03-data-sources.md, "Descriptions".
 
 6. **Unconfirmed boards are scanned.** Their jobs are only stored if they're
    in Canada, which already filters most slug collisions. The web UI (phase 3)

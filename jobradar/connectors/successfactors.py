@@ -22,7 +22,8 @@ read from their search pages instead, filtered to Canada, 25 rows a page:
         <span class="jobLocation"> Montréal, Quebec, CA, H3A 0A8 </span>
         <span class="jobDate"> Oct 18, 2026 </span> </tr>
 
-No descriptions in that mode. Sites whose search page builds its rows by
+Descriptions then come from each job's page (its itemprop="description"
+element), for wanted roles only. Sites whose search page builds its rows by
 script (Teck) can't be read.
 """
 
@@ -32,11 +33,12 @@ import html
 import re
 import xml.etree.ElementTree as ET
 from datetime import datetime
+from html.parser import HTMLParser
 
 from ..http import FetchError, HttpClient
 from ..locations import from_parts, parse_text
 from ..models import Board, RawJob
-from ._common import FetchContext, FetchResult, clean_title, html_to_text
+from ._common import FetchContext, FetchResult, clean_title, fill_details, html_to_text
 
 G = "{http://base.google.com/ns/1.0}"
 # "Software Engineer (Toronto, ON, CA)" -> the title without its location suffix.
@@ -54,7 +56,7 @@ async def fetch(board: Board, client: HttpClient, ctx: FetchContext) -> FetchRes
     except ET.ParseError as exc:
         raise FetchError(f"the job feed at {site}/sitemap.xml isn't valid XML") from exc
     if root.tag.endswith("urlset"):
-        return await _from_search_pages(client, site, board.company_canadian)
+        return await _from_search_pages(client, site, board.company_canadian, ctx)
     if root.tag != "rss":
         raise FetchError(f"{site}/sitemap.xml isn't a SuccessFactors job feed")
     items = root.findall("./channel/item")
@@ -93,7 +95,7 @@ _DATE = re.compile(r'<span class="jobDate[^"]*">\s*(.*?)\s*</span>', re.S)
 _TOTAL = re.compile(r"Results <b>[^<]*</b> of <b>([\d,]+)</b>")
 
 
-async def _from_search_pages(client: HttpClient, site: str, canadian: bool) -> FetchResult:
+async def _from_search_pages(client: HttpClient, site: str, canadian: bool, ctx: FetchContext) -> FetchResult:
     jobs: dict[str, RawJob] = {}
     total = None
     for page in range(MAX_PAGES):
@@ -114,7 +116,54 @@ async def _from_search_pages(client: HttpClient, site: str, canadian: bool) -> F
         await client.pause()
     complete = len(jobs) >= (total or 0)
     warnings = [] if complete else [f"read {len(jobs)} of {total} Canadian jobs from the search pages"]
-    return FetchResult(jobs=list(jobs.values()), total=total or 0, complete=complete, warnings=warnings)
+
+    async def detail(job: RawJob) -> None:
+        job.description = description_from_page(await client.get_text(job.url))
+
+    found = list(jobs.values())
+    warnings += await fill_details(found, ctx, client, detail)
+    return FetchResult(jobs=found, total=total or 0, complete=complete, warnings=warnings)
+
+
+class _ItempropDescription(HTMLParser):
+    """Collects the HTML inside the element marked itemprop="description"."""
+
+    def __init__(self):
+        super().__init__(convert_charrefs=False)
+        self.depth = 0
+        self.parts: list[str] = []
+
+    def handle_starttag(self, tag, attrs):
+        if self.depth:
+            self.depth += 1
+            self.parts.append(self.get_starttag_text() or "")
+        elif dict(attrs).get("itemprop") == "description":
+            self.depth = 1
+
+    def handle_endtag(self, tag):
+        if self.depth:
+            self.depth -= 1
+            if self.depth:
+                self.parts.append(f"</{tag}>")
+
+    def handle_data(self, data):
+        if self.depth:
+            self.parts.append(data)
+
+    def handle_entityref(self, name):
+        if self.depth:
+            self.parts.append(f"&{name};")
+
+    def handle_charref(self, name):
+        if self.depth:
+            self.parts.append(f"&#{name};")
+
+
+def description_from_page(page: str) -> str | None:
+    """A job page's description, from its itemprop="description" element."""
+    parser = _ItempropDescription()
+    parser.feed(page)
+    return html_to_text("".join(parser.parts))
 
 
 def _search_row(row: str, site: str, canadian: bool) -> RawJob | None:
