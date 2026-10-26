@@ -248,6 +248,13 @@ def create_app(settings: Settings, db_path: Path | None = None,
             raise HTTPException(400, f"search syntax: {exc}") from exc
         return {"total": total, "page": page, "page_size": page_size, "items": [_job_summary(r) for r in rows]}
 
+    @app.get("/api/jobs/provinces")
+    def province_counts(request: Request, conn: sqlite3.Connection = Conn):
+        try:
+            return queries.province_counts(conn, job_filter(request))
+        except sqlite3.OperationalError as exc:
+            raise HTTPException(400, f"search syntax: {exc}") from exc
+
     @app.get("/api/jobs.csv")
     def export_csv(request: Request, conn: sqlite3.Connection = Conn):
         try:
