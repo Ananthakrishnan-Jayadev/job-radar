@@ -70,6 +70,7 @@ def test_empty_database(client):
     assert meta["open_jobs"] == 0 and meta["companies"] == 0
     assert {"code": "ON", "name": "Ontario"} in meta["provinces"]
     assert "unknown" in meta["size_bands"] and "applied" in meta["job_statuses"]
+    assert "bamboohr" in meta["systems"] and meta["systems_in_use"] == []
     assert client.get("/api/jobs").json() == {"total": 0, "page": 1, "page_size": 50, "items": []}
     assert client.get("/api/companies").json() == []
     assert client.get("/api/scans").json() == []
@@ -83,6 +84,11 @@ def test_unknown_api_path_is_404_json(client):
 
 
 # --- jobs ---------------------------------------------------------------------------
+
+def test_systems_in_use_lists_only_systems_with_jobs(seeded):
+    client, _ = seeded
+    assert client.get("/api/meta").json()["systems_in_use"] == ["ashby", "workday"]
+
 
 def test_jobs_never_outside_canada(seeded):
     client, _ = seeded

@@ -187,6 +187,16 @@ def province_counts(conn: sqlite3.Connection, f: JobFilter) -> dict[str, int]:
     return counts
 
 
+def systems_in_use(conn: sqlite3.Connection) -> list[str]:
+    """Job systems that have at least one open Canadian job (for the filter)."""
+    rows = conn.execute(f"""
+        SELECT DISTINCT b.system FROM jobs j JOIN boards b ON b.id = j.board_id
+        WHERE j.closed_at IS NULL AND {_IN_CANADA.format(job='j.id')}
+        ORDER BY b.system
+    """)
+    return [r[0] for r in rows]
+
+
 def find_jobs(
     conn: sqlite3.Connection,
     query: str | None = None,
