@@ -8,7 +8,9 @@ from pathlib import Path
 
 from . import db
 from .config import load_settings
+from .export import export_jobs
 from .models import size_band
+from .scan import BoardOutcome, run_scan
 from .seed import SeedError, apply_seed, load_seed_file
 
 
@@ -16,6 +18,10 @@ def _open_db(args):
     settings = load_settings(args.root)
     path = Path(args.db) if args.db else settings.database
     return db.connect(path), path
+
+
+def _provinces(value: str | None) -> list[str] | None:
+    return [p.strip().upper() for p in value.split(",") if p.strip()] if value else None
 
 
 def cmd_init_db(args) -> int:
@@ -54,6 +60,59 @@ def cmd_companies(args) -> int:
     return 0
 
 
+def _print_outcome(outcome: BoardOutcome) -> None:
+    board = outcome.board
+    name = f"{board.company_name} ({board.system})"
+    if outcome.ok:
+        line = (f"  ok    {name:<38} {outcome.jobs_canada:>4} in Canada of {outcome.total_open or 0:>5}"
+                f"  +{outcome.jobs_new} new, {outcome.jobs_closed} closed  {outcome.ms / 1000:.1f}s")
+        print(line)
+        for warning in outcome.warnings:
+            print(f"        note: {warning}")
+    else:
+        print(f"  FAIL  {name:<38} {outcome.error}")
+
+
+def cmd_scan(args) -> int:
+    settings = load_settings(args.root)
+    conn, _ = _open_db(args)
+    print("Scanning..." if not args.company else f"Scanning {args.company}...")
+    summary = run_scan(conn, settings, company=args.company, progress=_print_outcome)
+    if not summary.outcomes:
+        print("No enabled boards to scan. Run `jobradar seed` first, or check the company name.")
+        return 1
+    stored = conn.execute("SELECT COUNT(*) FROM jobs WHERE closed_at IS NULL").fetchone()[0]
+    print(f"\nDone: {summary.boards_ok} boards ok, {summary.boards_failed} failed. "
+          f"{summary.jobs_new} new jobs, {summary.jobs_closed} closed. {stored} open Canadian jobs stored.")
+    return 0 if summary.boards_ok else 1
+
+
+def cmd_search(args) -> int:
+    conn, _ = _open_db(args)
+    query = " ".join(args.query) or None
+    try:
+        rows = db.find_jobs(conn, query, provinces=_provinces(args.province),
+                            include_closed=args.include_closed, limit=args.limit)
+    except Exception as exc:  # bad FTS syntax, e.g. an unclosed quote
+        print(f"Search failed: {exc}", file=sys.stderr)
+        return 1
+    for r in rows:
+        closed = "  [closed]" if r["closed_at"] else ""
+        print(f"{r['title']}  |  {r['company']}  |  {db.location_label(r['locations'])}"
+              f"  |  {r['posted_at'] or 'date unknown'}{closed}")
+        print(f"    {r['url']}")
+    print(f"\n{len(rows)} jobs{' (limit reached)' if args.limit and len(rows) == args.limit else ''}.")
+    return 0
+
+
+def cmd_export(args) -> int:
+    conn, _ = _open_db(args)
+    count = export_jobs(conn, args.out, query=args.query, provinces=_provinces(args.province),
+                        include_closed=args.include_closed)
+    print(f"Wrote {count} jobs to {args.out}.")
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="jobradar", description=__doc__)
     parser.add_argument("--root", help="project folder with config.toml (default: current folder)")
@@ -67,6 +126,25 @@ def build_parser() -> argparse.ArgumentParser:
     seed.set_defaults(func=cmd_seed)
 
     sub.add_parser("companies", help="list companies and their boards").set_defaults(func=cmd_companies)
+
+    scan = sub.add_parser("scan", help="fetch jobs from every enabled board")
+    scan.add_argument("--company", help="scan only this company (by name)")
+    scan.set_defaults(func=cmd_scan)
+
+    province_help = "comma-separated province codes, REMOTE for Canada-wide remote (default: all of Canada)"
+    search = sub.add_parser("search", help="search stored jobs")
+    search.add_argument("query", nargs="*", help='words, "exact phrase", OR, prefix* (empty: newest jobs)')
+    search.add_argument("--province", help=province_help)
+    search.add_argument("--limit", type=int, default=25)
+    search.add_argument("--include-closed", action="store_true")
+    search.set_defaults(func=cmd_search)
+
+    export = sub.add_parser("export", help="write jobs to a CSV file")
+    export.add_argument("--out", required=True, help="CSV file to write")
+    export.add_argument("--query", help="full-text query, as for search")
+    export.add_argument("--province", help=province_help)
+    export.add_argument("--include-closed", action="store_true")
+    export.set_defaults(func=cmd_export)
     return parser
 
 
