@@ -203,6 +203,22 @@ def test_rippling_fixture_pages(settings):
     assert result.complete
 
 
+def test_rippling_merges_one_entry_per_location(settings):
+    entry = {"id": "j1", "name": "AI Delivery Manager", "url": "u", "department": {"name": "AI"}}
+    page = {"page": 0, "totalPages": 1, "totalItems": 2, "items": [
+        {**entry, "locations": [{"name": "Montreal, Canada (Remote)", "city": "Montreal", "countryCode": "CA",
+                                  "workplaceType": "REMOTE"}]},
+        {**entry, "locations": [{"name": "Toronto, Canada", "city": "Toronto", "countryCode": "CA",
+                                  "workplaceType": "HYBRID"}]},
+    ]}
+    sources = FakeSources({("GET", "https://ats.rippling.com/"): page})
+    result = fetch(settings, sources, board("rippling", "nesto"))
+    assert len(result.jobs) == 1
+    assert [l.province for l in result.jobs[0].locations] == ["QC", "ON"]
+    assert result.jobs[0].workplace == "unknown"
+    assert result.complete
+
+
 def test_rippling_repeated_page_stops_and_is_partial(settings):
     page0 = fixture_json("rippling_nesto.json")  # says 2 pages, 39 items
     sources = FakeSources({("GET", "https://ats.rippling.com/"): page0})  # same page every time

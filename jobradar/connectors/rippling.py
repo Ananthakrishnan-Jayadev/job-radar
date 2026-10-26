@@ -1,8 +1,9 @@
 """Rippling ATS public board. Paged by 20, pages counted from 0.
 
 GET https://ats.rippling.com/api/v2/board/{company}/jobs?page=N
-The page parameter name is not documented; if a later page repeats the first
-one, we stop and warn instead of looping.
+The page parameter name is not documented; if a later page repeats earlier
+entries exactly, we stop and warn instead of looping. A job with several
+locations is listed once per location; the entries are merged by id.
 """
 
 from __future__ import annotations
@@ -27,15 +28,27 @@ async def fetch(board: Board, client: HttpClient, ctx: FetchContext) -> FetchRes
         await client.pause()
         page += 1
         more = (await client.get_json(url, params={"page": page})).get("items") or []
-        known = {i["id"] for i in items}
-        new = [i for i in more if i["id"] not in known]
-        if not new:
+        if more and all(i in items for i in more):
             warnings.append(f"page {page} repeated earlier jobs; read {len(items)} of {total}")
             break
-        items += new
+        items += more
     complete = not warnings and len(items) >= total
-    return FetchResult(jobs=[_job(i, board.company_canadian) for i in items], total=total,
+    return FetchResult(jobs=_merge(_job(i, board.company_canadian) for i in items), total=total,
                        complete=complete, warnings=warnings)
+
+
+def _merge(jobs) -> list[RawJob]:
+    """Rippling lists a job once per location: one RawJob per id, all locations."""
+    merged: dict[str, RawJob] = {}
+    for job in jobs:
+        if job.external_id in merged:
+            first = merged[job.external_id]
+            first.locations = dedupe_locations(first.locations + job.locations)
+            if first.workplace != job.workplace:
+                first.workplace = "unknown"
+        else:
+            merged[job.external_id] = job
+    return list(merged.values())
 
 
 def _job(item: dict, canadian: bool) -> RawJob:
