@@ -132,7 +132,7 @@ Canadian ones, and tracks open/closed over time. CSV export works.
 
 ---
 
-## Phase 3: Web UI and tracking
+## Phase 3: Web UI and tracking ✅ built 2026-10-26 (awaiting manual checks)
 
 **Goal:** everything you need day to day, in the browser: search, filters,
 statuses, notes, companies, Scan now.
