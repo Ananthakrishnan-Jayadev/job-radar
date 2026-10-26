@@ -259,6 +259,14 @@ all its open jobs.**
   Scotiabank the reason turned out to be that it isn't on Workday at all (see
   SAP SuccessFactors below). TELUS is still to check.
 - Be gentle: 20 per page, a short pause between pages, search per role.
+- **Not every site has a country filter** (found 2026-10-26 on 20 sites: PwC,
+  Capital One, iA, HOOPP, Farm Credit Canada...). They have a `locations`
+  filter listing places instead ("Toronto, Ontario, Canada", "Calgary,
+  Alberta", or just "Toronto"). The connector then filters by every value
+  that is clearly Canadian (names Canada or a province in full, or is a known
+  Canadian city; "AB - Campinas", a Brazilian state code, is rejected). A job
+  whose listed city isn't Canadian keeps a placeholder "Canada" location until
+  its detail page gives the real places.
 - Related: the user's `agentic_workday` project already automates Workday
   application pages (see 07).
 
@@ -275,6 +283,11 @@ all its open jobs.**
 - No posting date in the feed (only an expiry date).
 - Can be large: Scotiabank's was 38 MB for 1,471 jobs, almost all of it base64
   images inside descriptions.
+- **Not every site publishes the feed**: EY's and Teck's `/sitemap.xml` is a
+  plain list of job links. Those are read from the search pages instead,
+  `{site}/search/?q=&locationsearch=Canada&startrow=N` (25 rows: title, link,
+  location; EY: 423 Canadian jobs), without descriptions. Teck's search page
+  builds its rows by script, so Teck can't be read.
 - Not usable: the keyword RSS (`/services/rss/job/?keywords=...`) returns only
   20 items and matches description text. The HTML search pages
   (`/search/?q=&locationsearch=`, 25 per page) work but need many requests.
