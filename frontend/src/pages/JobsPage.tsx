@@ -1,10 +1,13 @@
+import NumberFlow from "@number-flow/react";
+import { Bookmark, Download } from "lucide-react";
+import { motion } from "motion/react";
 import { useState, type FormEvent } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { api } from "../api";
 import JobFilters from "../components/JobFilters";
 import Pagination from "../components/Pagination";
 import StatusSelect from "../components/StatusSelect";
-import { SIZE_LABEL, formatCount, formatDate } from "../format";
+import { SIZE_LABEL, formatDate } from "../format";
 import { savedFilters, withParam } from "../params";
 import { useApp, useLoad } from "../state";
 import type { JobSummary } from "../types";
@@ -53,7 +56,15 @@ export default function JobsPage() {
 
       <section className="results" aria-busy={jobs.loading}>
         <div className="results-head">
-          <h1>{jobs.data ? `${formatCount(jobs.data.total)} ${jobs.data.total === 1 ? "job" : "jobs"}` : "Jobs"}</h1>
+          <h1>
+            {jobs.data ? (
+              <>
+                <NumberFlow value={jobs.data.total} locales="en-CA" /> {jobs.data.total === 1 ? "job" : "jobs"}
+              </>
+            ) : (
+              "Jobs"
+            )}
+          </h1>
           <label className="sort">
             Sort
             <select value={params.get("sort") ?? ""} onChange={(e) => sortBy(e.target.value)}>
@@ -66,6 +77,7 @@ export default function JobsPage() {
           </label>
           <SaveSearch params={params} />
           <a className="button" href={api.exportUrl(params)} download>
+            <Download size={15} aria-hidden="true" />
             Export CSV
           </a>
         </div>
@@ -86,6 +98,8 @@ export default function JobsPage() {
           </div>
         )}
 
+        {!jobs.data && jobs.loading && <SkeletonRows />}
+
         {jobs.data && jobs.data.items.length > 0 && (
           <div className="table-wrap">
             <table className="jobs">
@@ -100,8 +114,14 @@ export default function JobsPage() {
                 </tr>
               </thead>
               <tbody>
-                {jobs.data.items.map((job) => (
-                  <tr key={job.id} className={`${isNew(job) ? "is-new" : ""}${job.closed_at ? " is-closed" : ""}`}>
+                {jobs.data.items.map((job, i) => (
+                  <motion.tr
+                    key={job.id}
+                    className={`${isNew(job) ? "is-new" : ""}${job.closed_at ? " is-closed" : ""}`}
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.22, delay: Math.min(i, 15) * 0.018, ease: "easeOut" }}
+                  >
                     <td className="job-cell">
                       <Link to={`/jobs/${job.id}`} className="job-title">
                         {job.title}
@@ -128,7 +148,7 @@ export default function JobsPage() {
                         onChange={(t) => updateJob(job.id, { status: t.status, applied_at: t.applied_at })}
                       />
                     </td>
-                  </tr>
+                  </motion.tr>
                 ))}
               </tbody>
             </table>
@@ -178,6 +198,7 @@ function SaveSearch({ params }: { params: URLSearchParams }) {
     return (
       <span className="save-search">
         <button type="button" onClick={() => { setOpen(true); setMessage(null); }}>
+          <Bookmark size={15} aria-hidden="true" />
           Save search
         </button>
         {message && <span className="hint">{message}</span>}
@@ -194,5 +215,24 @@ function SaveSearch({ params }: { params: URLSearchParams }) {
         Cancel
       </button>
     </form>
+  );
+}
+
+/** Grey placeholder rows while the first page of jobs loads. */
+function SkeletonRows() {
+  return (
+    <div className="table-wrap p-3" aria-hidden="true">
+      {Array.from({ length: 8 }, (_, i) => (
+        <div key={i} className="flex items-center gap-6 border-0 border-b border-solid border-line py-3 last:border-0">
+          <div className="flex flex-1 flex-col gap-2">
+            <div className="skeleton h-3.5" style={{ width: `${55 - (i % 3) * 10}%` }} />
+            <div className="skeleton h-3 w-1/4" />
+          </div>
+          <div className="skeleton h-3 w-24" />
+          <div className="skeleton h-3 w-16" />
+          <div className="skeleton h-6 w-28" />
+        </div>
+      ))}
+    </div>
   );
 }
