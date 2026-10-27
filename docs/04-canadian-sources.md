@@ -27,7 +27,7 @@ Most company-data products are US-heavy. Two points that help:
 | **Scott's Directories** | Canadian business database with employee counts and industry codes, filterable by province and city | **Paid** | Its public pages show employee counts. Strong for manufacturing and traditional industries. |
 | **Statistics Canada, Canadian Business Counts** | Business counts by industry and size range per region | Free | Totals only, no individual companies; useful for market context, not shortlisting. |
 | **Talent.com** (founded in Montreal) | Large job aggregator, strong in Canada | Partner or publisher programs | Not tested. |
-| **Adzuna Canada** | Job search API with Canada coverage (`/jobs/ca/...`) | Free developer key | **The best way to find which companies are hiring in Ontario.** See 03. |
+| **Adzuna Canada** | Job search API with Canada coverage (`/jobs/ca/...`) | Free developer key | Looked like the best way to find who is hiring in Ontario, but the free tier is 25 calls in total; used once and dropped (`decisions/2026-10-26-adzuna-snapshot.md`). |
 | **Jooble** | Job search API, covers Canada | Free key on request | See 03. |
 | **Government jobs**: GC Jobs (federal, jobs-emplois.gc.ca), Ontario Public Service (gojobs.gov.on.ca), cities such as Toronto, Ottawa, Mississauga | Public-sector data and analyst roles | Websites (some offer RSS) | Not investigated; government is a big employer of data analysts in Ontario. |
 | **Vector Institute** (Toronto AI institute) | AI research and engineering roles, plus a sponsor list of AI-active companies | Website | The "vector" Ashby board **may or may not** be the Vector Institute (see 05). |

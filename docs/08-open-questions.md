@@ -39,14 +39,18 @@
 11. **Config format:** TOML or YAML (YAML matches `agentic_workday`)?
 12. **Package manager:** `pip` + `venv` (`uv` isn't installed) or install `uv`?
 13. **Scheduling:** cron or systemd timer for daily scans, or only on demand?
-14. **Aggregator keys:** sign up for **Adzuna** (free app_id/app_key) and
+14. *Answered:* Adzuna's free tier is 25 calls in total, so it was used once
+    and dropped (`decisions/2026-10-26-adzuna-snapshot.md`); Jooble not
+    pursued. **Aggregator keys:** sign up for **Adzuna** (free app_id/app_key) and
     **Jooble**? Without them, finding new companies depends on the seed list and
     manual adds.
 15. **Company size:** Wikidata only (free), or also a PDL or Apollo free-tier
     key? Manual entry always available?
 16. **Job Bank CSV:** use it in version 1 or later? First check whether it
     includes employer names.
-17. **The Dayforce, iCIMS and Taleo gap:** accept it, cover it with aggregators,
+17. *Still open (2026-10-27):* companies on these and on Avature, Oracle
+    Cloud and ADP were moved out of the database for now
+    (`decisions/2026-10-27-company-cleanup.md`). **The Dayforce, iCIMS and Taleo gap:** accept it, cover it with aggregators,
     or allow a manual "add job by URL"?
 18. **LinkedIn:** leave it out completely, or keep "open this search on LinkedIn"
     links (no automation)? Use the MCP server manually for size bands?
@@ -57,8 +61,8 @@
 ## Facts still unverified
 
 - Rippling's page parameter name.
-- Whether Adzuna's `/top_companies` and Canada coverage work as documented
-  (needs a key).
+- ~~Whether Adzuna's `/top_companies` and Canada coverage work as documented.~~
+  Not needed any more: Adzuna was dropped.
 - Whether LinkedIn's company Jobs tab shows a total count (only relevant if
   LinkedIn is used).
 - Whether Communitech/Prospect and MaRS boards have a usable feed (Getro or

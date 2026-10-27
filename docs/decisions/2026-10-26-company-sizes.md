@@ -23,3 +23,10 @@ manual > stillhiring.today > Wikidata > estimate.
 - **Estimate**, for whatever is left: from open roles worldwide and the job
   system (Workday is almost only used by large employers). Stored as the low
   end of a size band and labelled "estimated from open roles".
+
+*Update 2026-10-27:* `enrich` now estimates first (no requests), then saves
+Wikidata results every 20 companies. A failed entity request only skips its
+batch. Before, everything was saved at the end, so a stopped or failed run
+kept nothing and never estimated. Companies whose size came from a better
+source (your own entry, stillhiring.today, your imported list) aren't looked
+up, which is why the button may say 182 rather than 215.

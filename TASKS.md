@@ -132,7 +132,7 @@ Canadian ones, and tracks open/closed over time. CSV export works.
 
 ---
 
-## Phase 3: Web UI and tracking ✅ built 2026-10-26 (awaiting manual checks)
+## Phase 3: Web UI and tracking ✅ done 2026-10-26 (checked by the user while using it)
 
 **Goal:** everything you need day to day, in the browser: search, filters,
 statuses, notes, companies, Scan now.
@@ -150,6 +150,9 @@ statuses, notes, companies, Scan now.
 2. **UI scaffold** (`frontend/`): Vite + React + TypeScript, build output to
    `../jobradar/web/static`, typed API client (`api.ts`, `types.ts`) mirroring
    the API, routing, layout, plain CSS (light and dark).
+   *Later (2026-10-27):* dim and dark themes with a switch, Tailwind,
+   Motion and other UI libraries; see
+   `docs/decisions/2026-10-27-ui-themes-and-motion.md`.
 3. **Jobs page:** keyword search (FTS5, "title only" switch), filters
    (province multi-select + Remote Canada-wide, size band, company, job
    status, company status with ignored hidden, posted within N days, job
@@ -197,7 +200,7 @@ statuses, notes, companies, Scan now.
 
 ---
 
-## Phase 4: Discovering companies and company size
+## Phase 4: Discovering companies and company size ✅ mostly done (task 5 open)
 
 **Split in two (2026-10-26):** part 1 is built: sizes (tasks 7 and 8),
 stillhiring.today candidates, detection (task 2), the Candidates page (task 3)
@@ -211,14 +214,29 @@ instead, outside the plan: SAP SuccessFactors, JazzHR, Pinpoint, Teamtailor
 and Humi connectors, and importing the user's own company lists. Task 5
 (add a single job by URL) is still open.
 
+**Also done in phase 4, outside the plan (2026-10-26 and 27):**
+- **Role filtering:** `roles.toml` hides roles outside software, data and AI
+  (`docs/decisions/2026-10-26-role-keywords.md`).
+- **Full descriptions** for wanted roles on every system that has them
+  (`docs/decisions/2026-10-26-job-descriptions.md`).
+- **The Adzuna snapshot is retired automatically:** a complete scan of a
+  company's confirmed board merges or closes its Adzuna copies
+  (`jobradar/snapshots.py`; replaces task 6, deduplication).
+- **HiBob connector** (16 job systems in all).
+- **Board review and cleanup:** 215 companies remain, each with a confirmed
+  board; 244 without a readable board were moved to an archive
+  (`docs/decisions/2026-10-27-company-cleanup.md`).
+- **Company sizes are saved as they're found** (estimates first, Wikidata in
+  batches of 20), so a stopped run keeps its results.
+
 **Goal:** the company list grows beyond the seed list, and most companies get
 a size without manual entry.
 
-**Before this phase (you):** sign up for an Adzuna developer key
-(developer.adzuna.com) and put `app_id` / `app_key` in `config.local.toml`.
+~~**Before this phase (you):** sign up for an Adzuna developer key.~~ Dropped
+(see the update above).
 
 **Tasks**
-1. `connectors/adzuna.py`: Canada search per saved search term (and province
+1. ~~Dropped.~~ `connectors/adzuna.py`: Canada search per saved search term (and province
    when filtered), `max_days_old`, paging; store results as jobs on an
    "Adzuna" pseudo-board per company; `top_companies` per term to suggest
    companies.
@@ -233,7 +251,7 @@ a size without manual entry.
 4. Add company by careers URL (detected automatically, confirm before saving).
 5. **Add job by URL** for companies on systems with no feed (Dayforce, iCIMS,
    Taleo): known ATS URL → fetch; otherwise a short manual form.
-6. **Deduplication:** an Adzuna job that matches a feed job (same company,
+6. ~~Dropped~~ (replaced by `snapshots.py`). **Deduplication:** an Adzuna job that matches a feed job (same company,
    similar title, same province, or same apply URL) is linked and hidden
    behind the feed job.
 7. **stillhiring.today source** (`docs/decisions/2026-10-26-stillhiring-source.md`):
@@ -274,6 +292,12 @@ a size without manual entry.
 ## Phase 5: Polish and hardening (end of version 1)
 
 **Goal:** comfortable for daily use, safe to keep data in.
+
+**Progress (2026-10-27):** task 1 is under way. Screenshot-driven UI fixes:
+page width, sidebar wrapping, the province heat map. Task 6 is partly done:
+README and decision records are up to date. Tasks 2–5 and 7 are open.
+Possible extra work: connectors for iCIMS / Avature / Oracle Cloud (see
+`docs/decisions/2026-10-27-company-cleanup.md`).
 
 **Tasks**
 1. Fix the UI issues you noted in phases 3–4.

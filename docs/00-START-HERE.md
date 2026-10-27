@@ -1,5 +1,11 @@
 # Job Radar: start here
 
+> **Status (2026-10-27):** this folder is the research from before any code
+> was written. The app now exists. For how it works today, read the
+> [README](../README.md), [PROJECT.md](../PROJECT.md) (the spec) and
+> [decisions/](decisions/). Where this research and a decision disagree, the
+> decision wins.
+
 This folder holds the **research and decisions so far** for a personal job-hunting
 tool. **No application code has been written yet, on purpose.** The next step is
 to write a proper plan, task list and phases, and only then build.

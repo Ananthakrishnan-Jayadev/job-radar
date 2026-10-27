@@ -52,3 +52,8 @@ Matching is strict on purpose ("Senior Software Engineer" never matches
 and the board's own job is there anyway. Guessed (unconfirmed) boards don't
 retire anything until you confirm them. Companies without a board of their own
 keep their snippets.
+
+*Update 2026-10-27:* after the board review and cleanup
+(`2026-10-27-company-cleanup.md`), every remaining company has its own
+board. Adzuna employers without one were moved to the removed-companies
+archive, so the snapshot is effectively gone from the live database.

@@ -389,7 +389,7 @@ These answer "who is hiring for X in Ontario?" across all companies. Use them to
 
 | Source | Access | Canada | Tested |
 |---|---|---|---|
-| **Adzuna API** | Free developer key (app_id + app_key) from developer.adzuna.com | ✅ `/v1/api/jobs/ca/search/{page}` | Endpoint exists; without a key it returns `{"exception":"AUTH_FAIL"}`. **Needs a key to go further.** |
+| **Adzuna API** | Free developer key (app_id + app_key) from developer.adzuna.com | ✅ `/v1/api/jobs/ca/search/{page}` | **Free tier: 25 test calls in total** (then paid). Used once for a snapshot, then dropped; see `decisions/2026-10-26-adzuna-snapshot.md`. |
 | **Jooble API** | Free key on request (`POST https://jooble.org/api/{key}`) | ✅ | Without a key, blocked by a Cloudflare check. Needs a key. |
 | **Job Bank** (Government of Canada) | Free open data, monthly CSV | ✅ | Dataset confirmed (see 04) |
 | Careerjet | Publisher API (affiliate) | Has Canada | Not tested |
