@@ -1,0 +1,172 @@
+{
+ "_request": {
+  "url": "https://xanadu.careers.hibob.com/api/job-ad",
+  "note": "Recorded 2026-10-27; 4 of 86 jobs, descriptions trimmed."
+ },
+ "response": {
+  "filterGroups": {
+   "departments": [
+    {
+     "serverId": "Hardware",
+     "value": "Hardware"
+    },
+    {
+     "serverId": "Operations",
+     "value": "Operations"
+    },
+    {
+     "serverId": "255844252",
+     "value": "Software"
+    }
+   ],
+   "sites": [
+    {
+     "serverId": "2153639",
+     "value": "Remote"
+    },
+    {
+     "serverId": "2058190",
+     "value": "Toronto"
+    },
+    {
+     "serverId": "2501659",
+     "value": "United States"
+    }
+   ],
+   "jobTypes": [
+    {
+     "serverId": "Full Time",
+     "value": "Full Time"
+    },
+    {
+     "serverId": "Intern",
+     "value": "Intern"
+    }
+   ],
+   "workspaceTypes": [
+    {
+     "serverId": "remote",
+     "value": "Remote"
+    },
+    {
+     "serverId": "hybrid",
+     "value": "Hybrid"
+    },
+    {
+     "serverId": "on_site",
+     "value": "On site"
+    }
+   ]
+  },
+  "jobAdDetails": [
+   {
+    "id": "ce50ce64-bce7-40e5-8b07-362045e73ad1",
+    "title": "Principal Analog ASIC Design Engineer",
+    "departmentId": "Hardware",
+    "department": "Hardware",
+    "employmentTypeId": "Full Time",
+    "employmentType": "Full Time",
+    "siteId": 2153639,
+    "site": "Remote",
+    "country": "Canada",
+    "language": "en",
+    "description": "<strong>About Xanadu:&nbsp;<br></strong>Xanadu’s mission is to build quantum computers that are useful and available to people everywhere.<br><br>At Xanadu, we are learners, innovators, researchers, collaborators and problem solvers. We are creating something that has never been built before. What we are doing is extremely hard, the classic moon shot. Few people in their life will be able to be a …",
+    "requirements": null,
+    "responsibilities": null,
+    "benefits": null,
+    "sectionLabels": {
+     "description": "Principal Analog ASIC Design Engineer"
+    },
+    "publishedAt": "2026-08-24T18:56:02.533796779Z",
+    "workspaceTypeId": "remote",
+    "workspaceType": "Remote",
+    "payTransparencyMinSalary": null,
+    "payTransparencyMaxSalary": null,
+    "payTransparencySalaryCurrency": null,
+    "payTransparencySalaryPayPeriod": null,
+    "payTransparencySalaryAdditionalInfo": null
+   },
+   {
+    "id": "7128f0d9-1e6b-45bb-9cbc-2e9e273a65cf",
+    "title": "Photonics Test Operator",
+    "departmentId": "Hardware",
+    "department": "Hardware",
+    "employmentTypeId": "Full Time",
+    "employmentType": "Full Time",
+    "siteId": 2058190,
+    "site": "Toronto",
+    "country": "Canada",
+    "language": "en",
+    "description": "<strong>About Xanadu: <br /></strong>Xanadu’s mission is to build quantum computers that are useful and available to people everywhere. <br /><br />At Xanadu, we are learners, innovators, researchers, collaborators and problem solvers. We are creating something that has never been built before.  What we are doing is extremely hard, the classic moon shot. Few people in their life will be able to be…",
+    "requirements": null,
+    "responsibilities": null,
+    "benefits": null,
+    "sectionLabels": {
+     "description": "Photonics Test Operator"
+    },
+    "publishedAt": "2026-10-16T13:50:25.846511522Z",
+    "workspaceTypeId": "hybrid",
+    "workspaceType": "Hybrid",
+    "payTransparencyMinSalary": null,
+    "payTransparencyMaxSalary": null,
+    "payTransparencySalaryCurrency": null,
+    "payTransparencySalaryPayPeriod": null,
+    "payTransparencySalaryAdditionalInfo": null
+   },
+   {
+    "id": "dc564ea3-3814-40ca-bdc7-6b5b5884f725",
+    "title": "Photonics AI Engineer - Fabrication-Aware Design - Santa, Clara CA",
+    "departmentId": "Hardware",
+    "department": "Hardware",
+    "employmentTypeId": "Full Time",
+    "employmentType": "Full Time",
+    "siteId": 2501659,
+    "site": "United States",
+    "country": "United States",
+    "language": "en",
+    "description": "<strong>About Xanadu:<br /></strong><br />Xanadu’s mission is to build quantum computers that are useful and available to people everywhere.<br /><br />At Xanadu, we are learners, innovators, researchers, collaborators and problem solvers. We are creating something that has never been built before. What we are doing is extremely hard, the classic moon shot. Few people in their life will be able to…",
+    "requirements": null,
+    "responsibilities": null,
+    "benefits": null,
+    "sectionLabels": {
+     "description": "Photonics AI Engineer - Fabrication-Aware Design - Santa, Clara CA"
+    },
+    "publishedAt": "2026-10-19T13:03:35.798165980Z",
+    "workspaceTypeId": "hybrid",
+    "workspaceType": "Hybrid",
+    "payTransparencyMinSalary": null,
+    "payTransparencyMaxSalary": null,
+    "payTransparencySalaryCurrency": null,
+    "payTransparencySalaryPayPeriod": null,
+    "payTransparencySalaryAdditionalInfo": null
+   },
+   {
+    "id": "86d117a3-de2b-460e-b6c6-e0da614ed16b",
+    "title": "Senior Data Scientist – Decision Intelligence",
+    "departmentId": "Hardware",
+    "department": "Hardware",
+    "employmentTypeId": "Full Time",
+    "employmentType": "Full Time",
+    "siteId": 2058190,
+    "site": "Toronto",
+    "country": "Canada",
+    "language": "en",
+    "description": "<strong>About Xanadu:<br></strong>Xanadu’s mission is to build quantum computers that are useful and available to people everywhere.<br><br>At Xanadu, we are learners, innovators, researchers, collaborators and problem solvers. We are creating something that has never been built before. &nbsp;What we are doing is extremely hard, the classic moon shot. Few people in their life will be able to be a …",
+    "requirements": null,
+    "responsibilities": null,
+    "benefits": null,
+    "sectionLabels": {
+     "description": "Senior Data Scientist – Decision Intelligence"
+    },
+    "publishedAt": "2026-09-01T15:25:45.925400313Z",
+    "workspaceTypeId": "hybrid",
+    "workspaceType": "Hybrid",
+    "payTransparencyMinSalary": null,
+    "payTransparencyMaxSalary": null,
+    "payTransparencySalaryCurrency": null,
+    "payTransparencySalaryPayPeriod": null,
+    "payTransparencySalaryAdditionalInfo": null
+   }
+  ]
+ }
+}

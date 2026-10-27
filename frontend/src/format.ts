@@ -51,6 +51,7 @@ export const SYSTEM_LABEL: Record<string, string> = {
   pinpoint: "Pinpoint",
   teamtailor: "Teamtailor",
   humi: "Humi",
+  hibob: "HiBob",
   adzuna: "Adzuna (one-time snapshot)",
 };
 

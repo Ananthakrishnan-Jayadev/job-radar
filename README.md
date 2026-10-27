@@ -79,7 +79,7 @@ the rules. Every Canadian job is still stored; the rest are only hidden, and
 jobs you're tracking always show. Edit the file and the change applies on the
 next page load, no rescan. `jobradar search` and `export` take `--all-roles`.
 
-## Job systems it reads (15)
+## Job systems it reads (16)
 
 | System | Read from | Example companies |
 |---|---|---|
@@ -92,6 +92,7 @@ next page load, no rescan. `jobradar search` and `export` take `--all-roles`.
 | Pinpoint | Its JSON job feed | Crawford Technologies |
 | Teamtailor | Its RSS job feed | commonsku |
 | Humi | The careers page's HTML (no feed; the most fragile) | Ecopia.AI, Hypercare |
+| HiBob | The careers app's JSON (undocumented) | Xanadu |
 
 Only jobs with a location in Canada are kept (or, for Canadian companies,
 postings that say nothing but "Remote"). Where a list has no job

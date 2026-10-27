@@ -21,6 +21,7 @@ SYSTEMS = (
     "pinpoint",
     "teamtailor",
     "humi",
+    "hibob",
     "adzuna",
     "manual",
 )
