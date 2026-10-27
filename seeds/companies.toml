@@ -270,6 +270,5 @@ boards = [{ system = "smartrecruiters", slug = "canva" }]
 name = "NVIDIA"
 boards = [{ system = "workday", slug = "https://nvidia.wd5.myworkdayjobs.com/NVIDIAExternalCareerSite" }]
 
-[[company]]
-name = "Uber"
-boards = [{ system = "smartrecruiters", slug = "uber", confirmed = false }]  # 1 job, probably not their real board
+# Uber removed 2026-10-27: its jobs are on jobs.uber.com, which the app can't read
+# (the SmartRecruiters account "uber" was not its real board).
