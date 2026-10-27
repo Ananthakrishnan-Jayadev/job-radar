@@ -50,7 +50,7 @@ export default function ProvinceMap({ names, selected, counts, onToggle, onClear
               whileTap={{ scale: 0.92 }}
               animate={{ scale: on ? 1.06 : 1 }}
               transition={{ type: "spring", stiffness: 500, damping: 24 }}
-              className={`tile${on ? " on" : ""}${count === 0 ? " none" : ""}`}
+              className={`tile${on ? " on" : ""}${count === 0 ? " none" : ""}${weight > 0.55 ? " deep" : ""}`}
               style={{ gridRow: row, gridColumn: col, "--weight": weight } as CSSProperties}
               aria-pressed={on}
               title={`${names[code] ?? code}: ${count.toLocaleString("en-CA")} jobs`}
