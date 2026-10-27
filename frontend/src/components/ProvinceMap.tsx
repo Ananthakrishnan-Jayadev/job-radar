@@ -1,3 +1,5 @@
+import NumberFlow from "@number-flow/react";
+import { motion } from "motion/react";
 import type { CSSProperties } from "react";
 
 // Canada as a grid of tiles, placed roughly where each province sits,
@@ -41,9 +43,13 @@ export default function ProvinceMap({ names, selected, counts, onToggle, onClear
           // Tile shade follows its share of jobs, so busy provinces stand out.
           const weight = count === 0 ? 0 : 0.15 + 0.85 * Math.sqrt(count / max);
           return (
-            <button
+            <motion.button
               key={code}
               type="button"
+              whileHover={{ y: -2 }}
+              whileTap={{ scale: 0.92 }}
+              animate={{ scale: on ? 1.06 : 1 }}
+              transition={{ type: "spring", stiffness: 500, damping: 24 }}
               className={`tile${on ? " on" : ""}${count === 0 ? " none" : ""}`}
               style={{ gridRow: row, gridColumn: col, "--weight": weight } as CSSProperties}
               aria-pressed={on}
@@ -51,20 +57,21 @@ export default function ProvinceMap({ names, selected, counts, onToggle, onClear
               onClick={() => onToggle(code)}
             >
               <span className="code">{code}</span>
-              <span className="count">{counts ? count.toLocaleString("en-CA") : "·"}</span>
-            </button>
+              <span className="count">{counts ? <NumberFlow value={count} locales="en-CA" /> : "·"}</span>
+            </motion.button>
           );
         })}
       </div>
-      <button
+      <motion.button
         type="button"
+        whileTap={{ scale: 0.98 }}
         className={`tile remote${selected.includes(REMOTE) ? " on" : ""}`}
         aria-pressed={selected.includes(REMOTE)}
         onClick={() => onToggle(REMOTE)}
       >
         <span className="code">Remote anywhere in Canada</span>
-        <span className="count">{counts ? (counts[REMOTE] ?? 0).toLocaleString("en-CA") : "·"}</span>
-      </button>
+        <span className="count">{counts ? <NumberFlow value={counts[REMOTE] ?? 0} locales="en-CA" /> : "·"}</span>
+      </motion.button>
       <p className="hint">
         {selected.length === 0 ? (
           "Showing all of Canada."

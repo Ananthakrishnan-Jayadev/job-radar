@@ -1,3 +1,5 @@
+import { ChevronDown, Search } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useState, type FormEvent } from "react";
 import { JOB_STATUS_LABEL, SIZE_LABEL, SYSTEM_LABEL, WORKPLACE_LABEL } from "../format";
 import { getList, isOn, toggleInList, withParam } from "../params";
@@ -53,7 +55,9 @@ export default function JobFilters({ meta, params, setParams, provinceCounts, pr
             placeholder='ai engineer, "data analyst", python'
             onChange={(e) => setQuery(e.target.value)}
           />
-          <button type="submit">Search</button>
+          <button type="submit" aria-label="Search" title="Search">
+            <Search size={16} aria-hidden="true" />
+          </button>
         </div>
         <label className="check">
           <input type="checkbox" checked={isOn(params, "title_only")} onChange={(e) => flag("title_only")(e.target.checked)} />
@@ -132,27 +136,51 @@ export default function JobFilters({ meta, params, setParams, provinceCounts, pr
         onToggle={(v) => setParams(toggleInList(params, "workplaces", v))}
       />
 
-      <details className="more" open={moreOpen} onToggle={(e) => setMoreOpen(e.currentTarget.open)}>
-        <summary>More filters</summary>
-        <Chips
-          legend="Job system"
-          options={meta.systems_in_use.map((s) => ({ value: s, label: SYSTEM_LABEL[s] ?? s }))}
-          selected={getList(params, "systems")}
-          onToggle={(v) => setParams(toggleInList(params, "systems", v))}
-        />
-        <label className="check">
-          <input type="checkbox" checked={isOn(params, "has_salary")} onChange={(e) => flag("has_salary")(e.target.checked)} />
-          Salary listed
-        </label>
-        <label className="check">
-          <input type="checkbox" checked={isOn(params, "include_closed")} onChange={(e) => flag("include_closed")(e.target.checked)} />
-          Include closed postings
-        </label>
-        <label className="check">
-          <input type="checkbox" checked={isOn(params, "include_ignored")} onChange={(e) => flag("include_ignored")(e.target.checked)} />
-          Include ignored companies
-        </label>
-      </details>
+      <div className="more">
+        <button
+          type="button"
+          className="more-toggle"
+          aria-expanded={moreOpen}
+          aria-controls="more-filters"
+          onClick={() => setMoreOpen((open) => !open)}
+        >
+          More filters
+          <ChevronDown size={16} aria-hidden="true" />
+        </button>
+        <AnimatePresence initial={false}>
+          {moreOpen && (
+            <motion.div
+              id="more-filters"
+              className="more-body"
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.25, ease: [0.3, 0, 0.2, 1] }}
+            >
+              <div>
+                <Chips
+                  legend="Job system"
+                  options={meta.systems_in_use.map((s) => ({ value: s, label: SYSTEM_LABEL[s] ?? s }))}
+                  selected={getList(params, "systems")}
+                  onToggle={(v) => setParams(toggleInList(params, "systems", v))}
+                />
+                <label className="check">
+                  <input type="checkbox" checked={isOn(params, "has_salary")} onChange={(e) => flag("has_salary")(e.target.checked)} />
+                  Salary listed
+                </label>
+                <label className="check">
+                  <input type="checkbox" checked={isOn(params, "include_closed")} onChange={(e) => flag("include_closed")(e.target.checked)} />
+                  Include closed postings
+                </label>
+                <label className="check">
+                  <input type="checkbox" checked={isOn(params, "include_ignored")} onChange={(e) => flag("include_ignored")(e.target.checked)} />
+                  Include ignored companies
+                </label>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
 
       {active && (
         <button type="button" className="link clear-all" onClick={() => setParams(new URLSearchParams())}>

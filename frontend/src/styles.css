@@ -1,59 +1,122 @@
-/* Job Radar. Granite, lake and spruce; amber only for "new". */
+/* Job Radar. Granite, lake and spruce; amber only for "new".
+   Two themes on <html data-theme>: "dim" (default, low-glare light) and "dark". */
 
-:root {
-  --bg: #eef1ef;
-  --surface: #fbfcfb;
-  --sunken: #e2e7e4;
-  --ink: #1f2b30;
-  --muted: #5b6a70;
-  --line: #cfd7d3;
-  --lake: #2e6a8a;
-  --lake-ink: #ffffff;
-  --lake-soft: #d6e6ee;
-  --spruce: #3d6b4e;
-  --amber: #c2861a;
-  --danger: #a33a32;
-  --warn-bg: #f4ead3;
+/* Tailwind's theme and utilities, without its reset (preflight): the pages below
+   rely on normal paragraph and list spacing. Unlayered rules beat every layer,
+   so all of this file's own rules sit in the components layer. */
+@layer theme, base, components, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
 
-  --s-new: #2e6a8a;
-  --s-saved: #b07914;
-  --s-applied: #3d6b4e;
-  --s-interviewing: #6b4c9a;
-  --s-offer: #1f7a3a;
-  --s-rejected: #8a5a55;
-  --s-not_interested: #8b979b;
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
 
-  --radius: 6px;
-  --font: "Instrument Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
+:root,
+[data-theme="dim"] {
+  --bg: #dde3e1;
+  --surface: #e8ecea;
+  --raised: #f1f3f2;
+  --sunken: #d0d7d4;
+  --ink: #1c2a2e;
+  --muted: #546569;
+  --line: #c2cbc7;
+  --lake: #2a6582;
+  --lake-ink: #f4f8fa;
+  --lake-soft: #c6d9e3;
+  --spruce: #36684a;
+  --amber: #b67812;
+  --amber-soft: #ecdcbc;
+  --amber-ink: #2a1d06;
+  --danger: #9a3a32;
+  --warn-bg: #e9dfc6;
+  --shadow: 0 1px 2px rgb(28 42 46 / 0.06), 0 4px 14px -6px rgb(28 42 46 / 0.12);
+
+  --s-new: #2a6582;
+  --s-saved: #a86f10;
+  --s-applied: #36684a;
+  --s-interviewing: #654893;
+  --s-offer: #1d7438;
+  --s-rejected: #85544f;
+  --s-not_interested: #87949a;
   color-scheme: light;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #171d20;
-    --surface: #1f272b;
-    --sunken: #283236;
-    --ink: #e4ebe8;
-    --muted: #9aa8ad;
-    --line: #34413f;
-    --lake: #6fa9c8;
-    --lake-ink: #0f1a20;
-    --lake-soft: #24404f;
-    --spruce: #7fb08f;
-    --amber: #e0a63f;
-    --danger: #e0786e;
-    --warn-bg: #3a3222;
-    --s-new: #6fa9c8;
-    --s-saved: #e0a63f;
-    --s-applied: #7fb08f;
-    --s-interviewing: #ab92d6;
-    --s-offer: #6fcf8f;
-    --s-rejected: #c4948e;
-    --s-not_interested: #7d898d;
-    color-scheme: dark;
+[data-theme="dark"] {
+  --bg: #121a1d;
+  --surface: #182226;
+  --raised: #1f2b30;
+  --sunken: #0f1619;
+  --ink: #dce6e3;
+  --muted: #8fa1a6;
+  --line: #29373c;
+  --lake: #78b2cf;
+  --lake-ink: #0d1a21;
+  --lake-soft: #1c3a49;
+  --spruce: #84b896;
+  --amber: #e2a948;
+  --amber-soft: #3a301c;
+  --amber-ink: #1c1405;
+  --danger: #e07b70;
+  --warn-bg: #34301f;
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.3), 0 6px 18px -8px rgb(0 0 0 / 0.5);
+
+  --s-new: #78b2cf;
+  --s-saved: #e2a948;
+  --s-applied: #84b896;
+  --s-interviewing: #ad94d8;
+  --s-offer: #6fcf8f;
+  --s-rejected: #c4948e;
+  --s-not_interested: #7a878b;
+  color-scheme: dark;
+}
+
+/* The same colours as Tailwind utilities: bg-surface, text-muted, border-line... */
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-raised: var(--raised);
+  --color-sunken: var(--sunken);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-lake: var(--lake);
+  --color-lake-ink: var(--lake-ink);
+  --color-lake-soft: var(--lake-soft);
+  --color-spruce: var(--spruce);
+  --color-amber: var(--amber);
+  --color-amber-soft: var(--amber-soft);
+  --color-danger: var(--danger);
+  --font-sans: "Instrument Sans Variable", "Instrument Sans", "Segoe UI", system-ui, sans-serif;
+  --animate-sweep: sweep 2.4s linear infinite;
+  --animate-shimmer: shimmer 1.4s ease-in-out infinite;
+
+  @keyframes sweep {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @keyframes shimmer {
+    0% {
+      background-position: 100% 0;
+    }
+    100% {
+      background-position: -100% 0;
+    }
   }
 }
 
+:root {
+  --radius: 7px;
+  --font: var(--font-sans);
+}
+
+/* Theme changes fade instead of snapping. */
+html.theme-fade,
+html.theme-fade * {
+  transition: background-color 0.35s ease, border-color 0.35s ease, color 0.2s ease !important;
+}
+
+@layer components {
 * {
   box-sizing: border-box;
 }
@@ -129,6 +192,12 @@ button.primary {
   border-color: var(--lake);
   color: var(--lake-ink);
   font-weight: 600;
+  box-shadow: 0 1px 0 rgb(255 255 255 / 0.15) inset, 0 2px 8px -3px color-mix(in srgb, var(--lake) 60%, transparent);
+}
+
+button.primary:hover:not(:disabled) {
+  border-color: var(--lake);
+  background: color-mix(in srgb, var(--lake) 88%, var(--ink));
 }
 
 button.link {
@@ -157,6 +226,10 @@ textarea {
 textarea {
   width: 100%;
   resize: vertical;
+}
+
+input[type="checkbox"] {
+  accent-color: var(--lake);
 }
 
 .hint {
@@ -245,8 +318,9 @@ textarea {
   display: flex;
   align-items: center;
   gap: 1.5rem;
-  padding: 0.6rem 1.5rem;
-  background: var(--surface);
+  padding: 0.55rem 1.5rem;
+  background: color-mix(in srgb, var(--surface) 82%, transparent);
+  backdrop-filter: saturate(1.4) blur(12px);
   border-bottom: 1px solid var(--line);
 }
 
@@ -260,16 +334,25 @@ textarea {
 }
 
 .brand svg {
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
   fill: none;
   stroke: var(--lake);
-  stroke-width: 2;
+  stroke-width: 1.6;
+  overflow: visible;
 }
 
 .brand .dot {
   fill: var(--amber);
   stroke: none;
+}
+
+/* The radar's sweep: still when idle, turning while a scan runs. */
+.brand .sweep {
+  fill: color-mix(in srgb, var(--lake) 30%, transparent);
+  stroke: none;
+  transform-box: view-box;
+  transform-origin: 8px 8px;
 }
 
 .topbar nav {
@@ -279,15 +362,30 @@ textarea {
 }
 
 .topbar nav a {
-  padding: 0.3rem 0.65rem;
+  position: relative;
+  isolation: isolate;
+  padding: 0.3rem 0.7rem;
   border-radius: var(--radius);
   color: var(--muted);
   text-decoration: none;
 }
 
+.topbar nav a:hover {
+  color: var(--ink);
+}
+
 .topbar nav a.active {
   color: var(--ink);
+}
+
+/* The highlight behind the current page; it slides between links. */
+.topbar nav .pill {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: var(--radius);
   background: var(--sunken);
+  box-shadow: inset 0 0 0 1px var(--line);
 }
 
 .scan-progress {
@@ -306,7 +404,6 @@ textarea {
   position: absolute;
   inset: 0 auto 0 0;
   background: var(--lake-soft);
-  transition: width 0.6s ease;
 }
 
 .scan-progress .text {
@@ -398,14 +495,31 @@ main {
   color: var(--bg);
 }
 
-.more summary {
-  cursor: pointer;
+.more-toggle {
+  border: 0;
+  padding: 0;
+  background: none;
   font-weight: 600;
   font-size: 0.9rem;
 }
 
-.more[open] summary {
-  margin-bottom: 0.6rem;
+.more-toggle svg {
+  transition: transform 0.25s ease;
+}
+
+.more-toggle[aria-expanded="true"] svg {
+  transform: rotate(180deg);
+}
+
+.more-body {
+  overflow: hidden;
+}
+
+.more-body > div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding-top: 0.6rem;
 }
 
 .clear-all {
@@ -427,7 +541,7 @@ main {
   gap: 0;
   padding: 0;
   border: 0;
-  border-radius: 3px;
+  border-radius: 5px;
   /* Shade by share of jobs: --weight runs from 0 (none) to 1 (the busiest). */
   background: color-mix(in srgb, var(--lake) calc(var(--weight, 0) * 70%), var(--sunken));
   color: var(--ink);
@@ -455,13 +569,13 @@ main {
 
 .tile.on {
   background: var(--amber);
-  color: #1f2b30;
-  box-shadow: inset 0 0 0 2px var(--ink);
+  color: var(--amber-ink);
+  box-shadow: inset 0 0 0 2px var(--ink), 0 4px 12px -4px color-mix(in srgb, var(--amber) 70%, transparent);
 }
 
 .tile.on .code,
 .tile.on .count {
-  color: #1f2b30;
+  color: var(--amber-ink);
 }
 
 .tile:hover:not(.on) {
@@ -516,6 +630,7 @@ main {
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: var(--radius);
+  box-shadow: var(--shadow);
 }
 
 table {
@@ -524,6 +639,7 @@ table {
 }
 
 th {
+  background: color-mix(in srgb, var(--sunken) 45%, var(--surface));
   text-align: left;
   font-weight: 600;
   font-size: 0.82rem;
@@ -606,7 +722,7 @@ a.job-title:hover {
 
 .tag.new {
   background: var(--amber);
-  color: #1f2b30;
+  color: var(--amber-ink);
   font-weight: 600;
 }
 
@@ -711,6 +827,7 @@ a.job-title:hover {
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: var(--radius);
+  box-shadow: var(--shadow);
   padding: 1rem;
   margin-bottom: 1rem;
 }
@@ -942,8 +1059,34 @@ td.actions button + button {
   }
 }
 
+/* --- motion polish -------------------------------------------------------- */
+
+button,
+.button,
+.chip,
+.tile,
+select,
+input:not([type="checkbox"]),
+textarea {
+  transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.status-select::before {
+  transition: background-color 0.3s ease, transform 0.3s cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+
+.skeleton {
+  border-radius: 4px;
+  background: linear-gradient(90deg, var(--sunken) 25%, color-mix(in srgb, var(--sunken) 40%, var(--raised)) 50%, var(--sunken) 75%);
+  background-size: 200% 100%;
+  animation: var(--animate-shimmer);
+}
+
 @media (prefers-reduced-motion: reduce) {
-  * {
+  *,
+  html.theme-fade * {
     transition: none !important;
+    animation: none !important;
   }
 }
+} /* @layer components */

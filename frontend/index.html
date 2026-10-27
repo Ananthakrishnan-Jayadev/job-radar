@@ -1,13 +1,17 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dim">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Job Radar</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><circle cx='8' cy='8' r='6' fill='none' stroke='%232E6A8A' stroke-width='2'/><circle cx='8' cy='8' r='2' fill='%23C2861A'/></svg>" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400..700&display=swap" rel="stylesheet" />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><circle cx='8' cy='8' r='6' fill='none' stroke='%232A6582' stroke-width='2'/><circle cx='8' cy='8' r='2' fill='%23B67812'/></svg>" />
+    <script>
+      // Pick the saved theme before the first paint, so the page never flashes the other one.
+      try {
+        var theme = localStorage.getItem("jobradar-theme");
+        if (theme === "dark" || theme === "dim") document.documentElement.dataset.theme = theme;
+      } catch (e) {}
+    </script>
   </head>
   <body>
     <div id="root"></div>

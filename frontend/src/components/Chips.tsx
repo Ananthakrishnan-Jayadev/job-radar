@@ -1,5 +1,7 @@
 // A row of on/off buttons for picking several values of one filter.
 
+import { motion } from "motion/react";
+
 interface Props {
   legend: string;
   options: { value: string; label: string }[];
@@ -15,15 +17,17 @@ export default function Chips({ legend, options, selected, onToggle }: Props) {
         {options.map(({ value, label }) => {
           const on = selected.includes(value);
           return (
-            <button
+            <motion.button
               key={value}
+              whileTap={{ scale: 0.93 }}
+              transition={{ type: "spring", stiffness: 600, damping: 30 }}
               type="button"
               className={`chip${on ? " on" : ""}`}
               aria-pressed={on}
               onClick={() => onToggle(value)}
             >
               {label}
-            </button>
+            </motion.button>
           );
         })}
       </div>
