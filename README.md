@@ -5,10 +5,13 @@ companies you care about, keeps only jobs located in Canada, and lets you
 search them, filter by province and company size, and track what you've
 saved and applied to. No LinkedIn automation, no accounts.
 
-**Status:** phases 1–3 of 5 done; phase 4 part 1 done (company sizes,
+**Status:** phases 1–3 of 5 done; phase 4 mostly done (company sizes,
 stillhiring.today candidates, job-board detection, importing your own company
-lists), plus five more job systems than planned. Next: phase 4 part 2 (Adzuna
-job search, needs a free key). See [TASKS.md](TASKS.md).
+lists), plus six more job systems than planned (16 in all), role filtering
+(`roles.toml`), full job descriptions, and a dim/dark UI. Adzuna was dropped
+(its free tier is 25 calls in total); its one-time snapshot is being replaced
+by the companies' own boards. Still open: adding a job by its link (phase 4)
+and phase 5. See [TASKS.md](TASKS.md).
 
 - [PROJECT.md](PROJECT.md): the specification
 - [TASKS.md](TASKS.md): the build plan in five phases
@@ -26,7 +29,7 @@ python3 -m venv .venv            # skip if .venv already exists
 .venv/bin/pip install -e ".[dev]"
 cp config.local.example.toml config.local.toml   # then add your email
 
-# The web UI (needs Node 18+)
+# The web UI (needs Node 20+, for Tailwind)
 cd frontend && npm install && npm run build && cd ..
 
 .venv/bin/jobradar init-db       # create data/jobradar.db
@@ -40,7 +43,10 @@ cd frontend && npm install && npm run build && cd ..
 ```
 
 One command, one terminal: the Python server serves both the data and the
-built UI. After changing anything in `frontend/`, run `npm run build` again,
+built UI. The UI has two themes, dim (low-glare light, the default) and dark;
+the moon/sun button in the top bar switches them and is remembered. It's
+built with React, Tailwind CSS, Motion (animations; turned off if your system
+asks for reduced motion), Lucide icons and NumberFlow (animated counts). After changing anything in `frontend/`, run `npm run build` again,
 or use `.venv/bin/jobradar serve --dev`, which rebuilds the UI on every save
 (reload the page to see it).
 
@@ -48,15 +54,15 @@ or use `.venv/bin/jobradar serve --dev`, which rebuilds the UI on every save
 
 - **Jobs:** shows only the roles you want (software, data, AI; see "Which
   roles" below), with a "Show all roles" switch and role chips. Search (words,
-  `"exact phrases"`, `OR`, `analy*`), a tile map of
-  Canada to filter by province (with live counts) plus "Remote anywhere in
-  Canada", and filters for company size, your status, workplace, date posted,
+  `"exact phrases"`, `OR`, `analy*`), a heat map of the ten provinces to
+  filter by (live counts; territories are left out but count in "all of
+  Canada") plus "Remote anywhere in Canada", and filters for company size, your status, workplace, date posted,
   job system and salary. Change a job's status right in the list; new jobs
   since your last visit have an amber edge. Save a search, export a CSV.
 - **Job page:** description, Canadian locations, notes, applied date, status
   history, and links to the posting, the careers page and a LinkedIn search.
-- **Companies:** open roles in Canada and worldwide, size, job boards, your
-  status. Buttons to fill in company sizes and to find job boards for
+- **Companies:** roles matching yours, open roles in Canada and worldwide,
+  size, job boards, your status. Buttons to fill in company sizes and to find job boards for
   companies that have none. Add a company (paste its careers link and let the
   app find its job board).
 - **Company page:** boards (switch on or off, confirm a board matched by name,
@@ -149,7 +155,10 @@ company page.
 
 **Company sizes** come from, best first: your own entry, stillhiring.today,
 your imported list ("51-200" counts as 125), Wikidata, then an estimate from
-open roles. A source never overwrites a better one.
+open roles. A source never overwrites a better one. "Fill in company sizes"
+skips companies whose size came from a better source (your list, your own
+entry), estimates the rest first, then asks Wikidata, saving every 20
+companies, so a stopped run keeps what it found.
 
 Options for any command: `--db PATH` uses another database file,
 `--root PATH` reads `config.toml` from another folder.
@@ -159,7 +168,15 @@ Options for any command: `--db PATH` uses another database file,
 Everything lives in `data/jobradar.db` (git-ignored). The database upgrades
 itself when a new version needs it. Bulk changes made for you (imports,
 board research) were preceded by a copy in `data/jobradar-backup-*.db`;
-delete old ones whenever you like. To make your own copy:
+delete old ones whenever you like.
+
+Companies without a readable job board were moved out on 2026-10-27, to keep
+the list to the ~215 that can be scanned. They're kept, with their boards,
+jobs and research notes, in `data/removed-companies-*.db` (same format as the
+main database) and `data/removed-companies-*.csv`. Re-importing `joblst.xlsx`
+would bring some back.
+
+To make your own copy:
 
 ```bash
 cp data/jobradar.db data/jobradar-$(date +%F).db   # with the server stopped
@@ -186,6 +203,7 @@ jobradar/            the package
   http.py            shared HTTP client: per-host limits, pauses, retry
   connectors/        one module per job system (greenhouse.py, workday.py...)
   scan.py            runs connectors, stores Canadian jobs, closes vanished ones
+  snapshots.py       replaces Adzuna snapshot copies with the company's own board
   queries.py         job search with every filter, company lists, scan history
   tracking.py        statuses, notes, sizes, saved searches, "new since last visit"
   enrich.py          company sizes: precedence, Wikidata, estimates
@@ -201,7 +219,9 @@ jobradar/            the package
   web/scanner.py     "Scan now" in a background thread
   web/tasks.py       other long jobs (sizes, finding boards) in the background
   web/static/        the built UI (generated by npm run build; git-ignored)
-frontend/            the React + TypeScript UI (Vite)
+frontend/            the React + TypeScript UI (Vite, Tailwind, Motion)
+  src/styles.css     the two themes (colours as CSS variables) and all styles
+  src/theme.tsx      the dim/dark switch
 roles.toml           which roles you want (edit freely)
 seeds/               starting company list
 tests/               pytest tests and recorded API responses
