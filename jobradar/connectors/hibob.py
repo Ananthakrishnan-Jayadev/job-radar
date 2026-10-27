@@ -12,6 +12,7 @@ from one public request:
                        "payTransparencyMinSalary", "payTransparencyMaxSalary",
                        "payTransparencySalaryCurrency", "payTransparencySalaryPayPeriod"}]}
 
+It answers 401 unless the request carries the careers page as Referer.
 A job's page is {site}/jobs/{id}. "site" is the company's own name for an
 office, so it can be a country ("United States") or "Remote"; "country" is
 always a country name.
@@ -31,7 +32,8 @@ SITE = "https://{slug}.careers.hibob.com"
 
 async def fetch(board: Board, client: HttpClient, ctx: FetchContext) -> FetchResult:
     site = SITE.format(slug=board.slug_or_url)
-    data = await client.get_json(f"{site}/api/job-ad")
+    # Without the careers page as Referer the API answers 401.
+    data = await client.get_json(f"{site}/api/job-ad", headers={"Referer": f"{site}/jobs"})
     items = data.get("jobAdDetails") or []
     return FetchResult(jobs=[_job(i, site, board.company_canadian) for i in items], total=len(items))
 

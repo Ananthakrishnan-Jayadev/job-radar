@@ -48,8 +48,8 @@ class HttpClient:
         if delay > 0:
             await asyncio.sleep(delay)
 
-    async def get_json(self, url: str, params: dict | None = None) -> Any:
-        return _json(await self.request("GET", url, params=params))
+    async def get_json(self, url: str, params: dict | None = None, headers: dict | None = None) -> Any:
+        return _json(await self.request("GET", url, params=params, headers=headers))
 
     async def post_json(self, url: str, body: dict) -> Any:
         return _json(await self.request("POST", url, json=body))

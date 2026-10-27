@@ -353,6 +353,8 @@ all its open jobs.**
   site, country, workspaceType, publishedAt, description, requirements,
   responsibilities, benefits, payTransparencyMinSalary/MaxSalary/SalaryCurrency/
   SalaryPayPeriod}]}`. Every job with its full description, in one request.
+- **Needs `Referer: https://{company}.careers.hibob.com/jobs`**; without it the
+  API answers HTTP 401. The User-Agent doesn't matter.
 - `site` is the company's own name for the office ("Toronto", "Remote",
   "United States"); `country` is a country name.
 - **Job page:** `https://{company}.careers.hibob.com/jobs/{id}`.
