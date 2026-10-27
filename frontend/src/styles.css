@@ -410,9 +410,11 @@ input[type="checkbox"] {
   position: relative;
 }
 
+/* Wide screens get the room: the jobs table and filters use the full width
+   up to 1,880px (a 1080p screen), with a 2rem margin on each side. */
 main {
-  padding: 1.5rem;
-  max-width: 1500px;
+  padding: 1.5rem 2rem;
+  max-width: 1880px;
   margin: 0 auto;
 }
 
@@ -428,7 +430,7 @@ main {
 
 .jobs-layout {
   display: grid;
-  grid-template-columns: 19rem minmax(0, 1fr);
+  grid-template-columns: 20rem minmax(0, 1fr);
   gap: 2rem;
   align-items: start;
 }
@@ -438,6 +440,11 @@ main {
   top: 4.2rem;
   max-height: calc(100vh - 5rem);
   overflow-y: auto;
+  overflow-x: hidden;
+  /* Room for the province tiles' pop and hover lift inside the scroll area. */
+  padding-top: 0.25rem;
+  padding-left: 0.2rem;
+  scrollbar-width: thin;
   display: flex;
   flex-direction: column;
   gap: 1.1rem;
@@ -487,6 +494,11 @@ main {
   padding: 0.2rem 0.6rem;
   font-size: 0.85rem;
   border-radius: 999px;
+  /* Long labels ("Adjacent (business/systems analysts, ...)") wrap inside the
+     sidebar instead of pushing it sideways. */
+  white-space: normal;
+  text-align: left;
+  max-width: 100%;
 }
 
 .chip.on {
