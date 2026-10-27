@@ -50,14 +50,17 @@ recorded in [`docs/decisions/`](docs/decisions/).
 | HTTP | httpx (async), per-host concurrency limit and pause | Gentle on sources |
 | Storage | SQLite through the standard `sqlite3` module, FTS5 for search | One file, no server, full-text search built in |
 | Config | TOML (`config.toml`, read with `tomllib`) | No extra package; draft already in TOML |
-| Secrets | `config.local.toml` (git-ignored) | API keys for Adzuna etc. |
+| Secrets | `config.local.toml` (git-ignored) | Your contact email (in the user agent); API keys if ever needed |
 | Command line | `argparse`, entry point `jobradar` | No extra package |
 | Tests | pytest, recorded responses as fixtures, `httpx.MockTransport` | No network in tests |
 
 Python runtime dependencies: `fastapi`, `uvicorn[standard]`, `httpx`.
 Dev: `pytest`. UI dependencies (in `frontend/package.json`): `react`,
-`react-dom`, `react-router-dom`; dev: `vite`, `@vitejs/plugin-react`,
-`typescript`, `@types/react`, `@types/react-dom`. No UI component or state
+`react-dom`, `react-router-dom`, and since 2026-10-27 `motion`,
+`lucide-react`, `@number-flow/react` and `@fontsource-variable/instrument-sans`;
+dev: `vite`, `@vitejs/plugin-react`, `tailwindcss`, `@tailwindcss/vite`,
+`typescript`, `@types/react`, `@types/react-dom`
+(`docs/decisions/2026-10-27-ui-themes-and-motion.md`). No UI component or state
 libraries: plain CSS and React state are enough for one user.
 
 **One terminal.** `jobradar serve` runs Uvicorn, which serves both the API and
@@ -115,10 +118,11 @@ job-radar/
       __init__.py           # registry: system name -> connector
       greenhouse.py lever.py ashby.py smartrecruiters.py workable.py
       recruitee.py breezy.py rippling.py bamboohr.py workday.py successfactors.py jazzhr.py
-      pinpoint.py teamtailor.py humi.py
-      adzuna.py             # phase 4
+      pinpoint.py teamtailor.py humi.py hibob.py
     detect.py               # job-system detection from URLs/HTML (phase 4)
     enrich.py               # company size (phase 4)
+    roles.py                # which titles are wanted (roles.toml)
+    snapshots.py            # replaces Adzuna snapshot copies with the company's own board
     export.py               # CSV
     cli.py
     web/
@@ -158,9 +162,16 @@ Per-company feeds (details and field lists in `docs/03-data-sources.md`):
 | Pinpoint | `{company}.pinpointhq.com/postings.json` | Added 2026-10-26; salary when shown; no posting date |
 | Teamtailor | `{site}/jobs.rss` | Added 2026-10-26; board is the site address (`*.teamtailor.com` or own domain) |
 | Humi | `{company}.applytojobs.ca` (HTML) | Added 2026-10-26; no feed, reads the careers page: the most fragile connector |
+| HiBob | `{company}.careers.hibob.com/api/job-ad` | Added 2026-10-27; undocumented; needs the careers page as Referer |
 
-Added in phase 4: **Adzuna** (Canada search, `top_companies`) and **Wikidata**
-(employee counts).
+Added in phase 4: **Wikidata** (employee counts). **Adzuna** was dropped
+(the free tier is 25 calls in total): the calls were used once for a snapshot,
+which `snapshots.py` replaces with the companies' own boards
+(`docs/decisions/2026-10-26-adzuna-snapshot.md`).
+
+**Descriptions:** where a list has none, the job's own page is read during
+the scan, for wanted roles in Canada only, at most `[details] max_per_board`
+(60) per board per scan (`docs/decisions/2026-10-26-job-descriptions.md`).
 
 ### Workday strategy
 
@@ -171,8 +182,8 @@ description. Per board:
    for Canada. Later requests filter with that facet.
 2. If the Canadian total is at or below `workday.max_list` (default 400), list
    them all. Otherwise run one search per **saved search** term instead.
-3. Fetch the job detail (exact date, all locations, description) only for jobs
-   seen for the first time, at most `workday.max_details_per_scan` (default 60)
+3. Fetch the job detail (exact date, all locations, description) only for
+   wanted roles (`roles.toml`) seen for the first time, at most `workday.max_details_per_scan` (default 60)
    per board per scan; the rest are filled in on later scans.
 4. Pause `workday.delay_seconds` (default 1.0) between requests.
 
@@ -195,9 +206,14 @@ data into `Location(city, province, country, remote, raw)`:
   company is Canadian.
 - Full list of forms in `docs/04-canadian-sources.md`.
 
-**Province filter:** multi-select of the 13 provinces and territories, plus
-"Remote (Canada-wide)" (remote, country Canada, no province). Default: all of
-Canada.
+**Province filter:** multi-select of the ten provinces (a 5 × 2 heat map in
+the UI; the territories are left out, but their jobs count in "all of
+Canada"), plus "Remote (Canada-wide)" (remote, country Canada, no province).
+Default: all of Canada.
+
+**Roles:** `roles.toml` marks each job's role categories; jobs outside the
+wanted ones (software, data, AI) are hidden by default, with a "Show all
+roles" switch. Jobs you're tracking always show.
 
 **Keyword search:** SQLite FTS5 over title, company name, department and
 description. Supports phrases (`"machine learning"`), OR, and prefix
@@ -209,7 +225,7 @@ remote/hybrid/onsite where known, has salary.
 
 **Saved searches:** named keyword + filter combinations, kept in the database
 and shown as one-click views. Their keywords also drive the sources that search
-on their own side (Workday over the limit, Adzuna).
+on their own side (Workday over the limit).
 
 ## 8. Company size
 
@@ -289,7 +305,8 @@ Schema changes go through numbered migrations applied on start
 - **Add company:** name + board (system + slug/URL), or (phase 4) a careers
   URL that is detected automatically.
 - **Scans:** last runs, per-board errors, "Scan now".
-- **Settings:** saved searches used for Workday/Adzuna, defaults.
+- **Saved searches:** the ones whose keywords big Workday sites are searched for.
+- **Themes:** dim (default) and dark, switched from the top bar.
 
 ## 13. Process rules for the coding agent
 
