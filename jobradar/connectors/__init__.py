@@ -13,6 +13,7 @@ from . import (
     bamboohr,
     breezy,
     greenhouse,
+    hibob,
     humi,
     jazzhr,
     lever,
@@ -43,6 +44,7 @@ CONNECTORS = {
     "pinpoint": pinpoint.fetch,
     "teamtailor": teamtailor.fetch,
     "humi": humi.fetch,
+    "hibob": hibob.fetch,
 }
 
 __all__ = ["CONNECTORS", "FetchContext", "FetchResult"]

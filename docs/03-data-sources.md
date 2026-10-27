@@ -344,6 +344,21 @@ all its open jobs.**
   Humi changes the page. `{company}.humi.ca/job-board` redirects there.
   Tested: ecopiatech (1), hypercare (2, from 2022).
 
+### HiBob ⚠️ undocumented (added 2026-10-27)
+
+- Careers sites at `https://{company}.careers.hibob.com/jobs` are a script app
+  (Angular); the page itself has no jobs. The app reads them from
+  **`GET https://{company}.careers.hibob.com/api/job-ad`**, public, no key:
+  `{filterGroups, jobAdDetails: [{id, title, department, employmentType,
+  site, country, workspaceType, publishedAt, description, requirements,
+  responsibilities, benefits, payTransparencyMinSalary/MaxSalary/SalaryCurrency/
+  SalaryPayPeriod}]}`. Every job with its full description, in one request.
+- `site` is the company's own name for the office ("Toronto", "Remote",
+  "United States"); `country` is a country name.
+- **Job page:** `https://{company}.careers.hibob.com/jobs/{id}`.
+- Found by reading the app's script (`/api/job-ad` in its job-ads service).
+- Tested: xanadu (86 jobs, 72 in Canada). Helcim's careers page also uses HiBob.
+
 ### Personio ✅ (mostly European companies)
 
 - `GET https://{company}.jobs.personio.de/xml` → XML `<workzag-jobs><position>`

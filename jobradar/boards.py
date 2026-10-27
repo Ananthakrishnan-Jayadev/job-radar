@@ -25,6 +25,7 @@ _URL_FORMS = {
     "jazzhr": (r"^([\w-]+)\.applytojob\.com$", "sub"),
     "pinpoint": (r"^([\w-]+)\.pinpointhq\.com$", "sub"),
     "humi": (r"^([\w-]+)\.(?:applytojobs\.ca|humi\.ca)$", "sub"),
+    "hibob": (r"^([\w-]+)\.careers\.hibob\.com$", "sub"),
 }
 
 

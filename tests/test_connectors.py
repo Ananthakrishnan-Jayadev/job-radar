@@ -694,3 +694,32 @@ def test_workday_details_for_wanted_roles_only(settings):
     assert not any("/job/" in str(r.url) for r in sources.requests if r.method == "GET")
     assert not any(j.details_fetched for j in result.jobs)
     assert not any("left for the next scan" in w for w in result.warnings)
+
+
+# --- HiBob ---------------------------------------------------------------------------
+
+def test_hibob_fixture(settings):
+    sources = FakeSources({("GET", "https://xanadu.careers.hibob.com/api/job-ad"): fixture_json("hibob_xanadu.json")})
+    result = fetch(settings, sources, board("hibob", "xanadu"))
+    assert result.total == 4
+    remote, toronto, us, data = result.jobs
+    assert remote.title == "Principal Analog ASIC Design Engineer"
+    assert remote.url == "https://xanadu.careers.hibob.com/jobs/ce50ce64-bce7-40e5-8b07-362045e73ad1"
+    assert remote.locations[0].remote_canada_wide and remote.workplace == "remote"
+    assert remote.posted_at == "2026-08-24"
+    assert remote.description.startswith("About Xanadu:") and "<strong>" not in remote.description
+    assert (toronto.locations[0].city, toronto.locations[0].province) == ("Toronto", "ON")
+    assert toronto.workplace in ("hybrid", "onsite")
+    assert us.locations[0].country == "US" and us.locations[0].city is None
+    assert data.title == "Senior Data Scientist – Decision Intelligence"
+    assert data.department and data.employment_type == "Full Time"
+
+
+def test_hibob_salary(settings):
+    item = {"id": "x1", "title": "ML Engineer", "site": "Toronto", "country": "Canada", "workspaceType": "On site",
+            "payTransparencyMinSalary": 130000, "payTransparencyMaxSalary": 150000,
+            "payTransparencySalaryCurrency": "CAD", "payTransparencySalaryPayPeriod": "Annual"}
+    sources = FakeSources({("GET", "https://acme.careers.hibob.com/"): {"jobAdDetails": [item]}})
+    job = fetch(settings, sources, board("hibob", "acme")).jobs[0]
+    assert job.salary_text == "CA$130,000 – 150,000 / year"
+    assert job.workplace == "onsite"
