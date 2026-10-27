@@ -2,23 +2,22 @@ import NumberFlow from "@number-flow/react";
 import { motion } from "motion/react";
 import type { CSSProperties } from "react";
 
-// Canada as a grid of tiles, placed roughly where each province sits,
-// with the number of matching jobs on each. Clicking a tile filters by it.
+// The ten provinces as a 5 x 2 grid, west to east, with the number of
+// matching jobs on each. Clicking a tile filters by it. The territories
+// (YT, NT, NU) are left out: they almost never have jobs, and their jobs
+// still count in "all of Canada".
 
 const TILES: { code: string; row: number; col: number }[] = [
-  { code: "YT", row: 1, col: 1 },
-  { code: "NT", row: 1, col: 2 },
-  { code: "NU", row: 1, col: 3 },
-  { code: "NL", row: 1, col: 7 },
-  { code: "BC", row: 2, col: 1 },
-  { code: "AB", row: 2, col: 2 },
-  { code: "SK", row: 2, col: 3 },
-  { code: "MB", row: 2, col: 4 },
-  { code: "ON", row: 2, col: 5 },
-  { code: "QC", row: 2, col: 6 },
-  { code: "PE", row: 2, col: 7 },
-  { code: "NB", row: 3, col: 6 },
-  { code: "NS", row: 3, col: 7 },
+  { code: "BC", row: 1, col: 1 },
+  { code: "AB", row: 1, col: 2 },
+  { code: "SK", row: 1, col: 3 },
+  { code: "MB", row: 1, col: 4 },
+  { code: "ON", row: 1, col: 5 },
+  { code: "QC", row: 2, col: 1 },
+  { code: "NB", row: 2, col: 2 },
+  { code: "NS", row: 2, col: 3 },
+  { code: "PE", row: 2, col: 4 },
+  { code: "NL", row: 2, col: 5 },
 ];
 
 export const REMOTE = "REMOTE";
