@@ -26,6 +26,8 @@ from .config import Settings
 from .http import FetchError, HttpClient
 
 # "imported": a size range from the user's own company list (e.g. "51-200").
+BATCH = 20  # Wikidata lookups saved together
+
 PRIORITY = {"estimate": 1, "wikidata": 2, "imported": 3, "stillhiring": 4, "manual": 5}
 
 WIKIDATA_API = "https://www.wikidata.org/w/api.php"
@@ -210,9 +212,12 @@ async def wikidata_lookup(client: HttpClient, companies: list[tuple[str, bool]],
     ids = sorted({hit["id"] for hits in searches.values() for hit in hits})
     entities: dict[str, dict] = {}
     for start in range(0, len(ids), 50):
-        data = await client.get_json(WIKIDATA_API, params={
-            "action": "wbgetentities", "ids": "|".join(ids[start:start + 50]),
-            "props": "claims|labels|descriptions", "languages": "en", "format": "json"})
+        try:
+            data = await client.get_json(WIKIDATA_API, params={
+                "action": "wbgetentities", "ids": "|".join(ids[start:start + 50]),
+                "props": "claims|labels|descriptions", "languages": "en", "format": "json"})
+        except FetchError:
+            continue  # those companies just get no match this time
         entities.update(data.get("entities", {}))
         await client.pause()
     return {name: pick_match(name, canadian, searches[name], entities) for name, canadian in companies}
@@ -230,7 +235,9 @@ class EnrichSummary:
 async def enrich_async(conn: sqlite3.Connection, settings: Settings, *, company: str | None = None,
                        transport: httpx.AsyncBaseTransport | None = None,
                        progress: Callable[[int, int], None] | None = None) -> EnrichSummary:
-    """Fill sizes: Wikidata for companies without a better source, then estimates."""
+    """Fill sizes: estimates first (no requests), then Wikidata for companies
+    without a better source, saved every BATCH companies so a stopped run keeps
+    what it found."""
     sql = "SELECT id, name, canadian, size_source FROM companies"
     params: list = []
     if company:
@@ -239,24 +246,30 @@ async def enrich_async(conn: sqlite3.Connection, settings: Settings, *, company:
     rows = [r for r in conn.execute(sql, params).fetchall()
             if r["size_source"] is None or PRIORITY[r["size_source"]] <= PRIORITY["wikidata"]]
     summary = EnrichSummary(looked_up=len(rows))
+    summary.estimated = estimate_missing(conn) if not company else 0
     if rows:
         async with HttpClient(settings, transport=transport) as client:
-            results = await wikidata_lookup(
-                client, [(r["name"], bool(r["canadian"])) for r in rows],
-                progress=(lambda done: progress(done, len(rows))) if progress else None,
-            )
-        for r in rows:
-            match, certain = results[r["name"]]
-            if match and certain:
-                if apply_size(conn, r["id"], match.employees, "wikidata", wikidata_id=match.wikidata_id):
-                    summary.from_wikidata += 1
-                    summary.details.append(f"{r['name']}: {match.employees:,} (Wikidata, {match.as_of or 'no date'})")
-            elif match:
-                suggest_size(conn, r["id"], match.as_suggestion())
-                summary.suggested += 1
-                summary.details.append(f"{r['name']}: maybe {match.employees:,} ({match.label}: {match.description})")
-    summary.estimated = estimate_missing(conn) if not company else 0
+            for start in range(0, len(rows), BATCH):
+                batch = rows[start:start + BATCH]
+                results = await wikidata_lookup(
+                    client, [(r["name"], bool(r["canadian"])) for r in batch],
+                    progress=(lambda done, s=start: progress(s + done, len(rows))) if progress else None,
+                )
+                _apply_matches(conn, batch, results, summary)
     return summary
+
+
+def _apply_matches(conn: sqlite3.Connection, rows, results, summary: EnrichSummary) -> None:
+    for r in rows:
+        match, certain = results[r["name"]]
+        if match and certain:
+            if apply_size(conn, r["id"], match.employees, "wikidata", wikidata_id=match.wikidata_id):
+                summary.from_wikidata += 1
+                summary.details.append(f"{r['name']}: {match.employees:,} (Wikidata, {match.as_of or 'no date'})")
+        elif match:
+            suggest_size(conn, r["id"], match.as_suggestion())
+            summary.suggested += 1
+            summary.details.append(f"{r['name']}: maybe {match.employees:,} ({match.label}: {match.description})")
 
 
 def run_enrich(conn: sqlite3.Connection, settings: Settings, **kwargs) -> EnrichSummary:

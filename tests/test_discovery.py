@@ -119,6 +119,34 @@ def test_enrich_end_to_end(conn, settings):
     assert sum(1 for r in sources.requests if r.url.params["action"] == "wbgetentities") == 1
 
 
+def test_enrich_failed_entity_request_still_estimates(conn, settings):
+    td = company(conn, "TD Bank")
+    db.upsert_board(conn, td, "workday", "https://td.wd3.myworkdayjobs.com/TD_Bank_Careers")
+    conn.commit()
+    search = wikidata_reply()
+    sources = FakeSources({("GET", WIKI): lambda r: search(r) if r.url.params["action"] == "wbsearchentities"
+                           else httpx.Response(500)})
+    summary = enrich.run_enrich(conn, settings, transport=sources.transport())
+    assert summary.from_wikidata == 0
+    assert size(conn, td) == (1000, "estimate")
+
+
+def test_enrich_keeps_earlier_batches_when_stopped(conn, settings, monkeypatch):
+    monkeypatch.setattr(enrich, "BATCH", 1)
+    shopify = company(conn, "Shopify")
+    company(conn, "Hopper")
+    search = wikidata_reply()
+
+    def reply(request):
+        if request.url.params.get("search") == "Hopper":
+            raise RuntimeError("server stopped")
+        return search(request)
+
+    with pytest.raises(RuntimeError):
+        enrich.run_enrich(conn, settings, transport=FakeSources({("GET", WIKI): reply}).transport())
+    assert size(conn, shopify) == (8300, "wikidata")  # saved before the stop
+
+
 def test_suggestion_accept(conn):
     c = company(conn, "Maybe Co")
     enrich.suggest_size(conn, c, {"source": "wikidata", "employees": 420, "wikidata_id": "Q1"})
