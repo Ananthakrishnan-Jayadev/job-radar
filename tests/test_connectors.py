@@ -701,6 +701,7 @@ def test_workday_details_for_wanted_roles_only(settings):
 def test_hibob_fixture(settings):
     sources = FakeSources({("GET", "https://xanadu.careers.hibob.com/api/job-ad"): fixture_json("hibob_xanadu.json")})
     result = fetch(settings, sources, board("hibob", "xanadu"))
+    assert sources.requests[0].headers["Referer"] == "https://xanadu.careers.hibob.com/jobs"
     assert result.total == 4
     remote, toronto, us, data = result.jobs
     assert remote.title == "Principal Analog ASIC Design Engineer"
