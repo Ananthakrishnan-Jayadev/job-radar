@@ -175,7 +175,7 @@ def cmd_levels(args) -> int:
         model = args.model or settings.ollama.model
         todo = len(levels.jobs_to_ask(conn))
         count = min(todo, args.limit) if args.limit else todo
-        print(f"Asking {model} about {count} jobs the rules couldn't place"
+        print(f"Asking {model} about {count} jobs missing a level or years"
               + (" (dry run: nothing is saved)" if args.dry_run else "") + "...")
         try:
             summary = levels.run_ask_ollama(conn, settings, model=model, limit=args.limit, dry_run=args.dry_run)
@@ -184,18 +184,22 @@ def cmd_levels(args) -> int:
             return 1
         for title, level, years in summary.answers:
             print(f"  {level or '?':7} {'' if years is None else f'{years}+ yrs':8} {title}")
-        print(f"\n{summary.found} levels found, {summary.unknown} still unclear, {summary.failed} unusable answers.")
+        print(f"\n{summary.levels_found} levels and {summary.years_found} years found for jobs missing them, "
+              f"{summary.failed} unusable answers.")
         if summary.stopped:
             print(f"Stopped early: {summary.stopped}")
+    years = conn.execute("SELECT COUNT(*) FROM jobs WHERE closed_at IS NULL AND COALESCE(role_wanted, 1) = 1 "
+                         "AND min_years IS NULL").fetchone()[0]
     counts = conn.execute(
         "SELECT COALESCE(experience_level, 'unknown') AS level, COUNT(*) FROM jobs "
         "WHERE closed_at IS NULL AND COALESCE(role_wanted, 1) = 1 GROUP BY 1").fetchall()
     by_level = dict(counts)
     print("\nOpen wanted jobs by level: " + ", ".join(
         f"{lv} {by_level.get(lv, 0)}" for lv in [*levels.LEVELS, levels.UNKNOWN_LEVEL]))
+    print(f"No years of experience found: {years}.")
     left = len(levels.jobs_to_ask(conn))
     if left and not args.ai:
-        print(f"{left} have no clear level; `jobradar levels --ai` asks Ollama about them.")
+        print(f"{left} with a description miss a level or years; `jobradar levels --ai` asks Ollama about them.")
     return 0
 
 

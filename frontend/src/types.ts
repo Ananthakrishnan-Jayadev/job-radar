@@ -31,7 +31,7 @@ export interface Meta {
   levels: string[];
   /** Filter values for the years of experience asked, ending with "none". */
   year_bands: string[];
-  /** Open wanted jobs the rules couldn't place, which Ollama can be asked about. */
+  /** Open wanted jobs missing a level or years, not yet asked about, which Ollama can read. */
   levels_to_ask: number;
   ollama_model: string;
 }
