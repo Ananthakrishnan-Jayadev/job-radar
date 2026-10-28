@@ -19,7 +19,7 @@ from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, Response
 from pydantic import BaseModel
 
-from .. import candidates, dashboard, db, enrich, levels, queries, tracking
+from .. import backup, candidates, dashboard, db, enrich, levels, queries, tracking
 from ..boards import BoardError, normalize_board
 from ..detect import Detected, detect_company
 from ..http import FetchError, HttpClient
@@ -157,6 +157,7 @@ def _company(row: dict) -> dict:
             "id": b["id"], "system": b["system"], "slug_or_url": b["slug_or_url"],
             "confirmed": bool(b["confirmed"]), "enabled": bool(b["enabled"]),
             "last_scanned_at": b["last_scanned_at"], "last_error": b["last_error"], "total_open": b["total_open"],
+            "failures": b.get("failures", 0),
         } for b in row["boards"]],
     }
 
@@ -593,6 +594,24 @@ def create_app(settings: Settings, db_path: Path | None = None,
     def delete_search(search_id: int, conn: sqlite3.Connection = Conn):
         tracking.delete_saved_search(conn, search_id)
         return Response(status_code=204)
+
+    # backups and board health (shown on the Scans page)
+
+    @app.get("/api/backup")
+    def backup_status():
+        return backup.backup_status(db_path.parent)
+
+    @app.post("/api/backup", status_code=201)
+    def make_backup(conn: sqlite3.Connection = Conn):
+        try:
+            backup.make_backup(conn, db_path.parent)
+        except backup.BackupError as exc:
+            raise HTTPException(500, str(exc)) from exc
+        return backup.backup_status(db_path.parent)
+
+    @app.get("/api/boards/failing")
+    def failing_boards(conn: sqlite3.Connection = Conn):
+        return {"after": queries.FAILING_AFTER, "boards": queries.failing_boards(conn)}
 
     # scans
 

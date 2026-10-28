@@ -3,6 +3,8 @@
 
 import type {
   Applications,
+  BackupStatus,
+  FailingBoard,
   Candidate,
   Company,
   DetectedBoard,
@@ -97,6 +99,9 @@ export const api = {
     request<DetectedBoard[]>("POST", "/api/detect", body),
   findMissingBoards: () => request<TaskState>("POST", "/api/find-boards"),
   askLevels: () => request<TaskState>("POST", "/api/levels/ask"),
+  backupStatus: () => request<BackupStatus>("GET", "/api/backup"),
+  makeBackup: () => request<BackupStatus>("POST", "/api/backup"),
+  failingBoards: () => request<{ after: number; boards: FailingBoard[] }>("GET", "/api/boards/failing"),
   applications: () => request<Applications>("GET", "/api/applications"),
   currentTask: () => request<TaskState>("GET", "/api/tasks/current"),
 

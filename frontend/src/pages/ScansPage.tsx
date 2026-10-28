@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { api } from "../api";
-import { SYSTEM_LABEL, duration, formatCount, formatDateTime } from "../format";
+import { SYSTEM_LABEL, boardLabel, duration, formatCount, formatDate, formatDateTime } from "../format";
 import { useApp, useLoad } from "../state";
 import type { ScanRecord } from "../types";
 
@@ -48,6 +48,9 @@ export default function ScansPage() {
           </>
         )}
       </section>
+
+      <BoardHealth version={`${dataVersion}|${scan?.running}`} />
+      <Backups />
 
       <h2>Past scans</h2>
       {history.data && history.data.length === 0 && <p className="empty">No scans yet.</p>}
@@ -122,5 +125,98 @@ function ScanDetail({ id }: { id: number }) {
         ))}
       </tbody>
     </table>
+  );
+}
+
+/** Boards that failed their last few scans: switch one off, or fix it on its company page. */
+function BoardHealth({ version }: { version: string }) {
+  const failing = useLoad(() => api.failingBoards(), version);
+  const [error, setError] = useState<string | null>(null);
+  if (!failing.data || failing.data.boards.length === 0) return null;
+
+  async function switchOff(id: number) {
+    setError(null);
+    try {
+      await api.patchBoard(id, { enabled: false });
+      failing.reload();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err));
+    }
+  }
+
+  return (
+    <section className="panel board-health">
+      <h2>Boards that keep failing</h2>
+      <p className="hint">
+        These failed their last {failing.data.after} scans or more. The company may have moved to another job system:
+        open it to add the new board, or switch this one off.
+      </p>
+      {error && <p className="error">{error}</p>}
+      <table className="boards">
+        <tbody>
+          {failing.data.boards.map((b) => (
+            <tr key={b.id}>
+              <td>
+                <Link to={`/companies/${b.company_id}`}>{b.company}</Link>
+                <div className="small muted">{boardLabel(b.system, b.slug_or_url)}</div>
+              </td>
+              <td className="small">
+                <span className="error">{b.failures} in a row</span>
+                <div className="muted">Last worked {b.last_ok_at ? formatDate(b.last_ok_at) : "never"}</div>
+              </td>
+              <td className="small">{b.last_error ?? ""}</td>
+              <td className="nowrap">
+                <button type="button" onClick={() => switchOff(b.id)}>
+                  Switch off
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </section>
+  );
+}
+
+/** The newest backup, a reminder after a week, and a button to make one. */
+function Backups() {
+  const status = useLoad(() => api.backupStatus(), "backup");
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const s = status.data;
+  if (!s) return null;
+
+  async function backUp() {
+    setBusy(true);
+    setError(null);
+    try {
+      status.setData(await api.makeBackup());
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <section className={`panel backups${s.remind ? " remind" : ""}`}>
+      <h2>Backups</h2>
+      <p>
+        {s.latest === null
+          ? "No backup yet. Your statuses, notes and applied dates exist only in the database, so keep a copy."
+          : s.age_days === 0
+            ? "Last backup: today."
+            : `Last backup: ${formatDate(s.taken_at)}, ${s.age_days} ${s.age_days === 1 ? "day" : "days"} ago.`}
+        {s.remind && s.latest !== null && " Time for a new one."}
+      </p>
+      {error && <p className="error">{error}</p>}
+      <button type="button" className={s.remind ? "primary" : ""} disabled={busy} onClick={backUp}>
+        {busy ? "Backing up…" : "Back up now"}
+      </button>
+      <p className="hint">
+        Copies go in the data folder as <code>jobradar-backup-&lt;date&gt;.db</code>; <code>jobradar backup</code> does
+        the same.
+      </p>
+    </section>
   );
 }

@@ -118,6 +118,8 @@ export interface Board {
   last_scanned_at: string | null;
   last_error: string | null;
   total_open: number | null;
+  /** Scans failed in a row, up to the latest (0 when the last one worked). */
+  failures: number;
 }
 
 export interface SizeSuggestion {
@@ -281,4 +283,23 @@ export interface Applications {
   saved: TrackedJob[];
   recent: { at: string; old: string | null; new: string | null; id: number; title: string; company_id: number;
             company: string }[];
+}
+
+export interface BackupStatus {
+  latest: string | null;
+  taken_at: string | null;
+  age_days: number | null;
+  /** True when there's no backup, or the newest is a week old or more. */
+  remind: boolean;
+}
+
+export interface FailingBoard {
+  id: number;
+  system: string;
+  slug_or_url: string;
+  last_error: string | null;
+  company_id: number;
+  company: string;
+  last_ok_at: string | null;
+  failures: number;
 }

@@ -318,12 +318,45 @@ def list_companies(
     """
     companies = [dict(r) for r in conn.execute(sql, params).fetchall()]
     boards: dict[int, list[dict]] = {c["id"]: [] for c in companies}
+    streaks = failure_streaks(conn)
     for b in conn.execute("SELECT * FROM boards ORDER BY system, slug_or_url"):
         if b["company_id"] in boards:
-            boards[b["company_id"]].append(dict(b))
+            boards[b["company_id"]].append({**dict(b), "failures": streaks.get(b["id"], 0)})
     for c in companies:
         c["boards"] = boards[c["id"]]
     return companies
+
+
+FAILING_AFTER = 3  # scans in a row a board must fail before it's flagged
+
+_STREAK = """
+    SELECT r.board_id, COUNT(*) FROM scan_results r
+    WHERE r.ok = 0 AND r.id > COALESCE(
+        (SELECT MAX(ok.id) FROM scan_results ok WHERE ok.board_id = r.board_id AND ok.ok = 1), 0)
+    GROUP BY r.board_id
+"""
+
+
+def failure_streaks(conn: sqlite3.Connection) -> dict[int, int]:
+    """{board id: scans failed in a row, up to the latest} for boards whose last scan failed."""
+    return dict(conn.execute(_STREAK).fetchall())
+
+
+def failing_boards(conn: sqlite3.Connection, at_least: int = FAILING_AFTER) -> list[dict]:
+    """Enabled boards that failed their last *at_least* scans or more, worst first,
+    with the latest error and when they last worked."""
+    streaks = {b: n for b, n in failure_streaks(conn).items() if n >= at_least}
+    if not streaks:
+        return []
+    rows = conn.execute(f"""
+        SELECT b.id, b.system, b.slug_or_url, b.last_error, c.id AS company_id, c.name AS company,
+               (SELECT MAX(s.started_at) FROM scan_results r JOIN scans s ON s.id = r.scan_id
+                WHERE r.board_id = b.id AND r.ok = 1) AS last_ok_at
+        FROM boards b JOIN companies c ON c.id = b.company_id
+        WHERE b.enabled = 1 AND b.id IN ({_marks(list(streaks))})
+    """, list(streaks)).fetchall()
+    found = [{**dict(r), "failures": streaks[r["id"]]} for r in rows]
+    return sorted(found, key=lambda r: (-r["failures"], r["company"].lower()))
 
 
 def scan_history(conn: sqlite3.Connection, limit: int = 20) -> list[dict]:

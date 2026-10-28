@@ -92,6 +92,33 @@ def cmd_scan(args) -> int:
     return 0 if summary.boards_ok else 1
 
 
+def cmd_backup(args) -> int:
+    from .backup import BackupError, make_backup
+
+    conn, path = _open_db(args)
+    try:
+        copy = make_backup(conn, Path(args.out) if args.out else path.parent, note=args.note or "")
+    except BackupError as exc:
+        print(f"Backup failed: {exc}", file=sys.stderr)
+        return 1
+    print(f"Backed up to {copy} ({copy.stat().st_size / 1_000_000:.1f} MB, checked).")
+    return 0
+
+
+def cmd_boards(args) -> int:
+    conn, _ = _open_db(args)
+    failing = queries.failing_boards(conn)
+    if not failing:
+        print(f"No board has failed its last {queries.FAILING_AFTER} scans.")
+        return 0
+    print(f"Boards that failed {queries.FAILING_AFTER} or more scans in a row:")
+    for b in failing:
+        print(f"  {b['company']} ({b['system']}:{b['slug_or_url']}): {b['failures']} in a row, "
+              f"last worked {(b['last_ok_at'] or 'never')[:10]}. {b['last_error'] or ''}")
+    print("\nSwitch them off or add the right board on each company's page in the web app.")
+    return 0
+
+
 def cmd_search(args) -> int:
     conn, _ = _open_db(args)
     sync_roles(conn, load_settings(args.root).root)
@@ -323,6 +350,13 @@ def build_parser() -> argparse.ArgumentParser:
     enrich = sub.add_parser("enrich", help="fill in company sizes (Wikidata, then estimates)")
     enrich.add_argument("--company", help="only this company (by name)")
     enrich.set_defaults(func=cmd_enrich)
+
+    bk = sub.add_parser("backup", help="copy the database to a dated file (safe while the app runs)")
+    bk.add_argument("--out", help="folder for the copy (default: next to the database)")
+    bk.add_argument("--note", help="a word or two added to the file name")
+    bk.set_defaults(func=cmd_backup)
+
+    sub.add_parser("failing-boards", help="boards that failed their last few scans").set_defaults(func=cmd_boards)
 
     lv = sub.add_parser("levels", help="experience levels of wanted jobs (rules, then Ollama with --ai)")
     lv.add_argument("--ai", action="store_true", help="ask Ollama about jobs the rules can't place")
