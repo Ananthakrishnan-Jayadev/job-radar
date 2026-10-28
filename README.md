@@ -1,24 +1,16 @@
 # Job Radar
 
 A personal job-hunting tool for Canada. It reads the public job feeds of the
-companies you care about, keeps only jobs located in Canada, and lets you
-search them, filter by province and company size, and track what you've
-saved and applied to. No LinkedIn automation, no accounts.
-
-**Status:** phases 1–4 of 5 done. Built beyond the plan: six more job systems than
-planned (16 in all), role filtering (`roles.toml`), full job descriptions,
-experience level and years-asked filters (with an optional Ollama step), an
-Applications dashboard, and a dim/dark UI. Adzuna was dropped (its free tier
-is 25 calls in total), and its one-time snapshot has been replaced by the
-companies' own boards. Next: phase 5 (polish and hardening). See
-[TASKS.md](TASKS.md), and [docs/09-plans.md](docs/09-plans.md) for what's
-planned beyond it.
+companies you care about (16 job systems, from Greenhouse to Workday), keeps
+only jobs located in Canada and in the roles you want, and lets you search
+them, filter by province, company size, experience level and years of
+experience asked, and track what you've saved and applied to on an
+Applications dashboard. It runs on your own computer: no LinkedIn
+automation, no accounts.
 
 - [PROJECT.md](PROJECT.md): the specification
-- [TASKS.md](TASKS.md): the build plan in five phases
-- [docs/09-plans.md](docs/09-plans.md): plans still to build
+- [docs/decisions/](docs/decisions/): why it works the way it does, dated
 - [docs/00-START-HERE.md](docs/00-START-HERE.md): the research behind it
-- [docs/decisions/](docs/decisions/): decisions, dated
 
 ## Setup
 
