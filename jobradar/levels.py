@@ -5,13 +5,14 @@ time): a level word in the title wins ("Senior", "Intern", "Staff", "II"...);
 otherwise the years of experience the description asks for (the largest
 number it names: smaller ones are usually for a single skill).
 
-Jobs the rules can't place can be sent to a local Ollama model on request
-(`jobradar levels --ai`, or the button on the Jobs page). Nothing calls it
-during a scan.
+Jobs the rules leave without a level or without years can be sent to a
+local Ollama model on request (`jobradar levels --ai`, or the button on the
+Jobs page). It fills only what's missing: a level from the title stays.
+Nothing calls it during a scan.
 
 level_source: NULL = not worked out yet, "title" / "years" = the rules,
-"none" = the rules found nothing (Ollama may try), "ollama:<model>" = asked
-the model (level NULL if it couldn't tell either; it isn't asked again).
+"none" = the rules found nothing, "ollama:<model>" = the model's level.
+level_asked: the model asked about the job (never asked twice), or NULL.
 """
 
 from __future__ import annotations
@@ -38,7 +39,7 @@ YEAR_BANDS = [("under3", 0, 2), ("3to5", 3, 5), ("over5", 6, None)]
 NO_YEARS = "none"  # filter value for jobs that state no number
 
 # Bump when the rules below change: rule-made levels are worked out again.
-RULES_VERSION = "2"
+RULES_VERSION = "3"
 
 _TITLE_RULES = [
     ("intern", r" (?:intern|interns|internship|co op|coop|stagiaire|summer student|student) "),
@@ -68,9 +69,12 @@ _YEARS = [  # (pattern, whether it needs the company-history check below)
     # No "experience", but plainly a requirement: "5+ years building...", "at least 3 years in C++"
     (re.compile(rf"\b{_NUM}\s*(?:(?:-|to)\s*\d{{1,2}}\s*\+?|\+|plus|or more)\s*(?:years?|yrs?)\b"), True),
     (re.compile(rf"\b(?:minimum(?: of)?|at least)\s+{_NUM}\s*(?:years?|yrs?)\b"), True),
+    # "(5 ans minimum)", "3 years minimum", "2 years required"
+    (re.compile(rf"\b{_NUM}\s*\+?\s*(?:years?|yrs?|ans?|annees?)\s*(?:minimum|min\b|required|requis)"), True),
 ]
 # Words just before the number that mean the company's history: "trusted for 10+ years".
-_HISTORY = re.compile(r"\b(?:for|over|past|since|trusted|founded|history|serving)\W*$")
+# Only spaces between: "what we're looking for:\n - 5+ years" is a requirement.
+_HISTORY = re.compile(r"\b(?:for|over|past|since|trusted|founded|history|serving)[ \t]*$")
 # The top of a range already read from its start: the "10+" in "7-10+ years".
 _RANGE_END = re.compile(r"\d\s*(?:-|to)\s*$")
 MAX_YEARS = 15  # "65 years of experience serving clients" is the company, not the job
@@ -140,8 +144,8 @@ def sync_levels(conn: sqlite3.Connection) -> int:
     """
     if db.get_setting(conn, "levels_version") != RULES_VERSION:
         with conn:
-            conn.execute("UPDATE jobs SET experience_level = NULL, min_years = NULL, level_source = NULL "
-                         "WHERE level_source IN ('title', 'years', 'none')")
+            conn.execute("UPDATE jobs SET experience_level = NULL, min_years = NULL, level_source = NULL, "
+                         "level_asked = NULL WHERE level_source IN ('title', 'years', 'none')")
         db.set_setting(conn, "levels_version", RULES_VERSION)
     rows = conn.execute("SELECT id, title, description FROM jobs "
                         "WHERE level_source IS NULL AND COALESCE(role_wanted, 1) = 1").fetchall()
@@ -193,9 +197,11 @@ _SCHEMA = {
 
 
 def jobs_to_ask(conn: sqlite3.Connection) -> list[sqlite3.Row]:
-    """Open wanted jobs with a description that the rules couldn't place."""
-    return conn.execute("SELECT id, title, description FROM jobs WHERE level_source = 'none' "
-                        "AND closed_at IS NULL AND description IS NOT NULL ORDER BY id").fetchall()
+    """Open wanted jobs with a description, missing a level or years, not asked yet."""
+    return conn.execute(
+        "SELECT id, title, description FROM jobs WHERE level_source IS NOT NULL AND level_asked IS NULL "
+        "AND (experience_level IS NULL OR min_years IS NULL) AND COALESCE(role_wanted, 1) = 1 "
+        "AND closed_at IS NULL AND description IS NOT NULL ORDER BY experience_level IS NOT NULL, id").fetchall()
 
 
 def parse_answer(content: str) -> tuple[str | None, int | None]:
@@ -224,8 +230,8 @@ def parse_answer(content: str) -> tuple[str | None, int | None]:
 class AskSummary:
     model: str
     asked: int = 0
-    found: int = 0
-    unknown: int = 0
+    levels_found: int = 0  # for jobs that had none
+    years_found: int = 0  # for jobs that had none
     failed: int = 0
     stopped: str | None = None  # why it stopped early
     answers: list[tuple[str, str | None, int | None]] = field(default_factory=list)  # (title, level, years)
@@ -235,8 +241,9 @@ async def ask_ollama(conn: sqlite3.Connection, settings: Settings, *, model: str
                      limit: int | None = None, dry_run: bool = False,
                      transport: httpx.AsyncBaseTransport | None = None,
                      progress: Callable[[int, int], None] | None = None) -> AskSummary:
-    """Ask the model about each job the rules couldn't place, one at a time,
-    saving each answer as it comes (a stopped run keeps what it got).
+    """Ask the model about each job missing a level or years, one at a time,
+    saving each answer as it comes (a stopped run keeps what it got). Only the
+    missing parts are filled in.
     dry_run: ask but save nothing, to compare models."""
     o = settings.ollama
     summary = AskSummary(model=model or o.model)
@@ -266,13 +273,18 @@ async def ask_ollama(conn: sqlite3.Connection, settings: Settings, *, model: str
             except ValueError:
                 summary.failed += 1
                 continue
-            summary.found += level is not None
-            summary.unknown += level is None
+            had_level, had_years = conn.execute("SELECT experience_level IS NOT NULL, min_years IS NOT NULL "
+                                                "FROM jobs WHERE id = ?", (row["id"],)).fetchone()
+            summary.levels_found += not had_level and level is not None
+            summary.years_found += not had_years and years is not None
             summary.answers.append((row["title"], level, years))
             if not dry_run:
-                with conn:
-                    conn.execute("UPDATE jobs SET experience_level = ?, min_years = ?, level_source = ? "
-                                 "WHERE id = ?", (level, years, f"ollama:{summary.model}", row["id"]))
+                with conn:  # SET reads the old values, so only empty fields change
+                    conn.execute(
+                        "UPDATE jobs SET experience_level = COALESCE(experience_level, ?), "
+                        "level_source = CASE WHEN experience_level IS NULL AND ? IS NOT NULL THEN ? "
+                        "ELSE level_source END, min_years = COALESCE(min_years, ?), level_asked = ? WHERE id = ?",
+                        (level, level, f"ollama:{summary.model}", years, summary.model, row["id"]))
     if summary.stopped and summary.asked == 0:
         raise LevelsError(summary.stopped)
     return summary

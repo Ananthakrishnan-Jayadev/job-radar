@@ -22,6 +22,13 @@ covers about 90%. That leaves 221 the rules can't place.
   3. The headline requirement is the largest; a range counts from its start.
 - **Years filter:** under 3 (0–2), 3–5, more than 5 (6+), not stated, as the
   user asked; stated numbers only.
+- **The model fills missing years too** (changed the same day): the user
+  wants the years from every description, not only a level. Jobs with a
+  title level but no years the rules could find are sent as well; only empty
+  fields are filled, and `level_asked` (schema 7) keeps each job to one
+  request. Many postings genuinely state no number (perks like "4 weeks per
+  year" and company history were most of the "years" mentions left), so
+  "Not stated" won't reach zero.
 - **The model must pick a level** (no "unknown" in its choices), since the
   user prefers a best guess to a blank; it gives years only when stated.
   First test on 20 jobs: Gemma placed 11, Nemotron 9 while it could still say

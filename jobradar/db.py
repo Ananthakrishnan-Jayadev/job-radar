@@ -298,6 +298,18 @@ MIGRATIONS: list[str] = [
         UPDATE jobs SET experience_level = NULL, min_years = NULL, level_source = NULL WHERE id = new.id;
     END;
     """,
+    # 7: which model was asked about a job's level and years (levels.py), so
+    #    it's asked once; a changed title or description clears it.
+    """
+    ALTER TABLE jobs ADD COLUMN level_asked TEXT;
+    UPDATE jobs SET level_asked = substr(level_source, 8) WHERE level_source LIKE 'ollama:%';
+    DROP TRIGGER jobs_level_reset;
+    CREATE TRIGGER jobs_level_reset AFTER UPDATE OF title, description ON jobs
+    WHEN old.title IS NOT new.title OR old.description IS NOT new.description BEGIN
+        UPDATE jobs SET experience_level = NULL, min_years = NULL, level_source = NULL, level_asked = NULL
+        WHERE id = new.id;
+    END;
+    """,
 ]
 
 

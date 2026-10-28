@@ -65,6 +65,8 @@ def test_title_level(title, level):
     ("At least 3 years in C++ for embedded systems", 3),
     ("- 2+ ann&eacute;es d'exp&eacute;rience en ing&eacute;nierie", 2),
     ("Trusted by Canadians for 10+ years.", None),  # the company's history
+    ("What we're looking for:\n\n - 5+ years working in security", 5),
+    ("- gestion d'equipe technique (5 ans minimum)", 5),
     ("Join a team that ships every week.", None),
     (None, None),
 ])
@@ -178,12 +180,17 @@ def _reply(level, years):
     return {"message": {"role": "assistant", "content": json.dumps({"level": level, "min_years": years})}}
 
 
+def _asked(conn, job_id):
+    return conn.execute("SELECT level_asked FROM jobs WHERE id = ?", (job_id,)).fetchone()[0]
+
+
 def test_ask_ollama_saves_answers(conn, tmp_path, settings):
     _, ids = _setup(conn, tmp_path)
     sources = FakeSources({("POST", CHAT): _reply("mid", 3)})
     summary = levels.run_ask_ollama(conn, settings, transport=sources.transport())
-    assert (summary.asked, summary.found, summary.unknown) == (1, 1, 0)
+    assert (summary.asked, summary.levels_found, summary.years_found) == (1, 1, 1)
     assert _level(conn, ids["Backend Developer"]) == ("mid", 3, "ollama:gemma4:31b-cloud")
+    assert _asked(conn, ids["Backend Developer"]) == "gemma4:31b-cloud"
     body = sources.bodies()[0]
     assert body["model"] == "gemma4:31b-cloud" and body["stream"] is False
     assert body["format"]["properties"]["level"]["enum"] == ["intern", "entry", "mid", "senior", "lead"]
@@ -192,13 +199,37 @@ def test_ask_ollama_saves_answers(conn, tmp_path, settings):
     assert levels.jobs_to_ask(conn) == []  # not asked again
 
 
-def test_ask_ollama_unknown_is_not_asked_again(conn, tmp_path, settings):
+def test_ask_ollama_fills_only_missing_years(conn, tmp_path, settings):
+    board, ids = _setup(conn, tmp_path)
+    staff, _ = db.upsert_job(conn, board, RawJob("8", "Staff Engineer", "u8", [Location("Toronto", "ON", "CA")],
+                                                  description="Own our platform."))
+    sync_roles(conn, tmp_path)
+    assert _level(conn, staff) == ("lead", None, "title")
+    sources = FakeSources({("POST", CHAT): Seq([_reply("mid", 3), _reply("senior", 6)])})
+    summary = levels.run_ask_ollama(conn, settings, transport=sources.transport())
+    assert summary.asked == 2  # the job without a level is asked first
+    assert _level(conn, staff) == ("lead", 6, "title")  # the title's level stays
+    assert (summary.levels_found, summary.years_found) == (1, 2)
+
+
+def test_ask_ollama_no_answer_is_not_asked_again(conn, tmp_path, settings):
     _, ids = _setup(conn, tmp_path)
     sources = FakeSources({("POST", CHAT): _reply("unknown", None)})
     summary = levels.run_ask_ollama(conn, settings, model="nemotron-3-nano:30b-cloud", transport=sources.transport())
-    assert summary.unknown == 1
-    assert _level(conn, ids["Backend Developer"]) == (None, None, "ollama:nemotron-3-nano:30b-cloud")
+    assert (summary.levels_found, summary.years_found) == (0, 0)
+    assert _level(conn, ids["Backend Developer"]) == (None, None, "none")
+    assert _asked(conn, ids["Backend Developer"]) == "nemotron-3-nano:30b-cloud"
     assert levels.jobs_to_ask(conn) == []
+
+
+def test_changed_description_is_asked_again(conn, tmp_path, settings):
+    board, ids = _setup(conn, tmp_path)
+    levels.run_ask_ollama(conn, settings, transport=FakeSources({("POST", CHAT): _reply("unknown", None)}).transport())
+    db.upsert_job(conn, board, RawJob("3", "Backend Developer", "u3", [Location("Toronto", "ON", "CA")],
+                                      description="Build things with us."))
+    sync_levels(conn)
+    assert _asked(conn, ids["Backend Developer"]) is None
+    assert len(levels.jobs_to_ask(conn)) == 1
 
 
 def test_ask_ollama_dry_run_saves_nothing(conn, tmp_path, settings):
@@ -213,7 +244,7 @@ def test_ask_ollama_unusable_answer_is_retried_later(conn, tmp_path, settings):
     _setup(conn, tmp_path)
     sources = FakeSources({("POST", CHAT): {"message": {"content": "It seems senior-ish."}}})
     summary = levels.run_ask_ollama(conn, settings, transport=sources.transport())
-    assert (summary.failed, summary.found) == (1, 0)
+    assert (summary.failed, summary.levels_found) == (1, 0)
     assert len(levels.jobs_to_ask(conn)) == 1
 
 
@@ -234,7 +265,7 @@ def test_ask_ollama_stops_at_usage_limit_keeping_answers(conn, tmp_path, setting
     sync_roles(conn, tmp_path)
     sources = FakeSources({("POST", CHAT): Seq([_reply("entry", 0), httpx.Response(429, json={"error": "limit"})])})
     summary = levels.run_ask_ollama(conn, settings, transport=sources.transport())
-    assert summary.found == 1 and "usage limit" in summary.stopped
+    assert summary.levels_found == 1 and "usage limit" in summary.stopped
     assert _level(conn, ids["Backend Developer"])[0] == "entry"
 
 
@@ -256,4 +287,5 @@ def test_cli_levels(tmp_path, capsys):
     assert cli.main(["--root", str(tmp_path), "--db", str(db_path), "levels"]) == 0
     out = capsys.readouterr().out
     assert "senior 1" in out and "mid 1" in out and "unknown 2" in out
-    assert "1 have no clear level" in out
+    assert "No years of experience found: 2." in out
+    assert "1 with a description miss a level or years" in out

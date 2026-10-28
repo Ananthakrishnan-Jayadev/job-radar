@@ -482,7 +482,8 @@ def create_app(settings: Settings, db_path: Path | None = None,
                 s = levels.run_ask_ollama(own, settings, transport=transport, progress=progress)
             finally:
                 own.close()
-            text = f"Asked {s.model} about {s.asked} jobs: {s.found} levels found, {s.unknown} still unclear"
+            text = (f"Asked {s.model} about {s.asked} jobs: {s.levels_found} levels and "
+                    f"{s.years_found} years of experience found")
             if s.failed:
                 text += f", {s.failed} answers unusable"
             return text + (f". Stopped early: {s.stopped}" if s.stopped else ".")

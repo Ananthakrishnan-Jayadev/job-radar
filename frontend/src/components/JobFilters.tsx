@@ -227,8 +227,8 @@ function LevelFilter({ meta, params, setParams }: Pick<Props, "meta" | "params" 
       {meta.levels_to_ask > 0 && !(task?.running && task.name === "levels") && (
         <div className="ask-ai">
           <p className="hint">
-            {meta.levels_to_ask} {meta.levels_to_ask === 1 ? "job has" : "jobs have"} no clear level in the title or
-            description.
+            The rules found no level or no years of experience in {meta.levels_to_ask}{" "}
+            {meta.levels_to_ask === 1 ? "job" : "jobs"}. The AI model can read those postings once.
           </p>
           <button type="button" disabled={task?.running} onClick={ask}>
             <Sparkles size={15} aria-hidden="true" />

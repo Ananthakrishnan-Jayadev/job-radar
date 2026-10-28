@@ -105,12 +105,13 @@ Rules work it out, with no requests and the same answer every time:
 A second filter, **years of experience asked**, picks under 3 (0–2), 3–5, or
 more than 5 (6+), or "not stated". It only uses numbers the posting states.
 
-Jobs neither rule places show as "Unknown". About 1 in 12 wanted jobs end up
-there. A local [Ollama](https://ollama.com) model can be asked about those,
-only when you say so: "Ask ..." under the Experience filter, or
-`jobradar levels --ai`. The model must always pick a level, judging from the
-responsibilities and scope when the posting doesn't say; it only gives years
-when the posting states a number. Each job is asked about once; the answer is saved as
+Jobs neither rule places show as "Unknown" (about 1 in 12). A local
+[Ollama](https://ollama.com) model can read the postings the rules left
+without a level **or** without years, only when you say so: "Ask ..." under
+the Experience filter, or `jobradar levels --ai`. It fills in only what's
+missing (a level from the title stays), must always pick a level, and gives
+years only when the posting states a number. Each job is read once; a
+changed description is read again. Each job is asked about once; the answer is saved as
 it comes, so stopping keeps what it got. The model is set in `config.toml`
 (`[ollama] model`, default `gemma4:31b-cloud`); cloud models need
 `ollama signin` once. Hover over a level in the list, or open the job, to see
