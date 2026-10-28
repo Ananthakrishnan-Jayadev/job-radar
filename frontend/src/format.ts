@@ -28,6 +28,23 @@ export const SIZE_LABEL: Record<string, string> = {
   unknown: "Unknown",
 };
 
+export const LEVEL_LABEL: Record<string, string> = {
+  intern: "Intern / co-op",
+  entry: "Entry",
+  mid: "Mid",
+  senior: "Senior",
+  lead: "Lead+",
+  unknown: "Unknown",
+};
+
+/** Where a job's level came from, as a short phrase. */
+export function levelSourceText(source: string | null): string {
+  if (source === "title") return "from the job title";
+  if (source === "years") return "from the years of experience asked";
+  if (source?.startsWith("ollama:")) return `worked out by ${source.slice(7)}`;
+  return "";
+}
+
 export const WORKPLACE_LABEL: Record<Workplace, string> = {
   remote: "Remote",
   hybrid: "Hybrid",

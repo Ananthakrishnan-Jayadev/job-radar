@@ -27,6 +27,11 @@ export interface Meta {
   role_categories: { name: string; label: string; enabled: boolean }[];
   open_jobs: number;
   companies: number;
+  /** Experience levels to filter by, ending with "unknown". */
+  levels: string[];
+  /** Open wanted jobs the rules couldn't place, which Ollama can be asked about. */
+  levels_to_ask: number;
+  ollama_model: string;
 }
 
 export interface JobSummary {
@@ -53,6 +58,12 @@ export interface JobSummary {
   closed_at: string | null;
   /** Role groups the title belongs to (software, data, ai, adjacent). */
   roles: string[];
+  /** intern / entry / mid / senior / lead, or null when not known. */
+  level: string | null;
+  /** The fewest years of experience the description asks for. */
+  min_years: number | null;
+  /** "title", "years", "none" or "ollama:<model>"; null when not worked out. */
+  level_source: string | null;
 }
 
 export interface JobPage {

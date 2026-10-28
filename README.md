@@ -56,8 +56,8 @@ or use `.venv/bin/jobradar serve --dev`, which rebuilds the UI on every save
   roles" below), with a "Show all roles" switch and role chips. Search (words,
   `"exact phrases"`, `OR`, `analy*`), a heat map of the ten provinces to
   filter by (live counts; territories are left out but count in "all of
-  Canada") plus "Remote anywhere in Canada", and filters for company size, your status, workplace, date posted,
-  job system and salary. Change a job's status right in the list; new jobs
+  Canada") plus "Remote anywhere in Canada", and filters for experience level,
+  company size, your status, workplace, date posted, job system and salary. Change a job's status right in the list; new jobs
   since your last visit have an amber edge. Save a search, export a CSV.
 - **Job page:** description, Canadian locations, notes, applied date, status
   history, and links to the posting, the careers page and a LinkedIn search.
@@ -84,6 +84,30 @@ governance...) is off. It was built from the real titles in the database
 the rules. Every Canadian job is still stored; the rest are only hidden, and
 jobs you're tracking always show. Edit the file and the change applies on the
 next page load, no rescan. `jobradar search` and `export` take `--all-roles`.
+
+## Experience level
+
+Each wanted job gets a level: intern / co-op, entry, mid, senior or lead+.
+Rules work it out, with no requests and the same answer every time:
+
+1. **A level word in the title wins:** Intern, Co-op, Student → intern;
+   Staff, Principal, Lead, Manager, Director, Head of, VP → lead+; Senior,
+   Sr → senior; Intermediate → mid; Junior, Jr, New Grad, Associate → entry;
+   "Engineer II" style grades (I entry, II mid, III/IV senior).
+2. **Otherwise the years the description asks for,** the smallest number it
+   names ("5+ years of backend experience; 2+ years of Kubernetes" counts as
+   2), so a job you might qualify for is never hidden: 0–1 entry, 2–4 mid,
+   5–7 senior, 8+ lead+. Numbers over 15 are ignored ("65 years of
+   experience serving clients" is the company's).
+
+Jobs neither rule places show as "Unknown". About 1 in 10 wanted jobs end up
+there. A local [Ollama](https://ollama.com) model can be asked about those,
+only when you say so: "Ask ..." under the Experience filter, or
+`jobradar levels --ai`. Each job is asked about once; the answer is saved as
+it comes, so stopping keeps what it got. The model is set in `config.toml`
+(`[ollama] model`, default `gemma4:31b-cloud`); cloud models need
+`ollama signin` once. Hover over a level in the list, or open the job, to see
+the years asked and where the level came from.
 
 ## Job systems it reads (16)
 
@@ -132,7 +156,13 @@ Run these from the project folder (or activate the venv with
 .venv/bin/jobradar detect "Docebo" --url https://jobs.ashbyhq.com/docebo
 .venv/bin/jobradar import-companies mylist.xlsx  # add companies from your own list
 .venv/bin/jobradar find-boards  # find job boards for companies that have none
+.venv/bin/jobradar levels       # experience levels: counts, and how many are unclear
+.venv/bin/jobradar levels --ai  # ask Ollama about the unclear ones
+.venv/bin/jobradar levels --ai --model nemotron-3-nano:30b-cloud --limit 50 --dry-run
 ```
+
+`levels --dry-run` prints the model's answers without saving them, to compare
+two models on the same jobs before picking one.
 
 Search accepts words, `"exact phrases"`, `OR` and prefixes (`analy*`).
 `--province` takes codes (ON, BC, QC...) and `REMOTE` for jobs open

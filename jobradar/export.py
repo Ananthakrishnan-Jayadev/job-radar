@@ -13,7 +13,7 @@ from .models import size_band
 
 COLUMNS = [
     "company", "title", "location", "provinces", "workplace", "posted_at", "salary",
-    "status", "applied_at", "notes", "company_size", "system", "first_seen", "last_seen",
+    "level", "min_years", "status", "applied_at", "notes", "company_size", "system", "first_seen", "last_seen",
     "closed_at", "url",
 ]
 
@@ -54,6 +54,8 @@ def write_csv(rows: list[dict], file: TextIO) -> None:
             "workplace": r["workplace"],
             "posted_at": r["posted_at"] or "",
             "salary": r["salary_text"] or "",
+            "level": r.get("experience_level") or "",
+            "min_years": "" if r.get("min_years") is None else r["min_years"],
             "status": r["status"],
             "applied_at": r["applied_at"] or "",
             "notes": r["notes"],

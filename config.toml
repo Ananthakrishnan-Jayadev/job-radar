@@ -35,3 +35,12 @@ max_per_board = 60
 [smartrecruiters]
 # Postings older than this are skipped (some boards keep 2017 postings).
 max_age_days = 180
+
+[ollama]
+# Only for "jobradar levels --ai" / "Ask AI" on the Jobs page: works out the
+# experience level of jobs the rules can't place. Cloud models need
+# `ollama signin` once. Change the model here or with --model.
+url = "http://localhost:11434"
+model = "gemma4:31b-cloud"
+timeout_seconds = 180
+max_chars = 6000

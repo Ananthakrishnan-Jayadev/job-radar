@@ -1,11 +1,14 @@
-import { ChevronDown, Search } from "lucide-react";
+import { ChevronDown, Search, Sparkles } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useState, type FormEvent } from "react";
-import { JOB_STATUS_LABEL, SIZE_LABEL, SYSTEM_LABEL, WORKPLACE_LABEL } from "../format";
+import { api } from "../api";
+import { JOB_STATUS_LABEL, LEVEL_LABEL, SIZE_LABEL, SYSTEM_LABEL, WORKPLACE_LABEL } from "../format";
 import { getList, isOn, toggleInList, withParam } from "../params";
+import { useApp } from "../state";
 import type { Meta } from "../types";
 import Chips from "./Chips";
 import ProvinceMap from "./ProvinceMap";
+import TaskStatus from "./TaskStatus";
 
 const POSTED_WITHIN = [
   { value: "", label: "Any time" },
@@ -115,6 +118,8 @@ export default function JobFilters({ meta, params, setParams, provinceCounts, pr
         </fieldset>
       )}
 
+      <LevelFilter meta={meta} params={params} setParams={setParams} />
+
       <Chips
         legend="Company size"
         options={meta.size_bands.map((b) => ({ value: b, label: SIZE_LABEL[b] ?? b }))}
@@ -188,5 +193,49 @@ export default function JobFilters({ meta, params, setParams, provinceCounts, pr
         </button>
       )}
     </aside>
+  );
+}
+
+/** Experience level chips, and asking the AI model about jobs the rules couldn't place. */
+function LevelFilter({ meta, params, setParams }: Pick<Props, "meta" | "params" | "setParams">) {
+  const { task, watchTask } = useApp();
+  const [error, setError] = useState<string | null>(null);
+
+  async function ask() {
+    setError(null);
+    try {
+      watchTask(await api.askLevels());
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err));
+    }
+  }
+
+  return (
+    <fieldset className="field">
+      <Chips
+        legend="Experience"
+        options={meta.levels.map((l) => ({ value: l, label: LEVEL_LABEL[l] ?? l }))}
+        selected={getList(params, "levels")}
+        onToggle={(v) => setParams(toggleInList(params, "levels", v))}
+      />
+      {meta.levels_to_ask > 0 && !(task?.running && task.name === "levels") && (
+        <div className="ask-ai">
+          <p className="hint">
+            {meta.levels_to_ask} {meta.levels_to_ask === 1 ? "job has" : "jobs have"} no clear level in the title or
+            description.
+          </p>
+          <button type="button" disabled={task?.running} onClick={ask}>
+            <Sparkles size={15} aria-hidden="true" />
+            Ask {meta.ollama_model}
+          </button>
+        </div>
+      )}
+      <TaskStatus name="levels" />
+      {error && (
+        <p className="error" role="alert">
+          {error}
+        </p>
+      )}
+    </fieldset>
   );
 }

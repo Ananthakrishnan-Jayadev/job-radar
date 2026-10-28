@@ -10,6 +10,7 @@ from __future__ import annotations
 import sqlite3
 from dataclasses import dataclass, field
 
+from .levels import LEVELS, UNKNOWN_LEVEL
 from .models import SIZE_BANDS, UNKNOWN_SIZE, Location
 
 REMOTE_CANADA = "REMOTE"  # province-filter value for remote jobs open across Canada
@@ -51,6 +52,7 @@ class JobFilter:
     new_since: str | None = None  # ISO time: only jobs first seen after it
     all_roles: bool = False  # False: only roles wanted in roles.toml (tracked jobs always show)
     role_categories: list[str] = field(default_factory=list)  # software / data / ai / adjacent
+    levels: list[str] = field(default_factory=list)  # levels.LEVELS and/or "unknown"
 
 
 def _fts_query(f: JobFilter) -> str | None:
@@ -102,6 +104,13 @@ def _where(f: JobFilter) -> tuple[list[str], list, bool]:
     if f.new_since:
         where.append("j.first_seen > ?")
         params.append(f.new_since)
+    if f.levels:
+        known = [lv for lv in f.levels if lv in LEVELS]
+        parts = [f"j.experience_level IN ({_marks(known)})"] if known else []
+        params += known
+        if UNKNOWN_LEVEL in f.levels:
+            parts.append("j.experience_level IS NULL")
+        where.append(f"({' OR '.join(parts) or '0'})")
     if f.role_categories:
         where.append("(" + " OR ".join("j.role_categories LIKE ?" for _ in f.role_categories) + ")")
         params += [f"%,{c},%" for c in f.role_categories]
@@ -120,6 +129,7 @@ _JOB_COLUMNS = """
     j.id, j.board_id, j.external_id, j.title, j.url, j.department, j.employment_type, j.workplace,
     j.posted_at, j.salary_text, j.salary_min, j.salary_max, j.currency, j.first_seen, j.last_seen,
     j.closed_at, j.status, j.notes, j.applied_at, j.status_changed_at, j.role_categories,
+    j.experience_level, j.min_years, j.level_source,
     c.id AS company_id, c.name AS company, c.employee_count, c.status AS company_status,
     b.system, b.confirmed AS board_confirmed
 """

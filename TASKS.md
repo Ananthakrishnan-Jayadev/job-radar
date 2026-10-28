@@ -299,6 +299,16 @@ README and decision records are up to date. Tasks 2–5 and 7 are open.
 Possible extra work: connectors for iCIMS / Avature / Oracle Cloud (see
 `docs/decisions/2026-10-27-company-cleanup.md`).
 
+**Added 2026-10-28: experience level.** Rules (title, then years asked) for
+every wanted job, an Experience filter and Level column, and an optional
+Ollama step for jobs the rules can't place (`jobradar levels --ai`, "Ask ..."
+on the Jobs page). Schema version 6. See
+`docs/decisions/2026-10-28-experience-level.md`. Manual checks:
+- Restart `jobradar serve` after `cd frontend && npm run build`.
+- Filter the Jobs page by Experience; hover a level; open a job.
+- `jobradar levels --ai --limit 20 --dry-run` with each model; pick one;
+  set it in `config.toml`, then run "Ask ..." for the rest.
+
 **Tasks**
 1. Fix the UI issues you noted in phases 3–4.
 2. Company page: open-roles history from `scan_results` (simple table or a

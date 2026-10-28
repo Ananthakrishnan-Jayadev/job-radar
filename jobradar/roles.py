@@ -114,7 +114,16 @@ def sync_roles(conn: sqlite3.Connection, root: str | Path) -> int:
     changed since last time, otherwise only jobs not done yet. Returns jobs updated.
 
     Without a roles.toml, every job is marked unknown (NULL), which shows it.
+    Then works out experience levels for newly wanted jobs (levels.py).
     """
+    from .levels import sync_levels
+
+    updated = _sync_role_columns(conn, root)
+    sync_levels(conn)
+    return updated
+
+
+def _sync_role_columns(conn: sqlite3.Connection, root: str | Path) -> int:
     from . import db
 
     path = Path(root) / ROLES_FILE

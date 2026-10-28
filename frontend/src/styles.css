@@ -1041,6 +1041,28 @@ td.actions button + button {
   color: var(--spruce);
 }
 
+/* Level filter: the "Ask the AI model" offer under the chips, in the narrow sidebar. */
+.ask-ai {
+  display: grid;
+  gap: 0.4rem;
+  justify-items: start;
+  margin-top: 0.5rem;
+}
+
+.ask-ai .hint {
+  margin: 0;
+}
+
+.filters .task-status {
+  flex-wrap: wrap;
+  gap: 0.4rem 0.75rem;
+  margin: 0.5rem 0 0;
+}
+
+.muted {
+  color: var(--muted);
+}
+
 .options {
   border: 1px solid var(--line);
   border-radius: var(--radius);

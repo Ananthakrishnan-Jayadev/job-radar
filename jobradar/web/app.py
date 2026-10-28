@@ -19,7 +19,7 @@ from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, Response
 from pydantic import BaseModel
 
-from .. import candidates, db, enrich, queries, tracking
+from .. import candidates, db, enrich, levels, queries, tracking
 from ..boards import BoardError, normalize_board
 from ..detect import Detected, detect_company
 from ..http import FetchError, HttpClient
@@ -140,6 +140,8 @@ def _job_summary(row: dict) -> dict:
         "status": row["status"], "notes": row["notes"], "applied_at": row["applied_at"],
         "first_seen": row["first_seen"], "last_seen": row["last_seen"], "closed_at": row["closed_at"],
         "roles": [c for c in (row.get("role_categories") or "").split(",") if c],
+        "level": row.get("experience_level"), "min_years": row.get("min_years"),
+        "level_source": row.get("level_source"),
     }
 
 
@@ -215,6 +217,7 @@ def job_filter(request: Request) -> queries.JobFilter:
         new_since=request.query_params.get("new_since") or None,
         all_roles=_flag(request, "all_roles"),
         role_categories=_list(request, "roles"),
+        levels=_list(request, "levels"),
     )
 
 
@@ -293,6 +296,9 @@ def create_app(settings: Settings, db_path: Path | None = None,
                 {"name": name, "label": label, "enabled": name in rules.enabled}
                 for name, label in rules.labels.items()],
             "companies": conn.execute("SELECT COUNT(*) FROM companies").fetchone()[0],
+            "levels": [*levels.LEVELS, levels.UNKNOWN_LEVEL],
+            "levels_to_ask": len(levels.jobs_to_ask(conn)),
+            "ollama_model": settings.ollama.model,
         }
 
     @app.post("/api/visit")
@@ -461,6 +467,25 @@ def create_app(settings: Settings, db_path: Path | None = None,
                     f" ({s.unconfirmed} guessed from the name; confirm those on each company's page).")
 
         if not tasks.start("find-boards", work):
+            raise HTTPException(409, "another task is already running")
+        return tasks.state()
+
+    # experience levels the rules couldn't work out
+
+    @app.post("/api/levels/ask", status_code=202)
+    def start_ask_levels():
+        def work(progress) -> str:
+            own = db.connect(db_path)
+            try:
+                s = levels.run_ask_ollama(own, settings, transport=transport, progress=progress)
+            finally:
+                own.close()
+            text = f"Asked {s.model} about {s.asked} jobs: {s.found} levels found, {s.unknown} still unclear"
+            if s.failed:
+                text += f", {s.failed} answers unusable"
+            return text + (f". Stopped early: {s.stopped}" if s.stopped else ".")
+
+        if not tasks.start("levels", work):
             raise HTTPException(409, "another task is already running")
         return tasks.state()
 
