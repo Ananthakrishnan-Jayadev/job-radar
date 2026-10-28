@@ -9,7 +9,8 @@
 
 1. **Exact target roles.** "AI engineer, data analyst etc.": which others?
    Data scientist, ML engineer, data engineer, BI developer, analytics engineer,
-   MLOps? Which seniority (exclude senior, staff, manager, director)? Internships
+   MLOps? Which seniority (exclude senior, staff, manager, director)? *Seniority
+   is now a filter (2026-10-28): experience level and years asked.* Internships
    or new-grad roles?
 2. **Locations.** All of Ontario, or specific cities (GTA, Waterloo region,
    Ottawa)? Include remote-in-Canada? Hybrid? Other provinces as a wider option?
@@ -57,6 +58,9 @@
 19. **Notifications:** daily digest by email or desktop notification?
 20. **LLM features** (summaries or fit scores against a résumé) through local
     Ollama like `agentic_workday`, or none for now?
+    *Update (2026-10-28):* one narrow use was added: reading the experience
+    level and years asked from postings the rules can't, on request only
+    (`decisions/2026-10-28-experience-level.md`). Fit scores are still later.
 
 ## Facts still unverified
 

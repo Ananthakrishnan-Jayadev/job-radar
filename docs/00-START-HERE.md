@@ -1,7 +1,8 @@
 # Job Radar: start here
 
-> **Status (2026-10-27):** this folder is the research from before any code
-> was written. The app now exists. For how it works today, read the
+> **Status (2026-10-28):** this folder is the research from before any code
+> was written. The app now exists (latest addition: experience level and
+> years-asked filters). For how it works today, read the
 > [README](../README.md), [PROJECT.md](../PROJECT.md) (the spec) and
 > [decisions/](decisions/). Where this research and a decision disagree, the
 > decision wins.

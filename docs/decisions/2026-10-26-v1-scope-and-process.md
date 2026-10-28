@@ -25,7 +25,7 @@ Answers to `docs/08-open-questions.md`, given by the user while planning.
 | 17 | Dayforce / iCIMS / Taleo gap | Covered by Adzuna plus "add job by URL". |
 | 18 | LinkedIn | Plain search links only, no automation. |
 | 19 | Notifications | None in v1. |
-| 20 | LLM features | None in v1. |
+| 20 | LLM features | None in v1. *Changed 2026-10-28:* Ollama reads experience level and years on request ([decision](2026-10-28-experience-level.md)). |
 
 Consequence of decision 1: feeds store **every Canadian job** they return
 (not only jobs matching roles), so any keyword can be searched later.
