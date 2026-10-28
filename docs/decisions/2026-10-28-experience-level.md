@@ -11,10 +11,21 @@ covers about 90%. That leaves 221 the rules can't place.
 
 - **Rules** (`jobradar/levels.py`): the title wins (Intern / Co-op, Staff /
   Principal / Lead / Manager / Director, Senior, Intermediate, Junior / New
-  Grad / Associate, "Engineer II" grades); otherwise the smallest number of
-  years the description asks for (0–1 entry, 2–4 mid, 5–7 senior, 8+ lead).
-  The smallest, so a job you might qualify for isn't hidden. English and
-  French patterns; numbers over 15 ignored (company history).
+  Grad / Associate, "Engineer II" grades); otherwise the years the description
+  asks for (0–1 entry, 2–4 mid, 5–7 senior, 8+ lead). English and French
+  patterns; numbers over 15, or after "for / over / since..." are company
+  history and ignored.
+- **Largest number, not smallest** (changed the same day): the first version
+  took the smallest so no job would be hidden, but once "N+ years building…"
+  lines counted too, a Director post with "10+ years in software with 5+
+  years in leadership" read as 5, and others dropped to a single skill's 2 or
+  3. The headline requirement is the largest; a range counts from its start.
+- **Years filter:** under 3 (0–2), 3–5, more than 5 (6+), not stated, as the
+  user asked; stated numbers only.
+- **The model must pick a level** (no "unknown" in its choices), since the
+  user prefers a best guess to a blank; it gives years only when stated.
+  First test on 20 jobs: Gemma placed 11, Nemotron 9 while it could still say
+  "unknown"; they agreed on the rest.
 - **Only wanted jobs** (roles.toml): the user browses with the role filter on,
   and it keeps the model's work to ~200 jobs once, then a few per scan.
 - **Ollama, not a paid API:** the user has free cloud access through Ollama
@@ -29,8 +40,8 @@ covers about 90%. That leaves 221 the rules can't place.
   rule-made levels but keeps the model's.
 
 **Known weak spots:** "Associate" means mid-level at banks; "Lead" can be a
-role name ("Lead Generation"); the smallest-years choice can understate a
-senior job that also names a minor skill with fewer years. The title still
+role name ("Lead Generation"); the largest-years choice can overstate a job
+that wants "5 years with a degree, or 3 with a master's". The title still
 wins in all of those, which covers most.
 
 **Model choice:** compare both with `jobradar levels --ai --dry-run --limit 50

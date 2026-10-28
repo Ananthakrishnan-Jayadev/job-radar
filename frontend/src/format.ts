@@ -37,6 +37,13 @@ export const LEVEL_LABEL: Record<string, string> = {
   unknown: "Unknown",
 };
 
+export const YEARS_LABEL: Record<string, string> = {
+  under3: "Under 3 years",
+  "3to5": "3–5 years",
+  over5: "More than 5",
+  none: "Not stated",
+};
+
 /** Where a job's level came from, as a short phrase. */
 export function levelSourceText(source: string | null): string {
   if (source === "title") return "from the job title";
