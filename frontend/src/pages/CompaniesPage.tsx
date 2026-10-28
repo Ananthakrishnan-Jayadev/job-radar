@@ -40,7 +40,7 @@ export default function CompaniesPage() {
     }
   }
 
-  const withoutBoard = (companies.data ?? []).filter((c) => c.boards.length === 0).length;
+  const withoutBoard = (companies.data ?? []).filter((c) => c.boards.every((b) => b.system === "manual")).length;
 
   async function setStatus(company: Company, status: CompanyStatus) {
     const updated = await api.patchCompany(company.id, { status });
@@ -142,12 +142,12 @@ export default function CompaniesPage() {
                   <td className="num">{formatCount(c.total_open)}</td>
                   <td className="nowrap">{SIZE_LABEL[c.size_band] ?? c.size_band}</td>
                   <td>
-                    {c.boards.length === 0 && <span className="tag warn">No job board yet</span>}
+                    {c.boards.every((b) => b.system === "manual") && <span className="tag warn">No job board yet</span>}
                     {/* A switched-off Adzuna snapshot is history, not a board: leave it out here. */}
                     {c.boards.filter((b) => b.enabled || b.system !== "adzuna").map((b) => (
                       <span
                         key={b.id}
-                        className={`tag${b.last_error ? " error" : !b.confirmed ? " warn" : ""}${b.enabled ? "" : " off"}`}
+                        className={`tag${b.last_error ? " error" : !b.confirmed ? " warn" : ""}${b.enabled || b.system === "manual" ? "" : " off"}`}
                         title={b.last_error ?? (b.confirmed ? b.slug_or_url : "Matched by name; not confirmed")}
                       >
                         {SYSTEM_LABEL[b.system] ?? b.system}

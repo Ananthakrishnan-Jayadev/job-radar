@@ -92,6 +92,41 @@ def cmd_scan(args) -> int:
     return 0 if summary.boards_ok else 1
 
 
+def cmd_add_job(args) -> int:
+    import asyncio
+
+    from . import manual
+    from .http import HttpClient
+
+    settings = load_settings(args.root)
+    conn, _ = _open_db(args)
+    try:
+        if (found := manual.existing_job(conn, args.url)) is not None:
+            print(f"Already stored as job {found}.")
+            return 0
+
+        async def go():
+            async with HttpClient(settings) as client:
+                return await manual.read_link(conn, client, args.url)
+        draft = asyncio.run(go())
+        given = {k: v for k, v in (("title", args.title), ("company", args.company), ("city", args.city),
+                                   ("province", args.province)) if v}
+        fields = {**{k: getattr(draft, k) for k in ("title", "company", "city", "province", "remote",
+                                                     "description", "posted_at", "employment_type", "salary")},
+                  **given, "remote": draft.remote or args.remote}
+        if not given.get("company"):
+            fields["company_id"] = draft.company_id
+        job_id, _ = manual.save_job(conn, url=args.url, status=args.status, **fields)
+    except manual.ManualJobError as exc:
+        print(f"{exc}\nGive it with --title, --company, --province (or --remote), or add the job in the web app.",
+              file=sys.stderr)
+        return 1
+    sync_roles(conn, settings.root)
+    row = conn.execute("SELECT title, status FROM jobs WHERE id = ?", (job_id,)).fetchone()
+    print(f"Added job {job_id}: {row['title']} ({row['status']}).")
+    return 0
+
+
 def cmd_backup(args) -> int:
     from .backup import BackupError, make_backup
 
@@ -350,6 +385,16 @@ def build_parser() -> argparse.ArgumentParser:
     enrich = sub.add_parser("enrich", help="fill in company sizes (Wikidata, then estimates)")
     enrich.add_argument("--company", help="only this company (by name)")
     enrich.set_defaults(func=cmd_enrich)
+
+    add = sub.add_parser("add-job", help="add one job by its link (for sites the app can't scan)")
+    add.add_argument("url")
+    add.add_argument("--status", default="saved", help="saved (default), applied, ...")
+    add.add_argument("--title", help="used when the page doesn't say")
+    add.add_argument("--company")
+    add.add_argument("--city")
+    add.add_argument("--province", help="code: ON, BC, QC...")
+    add.add_argument("--remote", action="store_true", help="remote anywhere in Canada")
+    add.set_defaults(func=cmd_add_job)
 
     bk = sub.add_parser("backup", help="copy the database to a dated file (safe while the app runs)")
     bk.add_argument("--out", help="folder for the copy (default: next to the database)")

@@ -19,7 +19,7 @@ from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, Response
 from pydantic import BaseModel
 
-from .. import backup, candidates, dashboard, db, enrich, levels, queries, tracking
+from .. import backup, candidates, dashboard, db, enrich, levels, manual, queries, tracking
 from ..boards import BoardError, normalize_board
 from ..detect import Detected, detect_company
 from ..http import FetchError, HttpClient
@@ -110,6 +110,25 @@ class DetectIn(BaseModel):
     name: str
     careers_url: str | None = None
     canadian: bool = True
+
+
+class LinkIn(BaseModel):
+    url: str
+
+
+class ManualJobIn(BaseModel):
+    url: str
+    title: str
+    company: str = ""
+    company_id: int | None = None
+    city: str = ""
+    province: str = ""
+    remote: bool = False
+    description: str = ""
+    posted_at: str | None = None
+    employment_type: str = ""
+    salary: str = ""
+    status: str = "saved"
 
 
 class EnrichIn(BaseModel):
@@ -341,6 +360,31 @@ def create_app(settings: Settings, db_path: Path | None = None,
         name = f"jobradar-{date.today().isoformat()}.csv"
         return Response(text, media_type="text/csv; charset=utf-8",
                         headers={"Content-Disposition": f'attachment; filename="{name}"'})
+
+    # jobs added by hand
+
+    @app.post("/api/jobs/from-link")
+    def read_job_link(body: LinkIn, conn: sqlite3.Connection = Conn):
+        """A stored job with this link, or a draft read from the page for the user to check."""
+        try:
+            if (found := manual.existing_job(conn, body.url)) is not None:
+                return {"existing": found}
+
+            async def go():
+                async with HttpClient(settings, transport=transport) as client:
+                    return await manual.read_link(conn, client, body.url)
+            return {"draft": asyncio.run(go()).as_dict()}
+        except manual.ManualJobError as exc:
+            raise HTTPException(400, str(exc)) from exc
+
+    @app.post("/api/jobs/manual", status_code=201)
+    def add_manual_job(body: ManualJobIn, conn: sqlite3.Connection = Conn):
+        try:
+            job_id, new = manual.save_job(conn, **body.model_dump())
+        except manual.ManualJobError as exc:
+            raise HTTPException(400, str(exc)) from exc
+        sync_roles(conn, settings.root)  # role and level for the new job
+        return {"id": job_id, "new": new}
 
     @app.get("/api/applications")
     def applications(conn: sqlite3.Connection = Conn):

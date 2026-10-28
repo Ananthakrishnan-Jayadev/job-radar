@@ -77,6 +77,7 @@ export const SYSTEM_LABEL: Record<string, string> = {
   humi: "Humi",
   hibob: "HiBob",
   adzuna: "Adzuna (one-time snapshot)",
+  manual: "Added by hand",
 };
 
 export const SIZE_SOURCE_LABEL: Record<string, string> = {
@@ -134,6 +135,7 @@ export function duration(start: string | null, end: string | null): string {
 
 export function boardLabel(system: string, slugOrUrl: string): string {
   const name = SYSTEM_LABEL[system] ?? system;
+  if (system === "manual") return "Jobs you added by link";
   if (system === "workday") {
     const site = slugOrUrl.split("/").filter(Boolean).pop();
     return `${name}: ${site ?? slugOrUrl}`;

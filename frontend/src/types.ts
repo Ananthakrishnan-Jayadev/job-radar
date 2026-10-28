@@ -303,3 +303,22 @@ export interface FailingBoard {
   last_ok_at: string | null;
   failures: number;
 }
+
+/** What a job link's page says, to check before saving (jobradar/manual.py). */
+export interface JobDraft {
+  url: string;
+  title: string;
+  company: string;
+  /** An existing company that matches, by the link's job board or by name. */
+  company_id: number | null;
+  city: string;
+  province: string;
+  country: string;
+  remote: boolean;
+  description: string;
+  posted_at: string | null;
+  employment_type: string;
+  salary: string;
+  found: string[];
+  note: string;
+}

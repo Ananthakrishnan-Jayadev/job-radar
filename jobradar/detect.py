@@ -205,9 +205,10 @@ async def find_missing_boards(conn, settings: Settings, *, transport=None, compa
     """
     from . import db
 
-    # An Adzuna snapshot isn't a job board we can read again, so it doesn't count.
+    # An Adzuna snapshot or jobs added by hand aren't a job board we can read, so they don't count.
     sql = """SELECT c.id, c.name, c.careers_url, c.canadian FROM companies c
-             WHERE NOT EXISTS (SELECT 1 FROM boards b WHERE b.company_id = c.id AND b.system != 'adzuna')"""
+             WHERE NOT EXISTS (SELECT 1 FROM boards b WHERE b.company_id = c.id
+                               AND b.system NOT IN ('adzuna', 'manual'))"""
     params: list = []
     if company:
         sql += " AND c.name = ? COLLATE NOCASE"

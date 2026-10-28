@@ -1080,6 +1080,48 @@ td.actions button + button {
   flex-wrap: wrap;
 }
 
+/* --- add a job by link ----------------------------------------------------- */
+
+.add-job {
+  max-width: 46rem;
+}
+
+.add-job .hint {
+  margin: -0.25rem 0 0.75rem;
+}
+
+.link-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.link-row input {
+  flex: 1 1 18rem;
+}
+
+.add-job .draft {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
+}
+
+.add-job .draft .stack .hint {
+  margin: 0;
+}
+
+.draft-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 1rem;
+  align-items: center;
+}
+
+.draft-row .stack {
+  flex: 1 1 12rem;
+}
+
 /* --- scans page: board health and backups ---------------------------------- */
 
 .backups.remind {
