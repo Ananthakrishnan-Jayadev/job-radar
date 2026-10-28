@@ -1080,6 +1080,24 @@ td.actions button + button {
   flex-wrap: wrap;
 }
 
+/* --- scans page: board health and backups ---------------------------------- */
+
+.backups.remind {
+  border-left: 3px solid var(--amber);
+}
+
+.backups p {
+  margin: 0 0 0.6rem;
+}
+
+.backups .hint {
+  margin: 0.6rem 0 0;
+}
+
+.board-health td {
+  vertical-align: middle;
+}
+
 /* --- applications page ------------------------------------------------- */
 
 /* The stages, left to right in the order an application moves; each count

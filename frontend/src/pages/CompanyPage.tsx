@@ -84,7 +84,12 @@ export default function CompanyPage() {
                           </button>
                         </div>
                       )}
-                      {b.last_error && <div className="error small">{b.last_error}</div>}
+                      {b.last_error && (
+                        <div className="error small">
+                          {b.failures >= 3 && <strong>Failed {b.failures} scans in a row. </strong>}
+                          {b.last_error}
+                        </div>
+                      )}
                     </td>
                     <td className="nowrap">{formatDateTime(b.last_scanned_at)}</td>
                     <td className="num">{formatCount(b.total_open)}</td>
