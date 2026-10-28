@@ -296,11 +296,26 @@ a size without manual entry.
 
 **Goal:** comfortable for daily use, safe to keep data in.
 
-**Progress (2026-10-27):** task 1 is under way. Screenshot-driven UI fixes:
-page width, sidebar wrapping, the province heat map. Task 6 is partly done:
-README and decision records are up to date. Tasks 2–5 and 7 are open.
-Possible extra work: connectors for iCIMS / Avature / Oracle Cloud (see
-`docs/decisions/2026-10-27-company-cleanup.md`).
+**Progress (2026-10-28):**
+- Task 1 (UI fixes): done for now; you're happy with the UI.
+- Task 2 (open-roles history): ✅ built, a chart on each company page.
+- Task 3 (backup): ✅ built, `jobradar backup` and a reminder with "Back up
+  now" on the Scans page.
+- Task 4 (board health): ✅ built, boards failing 3 scans in a row are
+  listed on the Scans page and marked on the company page.
+- Task 5 (performance): not needed; you find search fast enough.
+- Task 6 (docs): kept up to date with each change.
+- Task 7 (version 2 plan): later, with scheduled scans.
+- Also built: **add a job by its link** (was phase 4, task 5).
+See `docs/decisions/2026-10-28-backups-health-and-manual-jobs.md`.
+
+Manual checks for these:
+- `cd frontend && npm run build`, restart `jobradar serve`.
+- Scans page: "Back up now" makes a file in `data/`; the reminder goes away.
+- A company page: "Open roles over time" shows a bar per day with scans.
+- Applications page: "Add a job by link" with a Taleo or iCIMS posting;
+  check what it filled in, save it, find it on the Applications page.
+- Restore a backup into a fresh folder and open it (`--db` on any command).
 
 **Added 2026-10-28: experience level and years asked** ✅ built, awaiting
 your checks.

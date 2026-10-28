@@ -59,6 +59,11 @@ or use `.venv/bin/jobradar serve --dev`, which rebuilds the UI on every save
   the last 12 weeks, the ones with no news for 14 days or more (time to follow
   up), tables of applications in progress and saved jobs not applied to yet
   (flagged when the posting has closed), and recent status changes.
+  **Add a job by link** for a posting the app can't scan (Taleo, iCIMS,
+  Oracle, a job site, LinkedIn): the details are read from the page (the
+  schema.org job data most job sites embed for Google, or the page title)
+  for you to check and complete, then the job is tracked like any other and
+  never closed by a scan. The same link twice opens the stored job.
 - **Job page:** description, Canadian locations, notes, applied date, status
   history, and links to the posting, the careers page and a LinkedIn search.
 - **Companies:** roles matching yours, open roles in Canada and worldwide,
@@ -67,12 +72,17 @@ or use `.venv/bin/jobradar serve --dev`, which rebuilds the UI on every save
   app find its job board).
 - **Company page:** boards (switch on or off, confirm a board matched by name,
   add one by pasting its link), size (type your own, or accept a Wikidata
-  suggestion), notes, and "scan this company now".
+  suggestion), notes, "scan this company now", and open roles in Canada over
+  time (each day's last scan; a failed scan keeps the previous number). A
+  board that failed 3 scans in a row says so.
 - **Candidates:** companies listed on stillhiring.today; add the ones worth
   scanning.
 - **Saved searches:** your saved views; mark the ones whose keywords big
   Workday sites (TD, RBC, BMO, CIBC) should be searched for.
 - **Scans:** "Scan now", progress, and every past scan with per-board results.
+  Boards that failed their last 3 scans or more are listed, with a button to
+  switch each off (or fix it on its company page). Backups: when the newest
+  is, a reminder after a week, and "Back up now".
 
 ## Which roles
 
@@ -169,6 +179,18 @@ Run these from the project folder (or activate the venv with
 .venv/bin/jobradar levels --ai --model nemotron-3-nano:30b-cloud --limit 50 --dry-run
 ```
 
+Adding jobs by hand, backups and board health:
+
+```bash
+.venv/bin/jobradar add-job https://example.com/jobs/123 --status applied
+.venv/bin/jobradar add-job <link> --title "Data Analyst" --company Acme --province ON
+.venv/bin/jobradar backup --note before-cleanup   # dated, checked copy of the database
+.venv/bin/jobradar failing-boards                 # boards that failed 3+ scans in a row
+```
+
+`add-job` reads the page like the web form; give `--title`, `--company` and
+`--province` (or `--remote`) when the page doesn't say.
+
 `levels --dry-run` prints the model's answers without saving them, to compare
 two models on the same jobs before picking one. On 20 jobs, Gemma placed 11
 and Nemotron 9 (they agreed on the rest), so Gemma is the default.
@@ -205,9 +227,11 @@ Options for any command: `--db PATH` uses another database file,
 ## Your data
 
 Everything lives in `data/jobradar.db` (git-ignored). The database upgrades
-itself when a new version needs it. Bulk changes made for you (imports,
-board research) were preceded by a copy in `data/jobradar-backup-*.db`;
-delete old ones whenever you like.
+itself when a new version needs it. Your statuses, notes and applied dates
+exist only there, so keep backups: `jobradar backup` or "Back up now" on the
+Scans page writes `data/jobradar-backup-<date>.db` (an integrity-checked
+copy, safe while the app runs), and the Scans page reminds you when the
+newest is a week old. Delete old ones whenever you like.
 
 Companies without a readable job board were moved out on 2026-10-27, to keep
 the list to the ~215 that can be scanned. They're kept, with their boards,
@@ -215,10 +239,10 @@ jobs and research notes, in `data/removed-companies-*.db` (same format as the
 main database) and `data/removed-companies-*.csv`. Re-importing `joblst.xlsx`
 would bring some back.
 
-To make your own copy:
+To restore one, stop the server and copy it over the database:
 
 ```bash
-cp data/jobradar.db data/jobradar-$(date +%F).db   # with the server stopped
+cp data/jobradar-backup-20261028-120000.db data/jobradar.db
 ```
 
 ## Tests
@@ -245,6 +269,8 @@ jobradar/            the package
   snapshots.py       replaces Adzuna snapshot copies with the company's own board
   queries.py         job search with every filter, company lists, scan history
   tracking.py        statuses, notes, sizes, saved searches, "new since last visit"
+  manual.py          adding a job by its link: reading the page, saving it
+  backup.py          dated, checked copies of the database; the reminder
   dashboard.py       the Applications page: stages, weekly counts, follow-ups
   enrich.py          company sizes: precedence, Wikidata, estimates
   detect.py          finds a company's job board (link, careers page, name)

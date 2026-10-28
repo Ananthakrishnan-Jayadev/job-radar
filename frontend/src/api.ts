@@ -104,6 +104,7 @@ export const api = {
     request<{ existing?: number; draft?: JobDraft }>("POST", "/api/jobs/from-link", { url }),
   addManualJob: (job: Omit<JobDraft, "found" | "note" | "country"> & { status: JobStatus }) =>
     request<{ id: number; new: boolean }>("POST", "/api/jobs/manual", job),
+  companyHistory: (id: number) => request<{ day: string; open: number }[]>("GET", `/api/companies/${id}/history`),
   backupStatus: () => request<BackupStatus>("GET", "/api/backup"),
   makeBackup: () => request<BackupStatus>("POST", "/api/backup"),
   failingBoards: () => request<{ after: number; boards: FailingBoard[] }>("GET", "/api/boards/failing"),

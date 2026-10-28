@@ -28,7 +28,7 @@ decision to build a separate tool that does not depend on LinkedIn.
 | [06-architecture-draft.md](06-architecture-draft.md) | The architecture and design choices proposed so far (a draft, not final) |
 | [07-related-projects.md](07-related-projects.md) | The user's other projects that this can reuse from or connect to |
 | [08-open-questions.md](08-open-questions.md) | Decisions still to make before or while planning |
-| [09-plans.md](09-plans.md) | Plans still to build after phase 5: add a job by its link, more connectors, follow-ups |
+| [09-plans.md](09-plans.md) | Plans still to build: more connectors, small follow-ups, version 2 ideas |
 | [research/](research/) | Real sample responses from each API, probe scripts, draft code |
 
 ## Decisions already made

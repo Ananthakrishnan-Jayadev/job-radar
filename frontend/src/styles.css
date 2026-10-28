@@ -1230,22 +1230,22 @@ td.actions button + button {
   box-shadow: none;
 }
 
-/* Weekly chart: HTML bars so labels stay crisp at any width. One series, so
-   no legend; recessive grid; a tooltip on hover or keyboard focus. */
-.week-chart .plot {
+/* Column charts (BarChart.tsx): HTML bars so labels stay crisp at any width.
+   One series, so no legend; recessive grid; a tooltip on hover or focus. */
+.bar-chart .plot {
   position: relative;
   height: 9.5rem;
-  margin-left: 1.5rem;
+  margin-left: 2.25rem;
 }
 
-.week-chart .gridline {
+.bar-chart .gridline {
   position: absolute;
   left: 0;
   right: 0;
   border-top: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
 }
 
-.week-chart .gridline span {
+.bar-chart .gridline span {
   position: absolute;
   right: calc(100% + 0.45rem);
   top: -0.55rem;
@@ -1254,15 +1254,14 @@ td.actions button + button {
   font-variant-numeric: tabular-nums;
 }
 
-.week-chart .cols {
+.bar-chart .cols {
   position: absolute;
   inset: 0;
   display: grid;
-  grid-template-columns: repeat(12, 1fr);
   gap: 2px;
 }
 
-.week-chart .col {
+.bar-chart .col {
   position: relative;
   display: flex;
   align-items: flex-end;
@@ -1271,12 +1270,13 @@ td.actions button + button {
   outline-offset: 0;
 }
 
-.week-chart .col.on {
+.bar-chart .col.on {
   background: color-mix(in srgb, var(--sunken) 55%, transparent);
 }
 
-.week-chart .bar {
+.bar-chart .bar {
   width: 58%;
+  max-width: 2.5rem;
   min-height: 3px;
   background: var(--s-applied);
   border-radius: 4px 4px 0 0;
@@ -1298,15 +1298,39 @@ td.actions button + button {
   z-index: 2;
 }
 
-.week-chart .x-labels {
+/* Near the edges the tip opens inward instead of spilling off the panel. */
+.chart-tip.to-left {
+  left: auto;
+  right: 0;
+  transform: none;
+}
+
+.chart-tip.to-right {
+  left: 0;
+  transform: none;
+}
+
+.bar-chart .x-labels {
   display: grid;
-  grid-template-columns: repeat(12, 1fr);
   gap: 2px;
-  margin: 0.4rem 0 0 1.5rem;
+  margin: 0.4rem 0 0 2.25rem;
   font-size: 0.75rem;
   color: var(--muted);
   text-align: center;
   white-space: nowrap;
+}
+
+/* A company's open roles: the app's lake blue, not the "applied" green. */
+.company-history .bar {
+  background: var(--lake);
+}
+
+.company-history {
+  margin-top: 1.5rem;
+}
+
+.company-history .hint {
+  margin: -0.25rem 0 0.75rem;
 }
 
 .follow-list {

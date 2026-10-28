@@ -641,6 +641,12 @@ def create_app(settings: Settings, db_path: Path | None = None,
 
     # backups and board health (shown on the Scans page)
 
+    @app.get("/api/companies/{company_id}/history")
+    def company_history(company_id: int, conn: sqlite3.Connection = Conn):
+        if conn.execute("SELECT 1 FROM companies WHERE id = ?", (company_id,)).fetchone() is None:
+            raise HTTPException(404, f"company {company_id} not found")
+        return queries.company_history(conn, company_id)
+
     @app.get("/api/backup")
     def backup_status():
         return backup.backup_status(db_path.parent)
