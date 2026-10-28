@@ -201,7 +201,7 @@ statuses, notes, companies, Scan now.
 
 ---
 
-## Phase 4: Discovering companies and company size ✅ mostly done (task 5 open)
+## Phase 4: Discovering companies and company size ✅ done 2026-10-28 (task 5 moved to `docs/09-plans.md`)
 
 **Split in two (2026-10-26):** part 1 is built: sizes (tasks 7 and 8),
 stillhiring.today candidates, detection (task 2), the Candidates page (task 3)
@@ -212,8 +212,10 @@ Adzuna (task 1), add job by URL (task 5), deduplication (task 6).
 user won't pay, so tasks 1 and 6 are dropped. The test calls were used once
 for a snapshot (`docs/decisions/2026-10-26-adzuna-snapshot.md`). Added
 instead, outside the plan: SAP SuccessFactors, JazzHR, Pinpoint, Teamtailor
-and Humi connectors, and importing the user's own company lists. Task 5
-(add a single job by URL) is still open.
+and Humi connectors, and importing the user's own company lists.
+
+**Update (2026-10-28):** phase 4 is closed. Task 5 (add a single job by URL)
+moved to the plans in `docs/09-plans.md`.
 
 **Also done in phase 4, outside the plan (2026-10-26 and 27):**
 - **Role filtering:** `roles.toml` hides roles outside software, data and AI
@@ -250,7 +252,7 @@ a size without manual entry.
    detected board, a match confidence, and Approve / Reject. Nothing is added
    without your approval.
 4. Add company by careers URL (detected automatically, confirm before saving).
-5. **Add job by URL** for companies on systems with no feed (Dayforce, iCIMS,
+5. ~~Moved to `docs/09-plans.md`.~~ **Add job by URL** for companies on systems with no feed (Dayforce, iCIMS,
    Taleo): known ATS URL → fetch; otherwise a short manual form.
 6. ~~Dropped~~ (replaced by `snapshots.py`). **Deduplication:** an Adzuna job that matches a feed job (same company,
    similar title, same province, or same apply URL) is linked and hidden
