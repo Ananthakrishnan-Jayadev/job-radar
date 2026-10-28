@@ -2,6 +2,7 @@
 // that serves this page, so there is no base URL to configure.
 
 import type {
+  Applications,
   Candidate,
   Company,
   DetectedBoard,
@@ -96,6 +97,7 @@ export const api = {
     request<DetectedBoard[]>("POST", "/api/detect", body),
   findMissingBoards: () => request<TaskState>("POST", "/api/find-boards"),
   askLevels: () => request<TaskState>("POST", "/api/levels/ask"),
+  applications: () => request<Applications>("GET", "/api/applications"),
   currentTask: () => request<TaskState>("GET", "/api/tasks/current"),
 
   candidates: (params: URLSearchParams) =>

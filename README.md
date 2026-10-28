@@ -59,6 +59,12 @@ or use `.venv/bin/jobradar serve --dev`, which rebuilds the UI on every save
   Canada") plus "Remote anywhere in Canada", and filters for experience level,
   company size, your status, workplace, date posted, job system and salary. Change a job's status right in the list; new jobs
   since your last visit have an amber edge. Save a search, export a CSV.
+- **Applications:** where your tracked jobs stand. Counts for saved,
+  applied, interviewing, offer and rejected (each opens the Jobs list with
+  that status), how many applications heard back, applications per week for
+  the last 12 weeks, the ones with no news for 14 days or more (time to follow
+  up), tables of applications in progress and saved jobs not applied to yet
+  (flagged when the posting has closed), and recent status changes.
 - **Job page:** description, Canadian locations, notes, applied date, status
   history, and links to the posting, the careers page and a LinkedIn search.
 - **Companies:** roles matching yours, open roles in Canada and worldwide,
@@ -245,6 +251,7 @@ jobradar/            the package
   snapshots.py       replaces Adzuna snapshot copies with the company's own board
   queries.py         job search with every filter, company lists, scan history
   tracking.py        statuses, notes, sizes, saved searches, "new since last visit"
+  dashboard.py       the Applications page: stages, weekly counts, follow-ups
   enrich.py          company sizes: precedence, Wikidata, estimates
   detect.py          finds a company's job board (link, careers page, name)
   boards.py          turns a pasted board link into a board name
