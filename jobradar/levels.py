@@ -156,6 +156,8 @@ Levels:
 
 min_years: the smallest number of years of experience the posting asks for, or null if it doesn't say.
 
+Answer with JSON only, like {{"level": "mid", "min_years": 3}}.
+
 Title: {title}
 
 Posting:
@@ -178,15 +180,23 @@ def jobs_to_ask(conn: sqlite3.Connection) -> list[sqlite3.Row]:
 
 
 def parse_answer(content: str) -> tuple[str | None, int | None]:
-    """(level or None, years) from the model's JSON reply; ValueError if it isn't one."""
-    match = re.search(r"\{.*\}", content, re.S)
-    if not match:
-        raise ValueError("no JSON in the answer")
-    data = json.loads(match.group(0))
-    level = data.get("level")
+    """(level or None, years) from the model's reply; ValueError if it isn't one.
+
+    Cloud models served through Ollama may ignore the JSON schema and answer
+    "level: senior\nmin_years: 5" instead, so both forms are read.
+    """
+    if match := re.search(r"\{.*\}", content, re.S):
+        data = json.loads(match.group(0))
+        level, years = data.get("level"), data.get("min_years")
+    else:
+        found = re.search(r"\blevel\W+([a-z]+)", content, re.I)
+        if not found:
+            raise ValueError("no level in the answer")
+        level = found.group(1).lower()
+        years = re.search(r"\bmin_years\W+(\d{1,2})\b", content, re.I)
+        years = int(years.group(1)) if years else None
     if level not in (*LEVELS, UNKNOWN_LEVEL):
         raise ValueError(f"unexpected level {level!r}")
-    years = data.get("min_years")
     years = years if isinstance(years, int) and 0 <= years <= MAX_YEARS else None
     return (None if level == UNKNOWN_LEVEL else level), years
 

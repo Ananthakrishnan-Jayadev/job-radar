@@ -216,6 +216,9 @@ def test_ask_ollama_stops_at_usage_limit_keeping_answers(conn, tmp_path, setting
 def test_parse_answer():
     assert levels.parse_answer('Sure! {"level": "lead", "min_years": 10}') == ("lead", 10)
     assert levels.parse_answer('{"level": "mid", "min_years": 99}') == ("mid", None)
+    assert levels.parse_answer("level: senior\nmin_years: null") == ("senior", None)
+    assert levels.parse_answer("Level: Entry\nmin_years: 1") == ("entry", 1)
+    assert levels.parse_answer("**level**: unknown") == (None, None)
     with pytest.raises(ValueError):
         levels.parse_answer('{"level": "guru", "min_years": 3}')
 
