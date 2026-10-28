@@ -317,9 +317,19 @@ your checks.
 - Schema versions 6 and 7. Decision record:
   `docs/decisions/2026-10-28-experience-level.md`.
 
-Manual checks:
+**Added 2026-10-28: Applications page** ✅ built, awaiting your checks. A
+dashboard of your tracked jobs: stage counts, heard-back rate, applications
+per week (12 weeks), follow-ups after 14 days without news, in-progress and
+saved tables with status changes in place, recent changes. Every tracked job
+counts, whatever its role, location or posting state. See
+`docs/decisions/2026-10-28-applications-page.md`.
+
+Manual checks (both features):
 - `cd frontend && npm run build`, then restart `jobradar serve` (the
   database upgrades itself and works out the levels).
+- Open Applications: counts match your statuses; a stage opens the Jobs list
+  filtered to it; change a status in a table and the page updates; hover and
+  Tab through the weekly chart; try the dark theme and a narrow window.
 - Filter by Experience and by years; hover a level; open a job.
 - Click "Ask gemma4:31b-cloud" (about 600 jobs, one at a time). If the free
   usage limit stops it, run it again later: answers so far are kept.

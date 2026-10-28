@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from "motion/react";
 import { NavLink, Route, Routes, useLocation } from "react-router-dom";
 import ScanButton from "./components/ScanButton";
+import ApplicationsPage from "./pages/ApplicationsPage";
 import CandidatesPage from "./pages/CandidatesPage";
 import CompaniesPage from "./pages/CompaniesPage";
 import CompanyPage from "./pages/CompanyPage";
@@ -13,6 +14,7 @@ import { ThemeToggle } from "./theme";
 
 const NAV = [
   { to: "/", label: "Jobs", end: true },
+  { to: "/applications", label: "Applications" },
   { to: "/companies", label: "Companies" },
   { to: "/candidates", label: "Candidates" },
   { to: "/saved", label: "Saved searches" },
@@ -64,6 +66,7 @@ export default function App() {
             <Routes location={location}>
               <Route path="/" element={<JobsPage />} />
               <Route path="/jobs/:id" element={<JobPage />} />
+              <Route path="/applications" element={<ApplicationsPage />} />
               <Route path="/companies" element={<CompaniesPage />} />
               <Route path="/companies/:id" element={<CompanyPage />} />
               <Route path="/candidates" element={<CandidatesPage />} />

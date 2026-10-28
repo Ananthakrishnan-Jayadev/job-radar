@@ -19,7 +19,7 @@ from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, Response
 from pydantic import BaseModel
 
-from .. import candidates, db, enrich, levels, queries, tracking
+from .. import candidates, dashboard, db, enrich, levels, queries, tracking
 from ..boards import BoardError, normalize_board
 from ..detect import Detected, detect_company
 from ..http import FetchError, HttpClient
@@ -340,6 +340,11 @@ def create_app(settings: Settings, db_path: Path | None = None,
         name = f"jobradar-{date.today().isoformat()}.csv"
         return Response(text, media_type="text/csv; charset=utf-8",
                         headers={"Content-Disposition": f'attachment; filename="{name}"'})
+
+    @app.get("/api/applications")
+    def applications(conn: sqlite3.Connection = Conn):
+        """Where each tracked job stands, for the Applications page."""
+        return dashboard.application_dashboard(conn)
 
     @app.get("/api/jobs/{job_id}")
     def get_job(job_id: int, conn: sqlite3.Connection = Conn):

@@ -245,3 +245,40 @@ export interface ScanResultRow {
   company_id: number;
   company: string;
 }
+
+/** A tracked job on the Applications page. */
+export interface TrackedJob {
+  id: number;
+  title: string;
+  url: string;
+  status: JobStatus;
+  applied_at: string | null;
+  status_changed_at: string | null;
+  closed_at: string | null;
+  first_seen: string;
+  level: string | null;
+  company_id: number;
+  company: string;
+  /** Days since the status last changed (or since applying). */
+  days_since_change: number | null;
+  days_since_applied: number | null;
+}
+
+export interface Applications {
+  today: string;
+  /** Jobs in each status except "new". */
+  counts: Record<Exclude<JobStatus, "new">, number>;
+  /** Jobs ever applied to. */
+  applied_total: number;
+  /** Of those, how many got an answer (interview, offer or no). */
+  heard_back: number;
+  interviews: number;
+  follow_up_days: number;
+  /** The last 12 weeks, oldest first; each starts on a Monday. */
+  per_week: { week: string; applied: number }[];
+  follow_up: TrackedJob[];
+  active: TrackedJob[];
+  saved: TrackedJob[];
+  recent: { at: string; old: string | null; new: string | null; id: number; title: string; company_id: number;
+            company: string }[];
+}
