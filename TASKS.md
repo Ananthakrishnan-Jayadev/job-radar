@@ -21,7 +21,8 @@ Five phases. Each one ends with something you can run and check. Read
   packages only into `frontend/node_modules`. Never `sudo`,
   `pip install --user`, the system `pip`, `--break-system-packages`, `apt`,
   `snap`, `pipx`, `npm -g`, or `curl ... | sh` installers.
-- Commit locally with conventional commits after each task group. No remote.
+- Commit with conventional commits after each task group. Push to `origin main`
+  only when the user asks.
 - If something in `PROJECT.md` turns out wrong, say so, write a decision
   record in `docs/decisions/`, and update the spec.
 
