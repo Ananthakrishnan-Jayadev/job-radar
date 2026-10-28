@@ -52,10 +52,19 @@ def test_title_level(title, level):
     ("At least 2 years of professional software experience", 2),
     ("3 or more years of relevant experience", 3),
     ("Experience: minimum 4 years in data engineering", 4),
-    ("5+ years of backend experience; 2+ years of experience with Kubernetes", 2),
+    ("5+ years of backend experience; 2+ years of experience with Kubernetes", 5),
+    ("- 10+ years in software engineering with 5+ years in a leadership role", 10),
+    ("- 7-10+ years of progressive experience in analytics", 7),
+    ("- 5-7+ years in credit risk, collections, or recovery", 5),
+    ("3 to 5 years in software development", 3),
     ("Au moins 5 ans d&#39;exp&eacute;rience en d&eacute;veloppement", 5),
     ("&lt;p&gt;7+ yrs experience&lt;/p&gt;", 7),
     ("We bring 65 years of experience serving clients.", None),  # the company, not the job
+    ("- have 5+ years building user-facing security features", 5),
+    ("- 7+ years in a customer-facing pre-sales role", 7),
+    ("At least 3 years in C++ for embedded systems", 3),
+    ("- 2+ ann&eacute;es d'exp&eacute;rience en ing&eacute;nierie", 2),
+    ("Trusted by Canadians for 10+ years.", None),  # the company's history
     ("Join a team that ships every week.", None),
     (None, None),
 ])
@@ -136,12 +145,27 @@ def test_filter_by_level(conn, tmp_path):
     assert titles(["nonsense"]) == []
 
 
+def test_filter_by_years_asked(conn, tmp_path):
+    board, _ = _setup(conn, tmp_path)  # Senior 5, Software Engineer 2, two with no number
+    db.upsert_job(conn, board, RawJob("7", "Cloud Engineer", "u7", [Location("Toronto", "ON", "CA")],
+                                      description="8+ years of experience"))
+    sync_roles(conn, tmp_path)
+    def titles(years):
+        return sorted(r["title"] for r in queries.search_jobs(conn, queries.JobFilter(years=years))[1])
+    assert titles(["under3"]) == ["Software Engineer"]
+    assert titles(["3to5"]) == ["Senior Software Engineer"]
+    assert titles(["over5"]) == ["Cloud Engineer"]
+    assert titles(["under3", "none"]) == ["Backend Developer", "Platform Engineer", "Software Engineer"]
+
+
 def test_api_levels(conn, tmp_path, settings):
     _setup(conn, tmp_path)
     client = TestClient(web_app.create_app(settings, db_path=tmp_path / "test.db"))
     meta = client.get("/api/meta").json()
     assert meta["levels"] == ["intern", "entry", "mid", "senior", "lead", "unknown"]
     assert meta["levels_to_ask"] == 1  # Platform Engineer has no description
+    assert meta["year_bands"] == ["under3", "3to5", "over5", "none"]
+    assert client.get("/api/jobs?years=under3").json()["total"] == 1
     item = client.get("/api/jobs?levels=mid").json()["items"][0]
     assert (item["title"], item["level"], item["min_years"], item["level_source"]) == (
         "Software Engineer", "mid", 2, "years")
@@ -162,7 +186,8 @@ def test_ask_ollama_saves_answers(conn, tmp_path, settings):
     assert _level(conn, ids["Backend Developer"]) == ("mid", 3, "ollama:gemma4:31b-cloud")
     body = sources.bodies()[0]
     assert body["model"] == "gemma4:31b-cloud" and body["stream"] is False
-    assert body["format"]["properties"]["level"]["enum"][-1] == "unknown"
+    assert body["format"]["properties"]["level"]["enum"] == ["intern", "entry", "mid", "senior", "lead"]
+    assert "Always choose one level" in body["messages"][0]["content"]
     assert "Backend Developer" in body["messages"][0]["content"]
     assert levels.jobs_to_ask(conn) == []  # not asked again
 

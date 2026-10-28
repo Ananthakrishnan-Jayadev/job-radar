@@ -2,7 +2,7 @@ import { ChevronDown, Search, Sparkles } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useState, type FormEvent } from "react";
 import { api } from "../api";
-import { JOB_STATUS_LABEL, LEVEL_LABEL, SIZE_LABEL, SYSTEM_LABEL, WORKPLACE_LABEL } from "../format";
+import { JOB_STATUS_LABEL, LEVEL_LABEL, SIZE_LABEL, SYSTEM_LABEL, WORKPLACE_LABEL, YEARS_LABEL } from "../format";
 import { getList, isOn, toggleInList, withParam } from "../params";
 import { useApp } from "../state";
 import type { Meta } from "../types";
@@ -217,6 +217,12 @@ function LevelFilter({ meta, params, setParams }: Pick<Props, "meta" | "params" 
         options={meta.levels.map((l) => ({ value: l, label: LEVEL_LABEL[l] ?? l }))}
         selected={getList(params, "levels")}
         onToggle={(v) => setParams(toggleInList(params, "levels", v))}
+      />
+      <Chips
+        legend="Years of experience asked"
+        options={meta.year_bands.map((y) => ({ value: y, label: YEARS_LABEL[y] ?? y }))}
+        selected={getList(params, "years")}
+        onToggle={(v) => setParams(toggleInList(params, "years", v))}
       />
       {meta.levels_to_ask > 0 && !(task?.running && task.name === "levels") && (
         <div className="ask-ai">

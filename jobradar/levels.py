@@ -2,8 +2,8 @@
 
 Rules first, for every job roles.toml wants (no requests, same answer every
 time): a level word in the title wins ("Senior", "Intern", "Staff", "II"...);
-otherwise the years of experience the description asks for, the smallest
-number it names, so a job you might qualify for is never hidden.
+otherwise the years of experience the description asks for (the largest
+number it names: smaller ones are usually for a single skill).
 
 Jobs the rules can't place can be sent to a local Ollama model on request
 (`jobradar levels --ai`, or the button on the Jobs page). Nothing calls it
@@ -33,9 +33,12 @@ from .roles import fold
 
 LEVELS = ("intern", "entry", "mid", "senior", "lead")
 UNKNOWN_LEVEL = "unknown"  # filter value for jobs without a level
+# Filter by the years a job asks for: (value, lowest, highest or None).
+YEAR_BANDS = [("under3", 0, 2), ("3to5", 3, 5), ("over5", 6, None)]
+NO_YEARS = "none"  # filter value for jobs that state no number
 
 # Bump when the rules below change: rule-made levels are worked out again.
-RULES_VERSION = "1"
+RULES_VERSION = "2"
 
 _TITLE_RULES = [
     ("intern", r" (?:intern|interns|internship|co op|coop|stagiaire|summer student|student) "),
@@ -54,14 +57,22 @@ _GRADE_LEVEL = {"i": "entry", "1": "entry", "ii": "mid", "2": "mid", "iii": "sen
 _WORDS = {"one": 1, "two": 2, "three": 3, "four": 4, "five": 5, "six": 6, "seven": 7, "eight": 8,
           "nine": 9, "ten": 10, "twelve": 12, "fifteen": 15}
 _NUM = r"(\d{1,2}|" + "|".join(_WORDS) + r")(?:\s*\(\d{1,2}\+?\))?"
-_YEARS = [
+_YEARS = [  # (pattern, whether it needs the company-history check below)
     # "3+ years of experience", "3-5 yrs of hands-on experience", "five (5) years' experience"
-    re.compile(rf"\b{_NUM}\s*(?:\+|plus|or more)?\s*(?:(?:-|to|or)\s*\d{{1,2}}\s*\+?\s*)?(?:years?|yrs?)\b[^.;\n]{{0,60}}?\bexperience"),
+    (re.compile(rf"\b{_NUM}\s*(?:\+|plus|or more)?\s*(?:(?:-|to|or)\s*\d{{1,2}}\s*\+?\s*)?(?:years?|yrs?)\b[^.;\n]{{0,60}}?\bexperience"), False),
     # "experience: 3+ years", "experience (minimum 2 years)"
-    re.compile(rf"\bexperience\b[^.;\n]{{0,25}}?\b{_NUM}\s*\+?\s*(?:years?|yrs?)\b"),
-    # "5 ans d'experience" (accents are removed first)
-    re.compile(rf"\b{_NUM}\s*(?:\+|plus)?\s*(?:(?:-|a)\s*\d{{1,2}}\s*)?ans?\b[^.;\n]{{0,40}}?\bexperience"),
+    (re.compile(rf"\bexperience\b[^.;\n]{{0,25}}?\b{_NUM}\s*\+?\s*(?:years?|yrs?)\b"), False),
+    # "5 ans d'experience", "2+ annees d'experience" (accents are removed first)
+    (re.compile(rf"\b{_NUM}\s*(?:\+|plus)?\s*(?:(?:-|a)\s*\d{{1,2}}\s*)?(?:ans?|annees?)\b[^.;\n]{{0,40}}?\bexperience"),
+     False),
+    # No "experience", but plainly a requirement: "5+ years building...", "at least 3 years in C++"
+    (re.compile(rf"\b{_NUM}\s*(?:(?:-|to)\s*\d{{1,2}}\s*\+?|\+|plus|or more)\s*(?:years?|yrs?)\b"), True),
+    (re.compile(rf"\b(?:minimum(?: of)?|at least)\s+{_NUM}\s*(?:years?|yrs?)\b"), True),
 ]
+# Words just before the number that mean the company's history: "trusted for 10+ years".
+_HISTORY = re.compile(r"\b(?:for|over|past|since|trusted|founded|history|serving)\W*$")
+# The top of a range already read from its start: the "10+" in "7-10+ years".
+_RANGE_END = re.compile(r"\d\s*(?:-|to)\s*$")
 MAX_YEARS = 15  # "65 years of experience serving clients" is the company, not the job
 
 
@@ -84,17 +95,22 @@ def plain_text(description: str) -> str:
 
 
 def years_asked(description: str | None) -> int | None:
-    """The smallest number of years of experience the description asks for."""
+    """The years of experience the description asks for: the largest number it
+    names, since smaller ones are usually for one skill ("10+ years in software,
+    with 3+ years in Go"); a range counts from its start."""
     if not description:
         return None
     text = plain_text(description)
     found = []
-    for rx in _YEARS:
+    for rx, check in _YEARS:
         for m in rx.finditer(text):
+            before = text[max(0, m.start() - 30):m.start()]
+            if _RANGE_END.search(before) or (check and _HISTORY.search(before)):
+                continue
             value = int(m.group(1)) if m.group(1).isdigit() else _WORDS[m.group(1)]
             if value <= MAX_YEARS:
                 found.append(value)
-    return min(found) if found else None
+    return max(found) if found else None
 
 
 def level_for_years(years: int) -> str:
@@ -152,9 +168,12 @@ Levels:
 - mid: 2-4 years of experience
 - senior: 5-7 years, or a senior role
 - lead: 8+ years, or staff, principal, lead, manager or director
-- unknown: the posting gives no clue
 
-min_years: the smallest number of years of experience the posting asks for, or null if it doesn't say.
+Always choose one level, even when the posting doesn't say outright: judge from the
+responsibilities, the scope, who the role reports to or leads, and the skills it expects.
+
+min_years: the overall years of experience the posting requires (not the years for one
+skill), or null if it doesn't state a number. Don't guess this one.
 
 Answer with JSON only, like {{"level": "mid", "min_years": 3}}.
 
@@ -166,7 +185,7 @@ Posting:
 _SCHEMA = {
     "type": "object",
     "properties": {
-        "level": {"type": "string", "enum": [*LEVELS, UNKNOWN_LEVEL]},
+        "level": {"type": "string", "enum": list(LEVELS)},
         "min_years": {"type": ["integer", "null"]},
     },
     "required": ["level", "min_years"],

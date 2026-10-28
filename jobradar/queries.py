@@ -10,7 +10,7 @@ from __future__ import annotations
 import sqlite3
 from dataclasses import dataclass, field
 
-from .levels import LEVELS, UNKNOWN_LEVEL
+from .levels import LEVELS, NO_YEARS, UNKNOWN_LEVEL, YEAR_BANDS
 from .models import SIZE_BANDS, UNKNOWN_SIZE, Location
 
 REMOTE_CANADA = "REMOTE"  # province-filter value for remote jobs open across Canada
@@ -53,6 +53,7 @@ class JobFilter:
     all_roles: bool = False  # False: only roles wanted in roles.toml (tracked jobs always show)
     role_categories: list[str] = field(default_factory=list)  # software / data / ai / adjacent
     levels: list[str] = field(default_factory=list)  # levels.LEVELS and/or "unknown"
+    years: list[str] = field(default_factory=list)  # levels.YEAR_BANDS values and/or "none"
 
 
 def _fts_query(f: JobFilter) -> str | None:
@@ -110,6 +111,15 @@ def _where(f: JobFilter) -> tuple[list[str], list, bool]:
         params += known
         if UNKNOWN_LEVEL in f.levels:
             parts.append("j.experience_level IS NULL")
+        where.append(f"({' OR '.join(parts) or '0'})")
+    if f.years:
+        parts = []
+        for value, low, high in YEAR_BANDS:
+            if value in f.years:
+                parts.append("j.min_years BETWEEN ? AND ?" if high is not None else "j.min_years >= ?")
+                params += [low, high] if high is not None else [low]
+        if NO_YEARS in f.years:
+            parts.append("j.min_years IS NULL")
         where.append(f"({' OR '.join(parts) or '0'})")
     if f.role_categories:
         where.append("(" + " OR ".join("j.role_categories LIKE ?" for _ in f.role_categories) + ")")

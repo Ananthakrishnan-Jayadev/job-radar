@@ -94,16 +94,23 @@ Rules work it out, with no requests and the same answer every time:
    Staff, Principal, Lead, Manager, Director, Head of, VP → lead+; Senior,
    Sr → senior; Intermediate → mid; Junior, Jr, New Grad, Associate → entry;
    "Engineer II" style grades (I entry, II mid, III/IV senior).
-2. **Otherwise the years the description asks for,** the smallest number it
-   names ("5+ years of backend experience; 2+ years of Kubernetes" counts as
-   2), so a job you might qualify for is never hidden: 0–1 entry, 2–4 mid,
-   5–7 senior, 8+ lead+. Numbers over 15 are ignored ("65 years of
-   experience serving clients" is the company's).
+2. **Otherwise the years the description asks for:** "5+ years of
+   experience", "5+ years building…", "at least 3 years in…", "2+ années
+   d'expérience". When it names several, the largest counts ("10+ years in
+   software, with 3+ years in Go" is 10); a range counts from its start
+   ("7-10 years" is 7). 0–1 entry, 2–4 mid, 5–7 senior, 8+ lead+. Numbers over
+   15, and ones after "for", "over", "since"... ("trusted for 10+ years") are
+   the company's, not the job's.
 
-Jobs neither rule places show as "Unknown". About 1 in 10 wanted jobs end up
+A second filter, **years of experience asked**, picks under 3 (0–2), 3–5, or
+more than 5 (6+), or "not stated". It only uses numbers the posting states.
+
+Jobs neither rule places show as "Unknown". About 1 in 12 wanted jobs end up
 there. A local [Ollama](https://ollama.com) model can be asked about those,
 only when you say so: "Ask ..." under the Experience filter, or
-`jobradar levels --ai`. Each job is asked about once; the answer is saved as
+`jobradar levels --ai`. The model must always pick a level, judging from the
+responsibilities and scope when the posting doesn't say; it only gives years
+when the posting states a number. Each job is asked about once; the answer is saved as
 it comes, so stopping keeps what it got. The model is set in `config.toml`
 (`[ollama] model`, default `gemma4:31b-cloud`); cloud models need
 `ollama signin` once. Hover over a level in the list, or open the job, to see

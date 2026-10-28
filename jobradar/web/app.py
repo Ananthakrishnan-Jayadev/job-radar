@@ -218,6 +218,7 @@ def job_filter(request: Request) -> queries.JobFilter:
         all_roles=_flag(request, "all_roles"),
         role_categories=_list(request, "roles"),
         levels=_list(request, "levels"),
+        years=_list(request, "years"),
     )
 
 
@@ -297,6 +298,7 @@ def create_app(settings: Settings, db_path: Path | None = None,
                 for name, label in rules.labels.items()],
             "companies": conn.execute("SELECT COUNT(*) FROM companies").fetchone()[0],
             "levels": [*levels.LEVELS, levels.UNKNOWN_LEVEL],
+            "year_bands": [value for value, _, _ in levels.YEAR_BANDS] + [levels.NO_YEARS],
             "levels_to_ask": len(levels.jobs_to_ask(conn)),
             "ollama_model": settings.ollama.model,
         }
