@@ -15,5 +15,5 @@ before working. The short version:
 - UI: React + TypeScript in `frontend/`, built into `jobradar/web/static/`,
   served by FastAPI; `jobradar serve` is the only command to run it.
 - One phase of `TASKS.md` at a time; end each with manual test instructions.
-- Conventional commits. The remote is `origin` (GitHub, private); push to
+- Conventional commits. The remote is `origin` (GitHub, **public**); push to
   `main` only when the user asks, after checking nothing private is tracked.
