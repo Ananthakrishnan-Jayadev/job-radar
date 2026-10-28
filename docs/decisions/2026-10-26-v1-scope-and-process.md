@@ -12,7 +12,7 @@ Answers to `docs/08-open-questions.md`, given by the user while planning.
 | 6 | Tracking | Both jobs and companies. Jobs: new → saved → applied → interviewing → offer / rejected, plus not_interested. Companies: target, watching, ignored. |
 | 7 | Agent rules | The agent writes code **and pytest tests**, runs pytest, and writes **manual test instructions** for each phase. No installs or live scans without asking. |
 | 8 | Plan format | `PROJECT.md` + `TASKS.md`, dated decision records in `docs/decisions/`. |
-| 9 | Git | Commit regularly, conventional commits, **local only** for now. Branch renamed `master` → `main`. |
+| 9 | Git | Commit regularly, conventional commits, **local only** for now. Branch renamed `master` → `main`. *Changed 2026-10-28:* pushed to GitHub `main`, only when the user asks. |
 | — | Phases | **Five** phases (user asked for fewer than six). |
 | — | Language | **Python** as the main language; UI is Jinja2 + htmx so almost no JavaScript. |
 | 10 | Interface | **Web UI in v1**, plus a CLI. MCP server later. |

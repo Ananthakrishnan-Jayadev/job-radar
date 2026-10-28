@@ -332,7 +332,7 @@ Schema changes go through numbered migrations applied on start
   `pyproject.toml` / `frontend/package.json` and the install commands in the
   phase's manual checks.
 - **One phase at a time.** Stop at the end of each phase for the human to test.
-- **Git:** local only for now. Conventional commits (`type(scope): subject`,
+- **Git:** pushed to GitHub (`origin`, branch `main`) only when the user asks. Conventional commits (`type(scope): subject`,
   imperative, under 50 characters). Commit at the end of each task group.
 - **Decisions:** anything that changes this spec gets a dated record in
   `docs/decisions/` and an update here.
