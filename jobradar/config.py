@@ -42,6 +42,15 @@ class AdzunaSettings:
 
 
 @dataclass
+class OllamaSettings:
+    """A local Ollama server, asked about job levels only when you run it."""
+    url: str = "http://localhost:11434"
+    model: str = "gemma4:31b-cloud"
+    timeout_seconds: float = 180
+    max_chars: int = 6000  # of each description sent
+
+
+@dataclass
 class Settings:
     root: Path
     database: Path
@@ -51,6 +60,7 @@ class Settings:
     smartrecruiters_max_age_days: int = 180
     details_per_board: int = 60  # detail pages fetched per board per scan
     adzuna: AdzunaSettings = field(default_factory=AdzunaSettings)
+    ollama: OllamaSettings = field(default_factory=OllamaSettings)
 
     @property
     def user_agent(self) -> str:
@@ -100,4 +110,5 @@ def load_settings(root: Path | str | None = None) -> Settings:
         smartrecruiters_max_age_days=data.get("smartrecruiters", {}).get("max_age_days", 180),
         details_per_board=data.get("details", {}).get("max_per_board", 60),
         adzuna=_pick(AdzunaSettings, data.get("adzuna", {})),
+        ollama=_pick(OllamaSettings, data.get("ollama", {})),
     )

@@ -284,6 +284,20 @@ MIGRATIONS: list[str] = [
     ALTER TABLE jobs ADD COLUMN role_wanted INTEGER;
     CREATE INDEX jobs_role_wanted ON jobs(role_wanted);
     """,
+    # 6: experience level (intern / entry / mid / senior / lead), the years the
+    #    description asks for, and where the level came from (see levels.py).
+    #    A changed title or description is worked out again.
+    """
+    ALTER TABLE jobs ADD COLUMN experience_level TEXT;
+    ALTER TABLE jobs ADD COLUMN min_years INTEGER;
+    ALTER TABLE jobs ADD COLUMN level_source TEXT;
+    CREATE INDEX jobs_level_todo ON jobs(id) WHERE level_source IS NULL;
+    CREATE INDEX jobs_level ON jobs(experience_level);
+    CREATE TRIGGER jobs_level_reset AFTER UPDATE OF title, description ON jobs
+    WHEN old.title IS NOT new.title OR old.description IS NOT new.description BEGIN
+        UPDATE jobs SET experience_level = NULL, min_years = NULL, level_source = NULL WHERE id = new.id;
+    END;
+    """,
 ]
 
 

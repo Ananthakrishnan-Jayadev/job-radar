@@ -95,6 +95,7 @@ export const api = {
   detect: (body: { name: string; careers_url?: string | null; canadian: boolean }) =>
     request<DetectedBoard[]>("POST", "/api/detect", body),
   findMissingBoards: () => request<TaskState>("POST", "/api/find-boards"),
+  askLevels: () => request<TaskState>("POST", "/api/levels/ask"),
   currentTask: () => request<TaskState>("GET", "/api/tasks/current"),
 
   candidates: (params: URLSearchParams) =>

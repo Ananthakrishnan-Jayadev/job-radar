@@ -2,7 +2,16 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { api } from "../api";
 import StatusSelect from "../components/StatusSelect";
-import { JOB_STATUS_LABEL, SIZE_LABEL, SYSTEM_LABEL, WORKPLACE_LABEL, formatDate, formatDateTime } from "../format";
+import {
+  JOB_STATUS_LABEL,
+  LEVEL_LABEL,
+  SIZE_LABEL,
+  SYSTEM_LABEL,
+  WORKPLACE_LABEL,
+  formatDate,
+  formatDateTime,
+  levelSourceText,
+} from "../format";
 import { useLoad } from "../state";
 import type { JobDetail, JobStatus } from "../types";
 
@@ -46,6 +55,14 @@ export default function JobPage() {
               {j.locations.filter((l) => l.in_canada).map((l) => l.label).join("; ") || j.location}
               {j.locations.some((l) => !l.in_canada && (l.city || l.country)) && (
                 <span className="hint"> Also listed outside Canada.</span>
+              )}
+            </dd>
+            <dt>Level</dt>
+            <dd>
+              {j.level ? LEVEL_LABEL[j.level] : "Not clear"}
+              {j.min_years !== null && <>, asks for {j.min_years}+ years</>}
+              {j.level && levelSourceText(j.level_source) && (
+                <span className="hint"> ({levelSourceText(j.level_source)})</span>
               )}
             </dd>
             <dt>Workplace</dt>

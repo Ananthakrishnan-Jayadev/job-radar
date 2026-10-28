@@ -4,6 +4,7 @@ const RUNNING_LABEL: Record<string, string> = {
   sizes: "Looking up company sizes",
   boards: "Finding job boards",
   "find-boards": "Finding job boards",
+  levels: "Asking the AI model about job levels",
 };
 
 /** Progress of the background chore named *name*, or its last result. */

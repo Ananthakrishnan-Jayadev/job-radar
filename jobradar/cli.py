@@ -165,6 +165,40 @@ def cmd_enrich(args) -> int:
     return 0
 
 
+def cmd_levels(args) -> int:
+    from . import levels
+
+    settings = load_settings(args.root)
+    conn, _ = _open_db(args)
+    sync_roles(conn, settings.root)  # also works out levels with the rules
+    if args.ai:
+        model = args.model or settings.ollama.model
+        todo = len(levels.jobs_to_ask(conn))
+        count = min(todo, args.limit) if args.limit else todo
+        print(f"Asking {model} about {count} jobs the rules couldn't place"
+              + (" (dry run: nothing is saved)" if args.dry_run else "") + "...")
+        try:
+            summary = levels.run_ask_ollama(conn, settings, model=model, limit=args.limit, dry_run=args.dry_run)
+        except levels.LevelsError as exc:
+            print(exc, file=sys.stderr)
+            return 1
+        for title, level, years in summary.answers:
+            print(f"  {level or '?':7} {'' if years is None else f'{years}+ yrs':8} {title}")
+        print(f"\n{summary.found} levels found, {summary.unknown} still unclear, {summary.failed} unusable answers.")
+        if summary.stopped:
+            print(f"Stopped early: {summary.stopped}")
+    counts = conn.execute(
+        "SELECT COALESCE(experience_level, 'unknown') AS level, COUNT(*) FROM jobs "
+        "WHERE closed_at IS NULL AND COALESCE(role_wanted, 1) = 1 GROUP BY 1").fetchall()
+    by_level = dict(counts)
+    print("\nOpen wanted jobs by level: " + ", ".join(
+        f"{lv} {by_level.get(lv, 0)}" for lv in [*levels.LEVELS, levels.UNKNOWN_LEVEL]))
+    left = len(levels.jobs_to_ask(conn))
+    if left and not args.ai:
+        print(f"{left} have no clear level; `jobradar levels --ai` asks Ollama about them.")
+    return 0
+
+
 def cmd_candidates(args) -> int:
     from . import candidates
 
@@ -285,6 +319,13 @@ def build_parser() -> argparse.ArgumentParser:
     enrich = sub.add_parser("enrich", help="fill in company sizes (Wikidata, then estimates)")
     enrich.add_argument("--company", help="only this company (by name)")
     enrich.set_defaults(func=cmd_enrich)
+
+    lv = sub.add_parser("levels", help="experience levels of wanted jobs (rules, then Ollama with --ai)")
+    lv.add_argument("--ai", action="store_true", help="ask Ollama about jobs the rules can't place")
+    lv.add_argument("--model", help="Ollama model (default: [ollama] model in config.toml)")
+    lv.add_argument("--limit", type=int, help="ask about at most this many jobs")
+    lv.add_argument("--dry-run", action="store_true", help="print the answers without saving them")
+    lv.set_defaults(func=cmd_levels)
 
     cands = sub.add_parser("candidates", help="companies suggested by stillhiring.today")
     cands.add_argument("action", choices=["refresh", "list"])

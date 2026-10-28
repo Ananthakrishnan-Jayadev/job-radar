@@ -7,7 +7,7 @@ import { api } from "../api";
 import JobFilters from "../components/JobFilters";
 import Pagination from "../components/Pagination";
 import StatusSelect from "../components/StatusSelect";
-import { SIZE_LABEL, formatDate } from "../format";
+import { LEVEL_LABEL, SIZE_LABEL, formatDate, levelSourceText } from "../format";
 import { savedFilters, withParam } from "../params";
 import { useApp, useLoad } from "../state";
 import type { JobSummary } from "../types";
@@ -19,6 +19,15 @@ const SORTS = [
   { value: "company", label: "Company A–Z" },
   { value: "title", label: "Title A–Z" },
 ];
+
+/** Hover text for the level cell: the years asked and where the level came from. */
+function levelTitle(job: JobSummary): string | undefined {
+  const parts = [];
+  if (job.min_years !== null) parts.push(`Asks for ${job.min_years}+ years`);
+  const source = levelSourceText(job.level_source);
+  if (job.level && source) parts.push(source);
+  return parts.join(", ") || undefined;
+}
 
 export default function JobsPage() {
   const { meta, previousVisit, dataVersion } = useApp();
@@ -106,6 +115,7 @@ export default function JobsPage() {
               <thead>
                 <tr>
                   <th scope="col">Job</th>
+                  <th scope="col">Level</th>
                   <th scope="col">Where</th>
                   <th scope="col">Size</th>
                   <th scope="col">Posted</th>
@@ -136,6 +146,9 @@ export default function JobsPage() {
                           </span>
                         )}
                       </span>
+                    </td>
+                    <td className="nowrap" title={levelTitle(job)}>
+                      {job.level ? LEVEL_LABEL[job.level] : <span className="muted">–</span>}
                     </td>
                     <td>{job.location}</td>
                     <td className="nowrap">{SIZE_LABEL[job.size_band] ?? job.size_band}</td>
