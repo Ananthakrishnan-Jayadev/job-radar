@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { api } from "../api";
 import AddJobByLink from "../components/AddJobByLink";
+import BarChart from "../components/BarChart";
 import StatusSelect from "../components/StatusSelect";
 import { JOB_STATUS_LABEL, LEVEL_LABEL, formatDate, formatDateTime, plural } from "../format";
 import { useApp, useLoad } from "../state";
@@ -107,53 +108,23 @@ function Pipeline({ d }: { d: Applications }) {
   );
 }
 
-/** Applications per week: a single series, so no legend; hover or focus a week for its count. */
+/** Applications per week, by the date you applied. */
 function WeekChart({ weeks }: { weeks: Applications["per_week"] }) {
-  const [active, setActive] = useState<number | null>(null);
-  const most = Math.max(...weeks.map((w) => w.applied));
-  // Two gridlines above the baseline, on whole numbers.
-  const top = Math.max(2, most + (most % 2));
-  const thisWeek = weeks[weeks.length - 1]?.applied ?? 0;
-  const label = (i: number) => (i === weeks.length - 1 ? "This week" : formatDate(weeks[i].week));
-
+  const last = weeks.length - 1;
+  const thisWeek = weeks[last]?.applied ?? 0;
+  const bars = weeks.map((w, i) => ({
+    key: w.week,
+    value: w.applied,
+    label: i === last ? "This week" : i % 3 === 2 ? formatDate(w.week) : "",
+    tip: `${i === last ? "This week" : `Week of ${formatDate(w.week)}`}: ${plural(w.applied, "application")}`,
+  }));
   return (
     <section className="panel week-chart">
       <h2>Applications per week</h2>
       <p className="hint">
         Last 12 weeks, by the date you applied. {plural(thisWeek, "application")} this week.
       </p>
-      <div className="plot" onMouseLeave={() => setActive(null)}>
-        {[top, top / 2, 0].map((v) => (
-          <div key={v} className="gridline" style={{ bottom: `${(100 * v) / top}%` }}>
-            <span>{v}</span>
-          </div>
-        ))}
-        <div className="cols">
-          {weeks.map((w, i) => (
-            <div
-              key={w.week}
-              className={`col${active === i ? " on" : ""}`}
-              tabIndex={0}
-              aria-label={`Week of ${formatDate(w.week)}: ${plural(w.applied, "application")}`}
-              onMouseEnter={() => setActive(i)}
-              onFocus={() => setActive(i)}
-              onBlur={() => setActive(null)}
-            >
-              {w.applied > 0 && <span className="bar" style={{ height: `${(100 * w.applied) / top}%` }} />}
-              {active === i && (
-                <span className="chart-tip" role="tooltip">
-                  <strong>{w.applied}</strong> {i === weeks.length - 1 ? "this week" : `week of ${formatDate(w.week)}`}
-                </span>
-              )}
-            </div>
-          ))}
-        </div>
-      </div>
-      <div className="x-labels" aria-hidden="true">
-        {weeks.map((w, i) => (
-          <span key={w.week}>{i % 3 === 2 || i === weeks.length - 1 ? label(i) : ""}</span>
-        ))}
-      </div>
+      <BarChart bars={bars} />
     </section>
   );
 }

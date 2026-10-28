@@ -327,6 +327,29 @@ def list_companies(
     return companies
 
 
+HISTORY_POINTS = 30  # days shown in a company's open-roles history
+
+
+def company_history(conn: sqlite3.Connection, company_id: int) -> list[dict]:
+    """Open Canadian roles at a company on each day it was scanned, oldest first.
+
+    Per day, each board's last successful scan counts; a board that failed that
+    day keeps its previous number, so a failed scan isn't a drop in hiring.
+    """
+    rows = conn.execute("""
+        SELECT substr(s.started_at, 1, 10) AS day, r.board_id, r.jobs_canada
+        FROM scan_results r JOIN scans s ON s.id = r.scan_id JOIN boards b ON b.id = r.board_id
+        WHERE b.company_id = ? AND r.ok = 1 AND b.system NOT IN ('adzuna', 'manual')
+        ORDER BY r.id
+    """, (company_id,)).fetchall()
+    latest: dict[int, int] = {}
+    days: dict[str, int] = {}
+    for day, board, count in rows:
+        latest[board] = count
+        days[day] = sum(latest.values())  # later scans the same day overwrite
+    return [{"day": d, "open": n} for d, n in list(days.items())[-HISTORY_POINTS:]]
+
+
 FAILING_AFTER = 3  # scans in a row a board must fail before it's flagged
 
 _STREAK = """

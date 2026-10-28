@@ -101,3 +101,27 @@ def test_api_backup_and_failing(conn, tmp_path, settings):
     assert failing["after"] == 3 and failing["boards"][0]["company"] == "Acme"
     acme = client.get(f"/api/companies/{failing['boards'][0]['company_id']}").json()
     assert acme["boards"][0]["failures"] == 3
+
+
+def test_company_history(conn, tmp_path, settings):
+    company = db.upsert_company(conn, "Acme", canadian=True)
+    a = db.upsert_board(conn, company, "ashby", "acme")
+    b = db.upsert_board(conn, company, "lever", "acme")
+    other = db.upsert_board(conn, db.upsert_company(conn, "Other", canadian=True), "lever", "other")
+
+    def scan(day, results):
+        with conn:
+            sid = conn.execute("INSERT INTO scans (started_at) VALUES (?)", (f"{day}T10:00:00+00:00",)).lastrowid
+            for board, ok, n in results:
+                conn.execute("INSERT INTO scan_results (scan_id, board_id, ok, jobs_canada) VALUES (?, ?, ?, ?)",
+                             (sid, board, int(ok), n))
+
+    scan("2026-10-20", [(a, True, 10), (b, True, 5), (other, True, 99)])
+    scan("2026-10-21", [(a, True, 12), (b, False, 0)])  # b failed: keeps 5
+    scan("2026-10-21", [(a, True, 13)])  # a later scan the same day wins
+    scan("2026-10-23", [(a, True, 9), (b, True, 4)])
+    assert queries.company_history(conn, company) == [
+        {"day": "2026-10-20", "open": 15}, {"day": "2026-10-21", "open": 18}, {"day": "2026-10-23", "open": 13}]
+    client = TestClient(web_app.create_app(settings, db_path=tmp_path / "test.db"))
+    assert len(client.get(f"/api/companies/{company}/history").json()) == 3
+    assert client.get("/api/companies/9999/history").status_code == 404

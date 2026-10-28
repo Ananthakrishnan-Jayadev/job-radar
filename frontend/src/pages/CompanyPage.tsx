@@ -1,6 +1,7 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { Link, useParams } from "react-router-dom";
 import { api } from "../api";
+import BarChart from "../components/BarChart";
 import {
   COMPANY_STATUS_LABEL,
   SIZE_LABEL,
@@ -8,6 +9,7 @@ import {
   SYSTEM_LABEL,
   boardLabel,
   formatCount,
+  formatDate,
   formatDateTime,
 } from "../format";
 import { useApp, useLoad } from "../state";
@@ -121,6 +123,7 @@ export default function CompanyPage() {
               Scan {c.name} now
             </button>
           </section>
+          <OpenRolesHistory id={c.id} version={dataVersion} />
         </div>
 
         <aside className="job-side">
@@ -286,5 +289,40 @@ function AddBoard({ company, systems, onAdded }: { company: Company; systems: st
       </div>
       {error && <p className="error" role="alert">{error}</p>}
     </form>
+  );
+}
+
+/** Open Canadian roles on each day the company was scanned: is it hiring more or less? */
+function OpenRolesHistory({ id, version }: { id: number; version: number }) {
+  const history = useLoad(() => api.companyHistory(id), `${id}|${version}`);
+  const days = history.data ?? [];
+  if (days.length === 0) return null;
+  const every = Math.max(1, Math.ceil(days.length / 6));
+  const last = days.length - 1;
+  const bars = days.map((d, i) => ({
+    key: d.day,
+    value: d.open,
+    label: i === last || (last - i) % every === 0 ? formatDate(d.day) : "",
+    tip: `${formatDate(d.day)}: ${formatCount(d.open)} open in Canada`,
+  }));
+  const change = days[last].open - days[0].open;
+  return (
+    <section className="company-history">
+      <h2>Open roles over time</h2>
+      {days.length < 2 ? (
+        <p className="hint">
+          {formatCount(days[0].open)} open in Canada at the last scan. The trend shows after scans on two different days.
+        </p>
+      ) : (
+        <>
+          <p className="hint">
+            Open jobs in Canada at each day's last scan, over {days.length} days with scans:{" "}
+            {change === 0 ? "no change" : `${change > 0 ? "up" : "down"} ${formatCount(Math.abs(change))}`} since{" "}
+            {formatDate(days[0].day)}.
+          </p>
+          <BarChart bars={bars} className="company-history-chart" />
+        </>
+      )}
+    </section>
   );
 }
