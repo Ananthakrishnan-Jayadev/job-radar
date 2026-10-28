@@ -1,7 +1,9 @@
 import NumberFlow from "@number-flow/react";
+import { Plus } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { api } from "../api";
+import AddJobByLink from "../components/AddJobByLink";
 import StatusSelect from "../components/StatusSelect";
 import { JOB_STATUS_LABEL, LEVEL_LABEL, formatDate, formatDateTime, plural } from "../format";
 import { useApp, useLoad } from "../state";
@@ -17,12 +19,20 @@ export default function ApplicationsPage() {
   const { dataVersion } = useApp();
   const data = useLoad(() => api.applications(), String(dataVersion));
   const d = data.data;
+  const [adding, setAdding] = useState(false);
 
   return (
     <div className="applications-page">
       <div className="results-head">
         <h1>Applications</h1>
+        {!adding && (
+          <button type="button" onClick={() => setAdding(true)}>
+            <Plus size={15} aria-hidden="true" />
+            Add a job by link
+          </button>
+        )}
       </div>
+      {adding && <AddJobByLink onClose={() => setAdding(false)} />}
       {data.error && (
         <p className="error" role="alert">
           {data.error}
@@ -35,8 +45,8 @@ export default function ApplicationsPage() {
           {Object.values(d.counts).every((n) => n === 0) ? (
             <div className="empty">
               <p>
-                Nothing tracked yet. Set a job's status to Saved or Applied on the <Link to="/">Jobs</Link> page and it
-                shows up here.
+                Nothing tracked yet. Set a job's status to Saved or Applied on the <Link to="/">Jobs</Link> page, or add
+                one you found elsewhere with "Add a job by link", and it shows up here.
               </p>
             </div>
           ) : (

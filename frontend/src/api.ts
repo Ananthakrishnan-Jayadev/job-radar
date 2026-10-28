@@ -4,6 +4,7 @@
 import type {
   Applications,
   BackupStatus,
+  JobDraft,
   FailingBoard,
   Candidate,
   Company,
@@ -99,6 +100,10 @@ export const api = {
     request<DetectedBoard[]>("POST", "/api/detect", body),
   findMissingBoards: () => request<TaskState>("POST", "/api/find-boards"),
   askLevels: () => request<TaskState>("POST", "/api/levels/ask"),
+  readJobLink: (url: string) =>
+    request<{ existing?: number; draft?: JobDraft }>("POST", "/api/jobs/from-link", { url }),
+  addManualJob: (job: Omit<JobDraft, "found" | "note" | "country"> & { status: JobStatus }) =>
+    request<{ id: number; new: boolean }>("POST", "/api/jobs/manual", job),
   backupStatus: () => request<BackupStatus>("GET", "/api/backup"),
   makeBackup: () => request<BackupStatus>("POST", "/api/backup"),
   failingBoards: () => request<{ after: number; boards: FailingBoard[] }>("GET", "/api/boards/failing"),

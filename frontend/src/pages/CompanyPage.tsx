@@ -73,7 +73,7 @@ export default function CompanyPage() {
               </thead>
               <tbody>
                 {c.boards.map((b) => (
-                  <tr key={b.id} className={b.enabled ? "" : "is-closed"}>
+                  <tr key={b.id} className={b.enabled || b.system === "manual" ? "" : "is-closed"}>
                     <td>
                       {boardLabel(b.system, b.slug_or_url)}
                       {!b.confirmed && (
@@ -94,14 +94,18 @@ export default function CompanyPage() {
                     <td className="nowrap">{formatDateTime(b.last_scanned_at)}</td>
                     <td className="num">{formatCount(b.total_open)}</td>
                     <td>
-                      <label className="check">
-                        <input
-                          type="checkbox"
-                          checked={b.enabled}
-                          onChange={(e) => toggleBoard(b.id, { enabled: e.target.checked })}
-                        />
-                        {b.enabled ? "Yes" : "No"}
-                      </label>
+                      {b.system === "manual" ? (
+                        <span className="muted small">Never scanned</span>
+                      ) : (
+                        <label className="check">
+                          <input
+                            type="checkbox"
+                            checked={b.enabled}
+                            onChange={(e) => toggleBoard(b.id, { enabled: e.target.checked })}
+                          />
+                          {b.enabled ? "Yes" : "No"}
+                        </label>
+                      )}
                     </td>
                   </tr>
                 ))}
@@ -111,7 +115,7 @@ export default function CompanyPage() {
             <AddBoard company={c} systems={meta?.systems ?? []} onAdded={(updated) => company.setData(updated)} />
             <button
               type="button"
-              disabled={scan?.running || c.boards.every((b) => !b.enabled)}
+              disabled={scan?.running || c.boards.every((b) => !b.enabled || b.system === "manual")}
               onClick={() => startScan(c.id)}
             >
               Scan {c.name} now
