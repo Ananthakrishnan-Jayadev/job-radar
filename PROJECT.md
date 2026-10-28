@@ -16,7 +16,8 @@ recorded in [`docs/decisions/`](docs/decisions/).
 2. **Search them freely.** Any keywords ("ai engineer", "data analyst",
    "python", "dbt"), not a fixed list of roles.
 3. **Filter** by province (or remote across Canada), company size, company,
-   status, date posted, and job system.
+   status, date posted, job system, experience level and years of experience
+   asked.
 4. **See companies, not only jobs:** how many Canadian roles each one has open,
    how many in total, and how big it is.
 5. **Track** jobs and companies by hand ("box them in"): statuses, notes, date
@@ -31,7 +32,10 @@ recorded in [`docs/decisions/`](docs/decisions/).
   are allowed.
 - Filtering by work authorization.
 - Scheduled scans. Scans run on demand (button or command) in version 1.
-- Notifications, LLM summaries and fit scores (later phase, after v1).
+- Notifications, LLM summaries and fit scores (later phase, after v1). The one
+  exception, added 2026-10-28: a local Ollama model can be asked, on request,
+  for the experience level and years of postings the rules can't read
+  (`docs/decisions/2026-10-28-experience-level.md`).
 
 ## 3. Users and environment
 

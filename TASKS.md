@@ -299,15 +299,30 @@ README and decision records are up to date. Tasks 2–5 and 7 are open.
 Possible extra work: connectors for iCIMS / Avature / Oracle Cloud (see
 `docs/decisions/2026-10-27-company-cleanup.md`).
 
-**Added 2026-10-28: experience level.** Rules (title, then years asked) for
-every wanted job, an Experience filter and Level column, and an optional
-Ollama step for jobs the rules can't place (`jobradar levels --ai`, "Ask ..."
-on the Jobs page). Schema version 6. See
-`docs/decisions/2026-10-28-experience-level.md`. Manual checks:
-- Restart `jobradar serve` after `cd frontend && npm run build`.
-- Filter the Jobs page by Experience; hover a level; open a job.
-- `jobradar levels --ai --limit 20 --dry-run` with each model; pick one;
-  set it in `config.toml`, then run "Ask ..." for the rest.
+**Added 2026-10-28: experience level and years asked** ✅ built, awaiting
+your checks.
+- Rules for every wanted job: a level from the title (intern, entry, mid,
+  senior, lead+), and the years of experience the description states (the
+  largest number; ranges from their start; company history and perks
+  skipped). The level falls back to the years when the title has none.
+- Jobs page: Experience and "Years of experience asked" filters (under 3,
+  3–5, more than 5, not stated), a Level column, the level and years on the
+  job page, two CSV columns.
+- Optional Ollama step, only on request (`jobradar levels --ai`, or "Ask ..."
+  under Experience): reads postings the rules left without a level or years,
+  fills only what's missing, always picks a level, gives years only when
+  stated, reads each job once. Gemma (`gemma4:31b-cloud`) is the default
+  after a 20-job comparison with Nemotron.
+- Schema versions 6 and 7. Decision record:
+  `docs/decisions/2026-10-28-experience-level.md`.
+
+Manual checks:
+- `cd frontend && npm run build`, then restart `jobradar serve` (the
+  database upgrades itself and works out the levels).
+- Filter by Experience and by years; hover a level; open a job.
+- Click "Ask gemma4:31b-cloud" (about 600 jobs, one at a time). If the free
+  usage limit stops it, run it again later: answers so far are kept.
+- Spot-check ten jobs against their postings.
 
 **Tasks**
 1. Fix the UI issues you noted in phases 3–4.
