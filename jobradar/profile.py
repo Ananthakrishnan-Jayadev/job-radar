@@ -45,6 +45,8 @@ class Profile:
     github: str = ""
     website: str = ""
     pronouns: str = ""
+    current_company: str = ""
+    current_title: str = ""
     authorized_canada: bool | None = None
     authorized_us: bool | None = None
     needs_sponsorship: bool | None = None
