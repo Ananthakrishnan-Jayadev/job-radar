@@ -28,6 +28,11 @@ cd frontend && npm install && npm run build && cd ..
 
 .venv/bin/jobradar init-db       # create data/jobradar.db
 .venv/bin/jobradar seed          # load the starting company list
+
+# Only for "Apply" (filling in Greenhouse applications): the browser it drives,
+# kept inside the venv, and your details (git-ignored)
+PLAYWRIGHT_BROWSERS_PATH=.venv/ms-playwright .venv/bin/playwright install firefox
+cp profile.example.toml profile.local.toml       # then fill it in
 ```
 
 ## Run the app
@@ -83,6 +88,30 @@ or use `.venv/bin/jobradar serve --dev`, which rebuilds the UI on every save
   Boards that failed their last 3 scans or more are listed, with a button to
   switch each off (or fix it on its company page). Backups: when the newest
   is, a reminder after a week, and "Back up now".
+
+## Applying (Greenhouse)
+
+On a Greenhouse job's page, **Apply** fills in the company's real
+application form for you to check and submit:
+
+1. Pick a saved résumé, or upload one (kept in `data/resumes/`).
+2. "Open pre-filled application": a browser window opens the form, filled in
+   from `profile.local.toml`: name, email, phone, résumé, location, LinkedIn
+   and other links, work authorization, sponsorship, "how did you hear about
+   us", notice and salary when you've set them, and your own `[answers]` to
+   questions that come up often.
+3. The panel lists what's left for you (questions about this job, anything
+   the form didn't take) and what was a guess worth checking.
+4. **You** read the form, answer the rest and press Submit (and solve a
+   CAPTCHA if there is one). It never submits by itself.
+5. When the form says thank you, the job is marked Applied, with a note of
+   the résumé used. Closing the window first changes nothing.
+
+Questions about gender, race, disability or veteran status are never
+answered. Your profile stays on your computer (git-ignored); the job's
+questions come from Greenhouse's public API, and nothing about you is sent
+anywhere but the form you submit. `jobradar apply <job number> --resume
+cv.pdf` does the same from the command line.
 
 ## Which roles
 
@@ -270,6 +299,9 @@ jobradar/            the package
   queries.py         job search with every filter, company lists, scan history
   tracking.py        statuses, notes, sizes, saved searches, "new since last visit"
   manual.py          adding a job by its link: reading the page, saving it
+  apply/             filling in Greenhouse applications (plan answers, drive the browser)
+  profile.py         your details for applications, from profile.local.toml
+  resumes.py         résumés kept in data/resumes/
   backup.py          dated, checked copies of the database; the reminder
   dashboard.py       the Applications page: stages, weekly counts, follow-ups
   enrich.py          company sizes: precedence, Wikidata, estimates

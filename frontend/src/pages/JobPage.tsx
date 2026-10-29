@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { api } from "../api";
+import ApplyPanel from "../components/ApplyPanel";
 import StatusSelect from "../components/StatusSelect";
 import {
   JOB_STATUS_LABEL,
@@ -106,6 +107,7 @@ export default function JobPage() {
         </div>
 
         <aside className="job-side">
+          {j.system === "greenhouse" && !j.closed_at && <ApplyPanel jobId={j.id} onApplied={job.reload} />}
           <section className="panel">
             <h2>My tracking</h2>
             <label className="stack">

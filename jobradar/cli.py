@@ -127,6 +127,43 @@ def cmd_add_job(args) -> int:
     return 0
 
 
+def cmd_apply(args) -> int:
+    from . import resumes
+    from .apply.browser import playwright_ready
+    from .apply.greenhouse import ApplyError
+    from .apply.run import apply_job, plan_application
+    from .profile import ProfileError
+
+    settings = load_settings(args.root)
+    conn, path = _open_db(args)
+    data_dir = path.parent
+    if missing := playwright_ready():
+        print(missing, file=sys.stderr)
+        return 1
+    name = args.resume
+    if Path(name).is_file():  # a file elsewhere: keep a copy with the others
+        name = resumes.save_resume(data_dir, Path(name).name, Path(name).read_bytes())
+    try:
+        plan = plan_application(conn, settings, args.job_id, name, data_dir)
+    except (ApplyError, ProfileError, resumes.ResumeError) as exc:
+        print(exc, file=sys.stderr)
+        return 1
+    print(f"Filling in the application for {plan.title} at {plan.company} with {name}...")
+
+    def report(state: dict) -> None:
+        if state.get("phase") == "ready":
+            for f in state["filled"]:
+                print(f"  filled: {f['label']}" + ("  (check this)" if f["check"] else ""))
+            for t in state["todo"]:
+                print(f"  for you: {t['label']}" + (" (required)" if t["required"] else "")
+                      + (f" - {t['why']}" if t["why"] else ""))
+            print("\nCheck the form in the browser window, answer what's left, then press Submit there.")
+
+    outcome = apply_job(path, plan, name, report)
+    print("Submitted: marked as Applied." if outcome == "submitted" else "Closed without submitting; nothing changed.")
+    return 0
+
+
 def cmd_backup(args) -> int:
     from .backup import BackupError, make_backup
 
@@ -395,6 +432,11 @@ def build_parser() -> argparse.ArgumentParser:
     add.add_argument("--province", help="code: ON, BC, QC...")
     add.add_argument("--remote", action="store_true", help="remote anywhere in Canada")
     add.set_defaults(func=cmd_add_job)
+
+    ap = sub.add_parser("apply", help="fill in a Greenhouse application for you to check and submit")
+    ap.add_argument("job_id", type=int, help="the job's number (in its page's address)")
+    ap.add_argument("--resume", required=True, help="a saved résumé's name, or a file to use (and save)")
+    ap.set_defaults(func=cmd_apply)
 
     bk = sub.add_parser("backup", help="copy the database to a dated file (safe while the app runs)")
     bk.add_argument("--out", help="folder for the copy (default: next to the database)")

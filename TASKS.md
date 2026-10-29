@@ -309,6 +309,18 @@ a size without manual entry.
 - Also built: **add a job by its link** (was phase 4, task 5).
 See `docs/decisions/2026-10-28-backups-health-and-manual-jobs.md`.
 
+**Added 2026-10-29: Apply (Greenhouse)** ✅ built, awaiting your first real
+try. "Apply" on a Greenhouse job: pick or upload a résumé, a browser window
+opens the real form filled in from `profile.local.toml`, you check it and
+press Submit; then the job is marked Applied. Never submits by itself. See
+`docs/decisions/2026-10-29-apply-greenhouse.md`. Before it works:
+- `.venv/bin/pip install -e ".[dev]"` (adds Playwright), then
+  `PLAYWRIGHT_BROWSERS_PATH=.venv/ms-playwright .venv/bin/playwright install firefox`.
+- `cp profile.example.toml profile.local.toml` and fill it in.
+- Try it on one job you really want to apply to, and watch what it fills.
+  Things only a real form can confirm: the form address, field names, the
+  searchable dropdowns, and spotting the thank-you page.
+
 Manual checks for these:
 - `cd frontend && npm run build`, restart `jobradar serve`.
 - Scans page: "Back up now" makes a file in `data/`; the reminder goes away.

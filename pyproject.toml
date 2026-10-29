@@ -7,6 +7,8 @@ dependencies = [
     "fastapi>=0.115",
     "uvicorn[standard]>=0.30",
     "httpx>=0.27",
+    "python-multipart>=0.0.9",  # résumé uploads
+    "playwright>=1.48",  # fills in applications; its Firefox goes in .venv/ms-playwright
 ]
 
 [project.optional-dependencies]

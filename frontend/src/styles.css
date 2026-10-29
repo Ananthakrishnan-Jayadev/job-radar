@@ -1080,6 +1080,63 @@ td.actions button + button {
   flex-wrap: wrap;
 }
 
+/* --- apply panel (job page) ------------------------------------------------ */
+
+.apply-panel {
+  border-top: 3px solid var(--s-applied);
+}
+
+.apply-panel .hint {
+  margin: -0.25rem 0 0.75rem;
+}
+
+.apply-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.apply-progress p {
+  margin: 0 0 0.6rem;
+}
+
+.apply-progress h3 {
+  font-size: 0.85rem;
+  font-weight: 650;
+  margin: 0.75rem 0 0.3rem;
+}
+
+.apply-progress ul {
+  margin: 0;
+  padding-left: 1.1rem;
+  font-size: 0.88rem;
+}
+
+.apply-progress .tag {
+  margin-left: 0.35rem;
+}
+
+.apply-outcome {
+  display: flex;
+  gap: 0.4rem;
+  align-items: flex-start;
+  margin: 0.75rem 0 0;
+  color: var(--muted);
+}
+
+.apply-outcome.ok {
+  color: var(--spruce);
+}
+
+.apply-outcome.error {
+  color: var(--danger);
+}
+
+.apply-outcome svg {
+  flex: none;
+  margin-top: 0.15rem;
+}
+
 /* --- add a job by link ----------------------------------------------------- */
 
 .add-job {

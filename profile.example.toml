@@ -1,0 +1,36 @@
+# Your details for filling in job applications ("Apply" on a job's page).
+#
+# Copy this file to profile.local.toml (git-ignored: it never leaves your
+# computer) and fill it in. Anything left empty is left for you to answer on
+# the form. Questions about gender, race, disability or veteran status are
+# never filled in.
+
+[you]
+first_name = ""
+last_name = ""
+preferred_name = ""     # if you go by another first name
+email = ""
+phone = ""
+city = ""               # where you live, e.g. "Toronto"
+province = ""           # code: ON, BC, QC...
+country = "Canada"
+linkedin = ""           # full link: https://www.linkedin.com/in/...
+github = ""
+website = ""            # portfolio or personal site
+pronouns = ""
+
+[work]
+# true / false. Empty ("") means: leave the question for me.
+authorized_canada = ""      # legally allowed to work in Canada?
+authorized_us = ""          # ... in the United States?
+needs_sponsorship = ""      # need a visa or work permit sponsored?
+willing_to_relocate = ""
+notice = ""                 # e.g. "2 weeks", for "when can you start?"
+salary_expectation = ""     # e.g. "80,000 - 95,000 CAD"; empty: answer per job
+how_heard = "Company careers page"
+
+[answers]
+# Your own answers to questions that come up often:
+# a piece of the question (any case) = the answer.
+# "years of experience with python" = "3"
+# "previously worked for" = "No"

@@ -15,11 +15,15 @@ from pathlib import Path
 from urllib.parse import quote_plus
 
 import httpx
-from fastapi import Depends, FastAPI, HTTPException, Request
+from fastapi import Depends, FastAPI, File, HTTPException, Request, UploadFile
 from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, Response
 from pydantic import BaseModel
 
-from .. import backup, candidates, dashboard, db, enrich, levels, manual, queries, tracking
+from .. import backup, candidates, dashboard, db, enrich, levels, manual, queries, resumes, tracking
+from ..apply.browser import playwright_ready
+from ..apply.greenhouse import ApplyError
+from ..apply.run import plan_application
+from ..profile import ProfileError, load_profile
 from ..boards import BoardError, normalize_board
 from ..detect import Detected, detect_company
 from ..http import FetchError, HttpClient
@@ -29,6 +33,7 @@ from ..export import jobs_csv
 from ..locations import PROVINCE_NAMES
 from ..models import COMPANY_STATUSES, JOB_STATUSES, SIZE_BANDS, UNKNOWN_SIZE, WORKPLACES, Location, size_band
 from ..roles import rules_for, sync_roles
+from .applier import ApplyRunner
 from .scanner import ScanRunner
 from .tasks import TaskRunner
 
@@ -129,6 +134,10 @@ class ManualJobIn(BaseModel):
     employment_type: str = ""
     salary: str = ""
     status: str = "saved"
+
+
+class ApplyIn(BaseModel):
+    resume: str
 
 
 class EnrichIn(BaseModel):
@@ -245,14 +254,16 @@ def job_filter(request: Request) -> queries.JobFilter:
 # --- the app -------------------------------------------------------------------------
 
 def create_app(settings: Settings, db_path: Path | None = None,
-               transport: httpx.AsyncBaseTransport | None = None) -> FastAPI:
+               transport: httpx.AsyncBaseTransport | None = None, apply_filler=None) -> FastAPI:
     db_path = db_path or settings.database
     db.connect(db_path).close()  # create / migrate before the first request
     runner = ScanRunner(settings, db_path, transport=transport)
     tasks = TaskRunner()
+    applier = ApplyRunner(db_path, filler=apply_filler)
     app = FastAPI(title="Job Radar", docs_url="/api/docs", openapi_url="/api/openapi.json")
     app.state.runner = runner
     app.state.tasks = tasks
+    app.state.applier = applier
 
     def detect(name: str, careers_url: str | None, canadian: bool) -> list[Detected]:
         async def go():
@@ -385,6 +396,44 @@ def create_app(settings: Settings, db_path: Path | None = None,
             raise HTTPException(400, str(exc)) from exc
         sync_roles(conn, settings.root)  # role and level for the new job
         return {"id": job_id, "new": new}
+
+    # filling in applications (Greenhouse), for you to check and submit
+
+    @app.get("/api/apply/setup")
+    def apply_setup():
+        """What's needed before "Apply" works: Playwright, your profile, a résumé."""
+        try:
+            profile = load_profile(settings.root)
+            profile_state = {"ok": not profile.missing, "missing": profile.missing, "error": None}
+        except ProfileError as exc:
+            profile_state = {"ok": False, "missing": [], "error": str(exc)}
+        return {"browser": None if apply_filler else playwright_ready(), "profile": profile_state,
+                "resumes": resumes.list_resumes(db_path.parent)}
+
+    @app.post("/api/resumes", status_code=201)
+    async def upload_resume(file: UploadFile = File(...)):
+        try:
+            name = resumes.save_resume(db_path.parent, file.filename or "", await file.read())
+        except resumes.ResumeError as exc:
+            raise HTTPException(400, str(exc)) from exc
+        return {"name": name, "resumes": resumes.list_resumes(db_path.parent)}
+
+    @app.post("/api/jobs/{job_id}/apply", status_code=202)
+    def apply(job_id: int, body: ApplyIn, conn: sqlite3.Connection = Conn):
+        if applier.busy:
+            raise HTTPException(409, "An application window is already open; finish or close it first.")
+        if not apply_filler and (missing := playwright_ready()):
+            raise HTTPException(400, missing)
+        try:
+            plan = plan_application(conn, settings, job_id, body.resume, db_path.parent, transport=transport)
+        except (ApplyError, ProfileError, resumes.ResumeError) as exc:
+            raise HTTPException(400, str(exc)) from exc
+        applier.start(plan, body.resume)
+        return applier.state()
+
+    @app.get("/api/apply/current")
+    def apply_state():
+        return applier.state()
 
     @app.get("/api/applications")
     def applications(conn: sqlite3.Connection = Conn):

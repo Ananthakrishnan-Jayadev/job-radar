@@ -11,6 +11,14 @@ Moved here from phase 4 and built the same day: "Add a job by link" on the
 Applications page and `jobradar add-job`
 ([decision](decisions/2026-10-28-backups-health-and-manual-jobs.md)).
 
+## Applying beyond Greenhouse
+
+Greenhouse is built (2026-10-29,
+[decision](decisions/2026-10-29-apply-greenhouse.md)). Next, if it holds up
+in real use: Ashby and Lever (one-page forms, 16% of wanted jobs), drafted
+answers to a job's own questions from your résumé with a local model, and a
+Workday hand-off to `agentic_workday` (35% of wanted jobs).
+
 ## 2. Connectors for iCIMS, Avature and Oracle Cloud
 
 Several companies moved to the archive on 2026-10-27 use these

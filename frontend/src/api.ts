@@ -3,6 +3,8 @@
 
 import type {
   Applications,
+  ApplySetup,
+  ApplyState,
   BackupStatus,
   JobDraft,
   FailingBoard,
@@ -51,6 +53,16 @@ async function request<T>(method: string, path: string, body?: unknown): Promise
   }
   if (response.status === 204) return undefined as T;
   return (await response.json()) as T;
+}
+
+/** Upload a résumé (a form post, not JSON). */
+async function uploadResume(file: File): Promise<{ name: string; resumes: ApplySetup["resumes"] }> {
+  const form = new FormData();
+  form.append("file", file);
+  const response = await fetch("/api/resumes", { method: "POST", body: form });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) throw new ApiError(response.status, typeof data.detail === "string" ? data.detail : "Upload failed");
+  return data;
 }
 
 export interface JobPatch {
@@ -105,6 +117,10 @@ export const api = {
   addManualJob: (job: Omit<JobDraft, "found" | "note" | "country"> & { status: JobStatus }) =>
     request<{ id: number; new: boolean }>("POST", "/api/jobs/manual", job),
   companyHistory: (id: number) => request<{ day: string; open: number }[]>("GET", `/api/companies/${id}/history`),
+  applySetup: () => request<ApplySetup>("GET", "/api/apply/setup"),
+  uploadResume,
+  applyToJob: (id: number, resume: string) => request<ApplyState>("POST", `/api/jobs/${id}/apply`, { resume }),
+  applyState: () => request<ApplyState>("GET", "/api/apply/current"),
   backupStatus: () => request<BackupStatus>("GET", "/api/backup"),
   makeBackup: () => request<BackupStatus>("POST", "/api/backup"),
   failingBoards: () => request<{ after: number; boards: FailingBoard[] }>("GET", "/api/boards/failing"),
