@@ -66,6 +66,24 @@ API lists each job's questions.
 - Every field that can't be filled now says why in the panel, to make the
   next fix quick.
 
+**Checked on a real form (Stripe, job 766, headless, dummy details, not
+submitted):** the embed address works and the form is in the page itself;
+fields carry Greenhouse's ids; the résumé attaches through its file input.
+Fixed from that check:
+
+- The phone country dropdown's options ("Canada +1") are picked by their
+  shown text; their accessible name differs.
+- "Current or previous employer / job title" now count as current company
+  and title.
+- "The country where you currently reside" and "the countries you
+  anticipate working in" are answered with the profile's country.
+- Multi-choice questions shown as checkboxes (`question_1[]`) are ticked by
+  label; before, the first box (whatever it said) would have been clicked.
+
+Not filled yet: the Education section (school, degree: searchable lists
+that aren't among the API's questions) and the location suggestion list
+(the text is typed; picking the suggestion is worth a check).
+
 **Still unverified:** the embed address on
 today's Greenhouse, its field ids, the searchable dropdowns and the
 thank-you detection. Tests use a stand-in page; the user's first application

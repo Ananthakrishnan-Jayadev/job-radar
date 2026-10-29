@@ -131,13 +131,30 @@ def _phone_country(frame, country: str) -> bool:
         return True
     el.click(timeout=FIELD_WAIT_MS)
     el.fill(country, timeout=FIELD_WAIT_MS)
-    frame.get_by_role("option", name=pick).first.click(timeout=FIELD_WAIT_MS)
+    # By the text shown ("Canada +1"): the option's accessible name isn't that text.
+    frame.get_by_role("option").filter(has_text=pick).first.click(timeout=FIELD_WAIT_MS)
+    return True
+
+
+def _tick(frame, step: Step) -> bool:
+    """Choices shown as checkboxes or radio buttons (name="question_1[]"): tick the
+    one labelled with the answer. False when the question isn't shown that way."""
+    boxes = frame.locator(f"input[name='{step.name}']:is([type=checkbox], [type=radio])")
+    if not boxes.count():
+        return False
+    group = frame.locator(f"fieldset:has(input[name='{step.name}'])")
+    choice = (group.first if group.count() else frame).get_by_label(step.value, exact=True)
+    if not choice.count():
+        raise BrowserError(f"no {step.value!r} among the choices")
+    choice.first.check(timeout=FIELD_WAIT_MS)
     return True
 
 
 def _fill(frame, step: Step) -> None:
     if step.kind == FILE:
         _attach(frame, step)
+        return
+    if step.kind in (SELECT, MULTI) and _tick(frame, step):
         return
     el = _field(frame, step)
     if el is None:
