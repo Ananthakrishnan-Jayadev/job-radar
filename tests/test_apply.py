@@ -11,7 +11,7 @@ from fastapi.testclient import TestClient
 from conftest import FakeSources
 from jobradar import db, resumes
 from jobradar.apply import browser
-from jobradar.apply.greenhouse import FILE, SELECT, TEXT, ApplyError, Step, fetch_questions, make_plan, pick_option, prepare
+from jobradar.apply.greenhouse import FILE, MULTI, SELECT, TEXT, ApplyError, Step, fetch_questions, make_plan, pick_option, prepare
 from jobradar.apply.run import apply_job, record_submitted
 from jobradar.http import HttpClient
 from jobradar.models import Location, RawJob
@@ -149,12 +149,26 @@ def test_plan(profile, tmp_path):
 
 def test_current_company_and_title(profile, tmp_path):
     q = [{"label": label, "required": True, "fields": [{"name": f"q{i}", "type": "input_text"}]}
-         for i, label in enumerate(["Current Company", "Current Job Title", "Most recent employer", "Title"])]
+         for i, label in enumerate(["Current Company", "Current Job Title", "Most recent employer", "Title",
+                                    "Who is your current or previous employer?",
+                                    "What is your current or previous job title?"])]
     blank = make_plan(q, profile, tmp_path / "cv.pdf", job_id=1, title="", company="", form_url="", job_url="")
-    assert len(blank.todo) == 4  # nothing in the profile: left for you
+    assert len(blank.todo) == 6  # nothing in the profile: left for you
     profile.current_company, profile.current_title = "Acme Corp", "Data Analyst"
     plan = make_plan(q, profile, tmp_path / "cv.pdf", job_id=1, title="", company="", form_url="", job_url="")
-    assert [s.value for s in plan.steps] == ["Acme Corp", "Data Analyst", "Acme Corp", "Data Analyst"]
+    assert [s.value for s in plan.steps] == ["Acme Corp", "Data Analyst"] * 3
+
+
+def test_country_questions(profile, tmp_path):
+    countries = [{"label": c} for c in ("Brazil", "Canada", "US")]
+    q = [{"label": "Please select the country where you currently reside.",
+          "fields": [{"name": "a", "type": "multi_value_single_select", "values": countries}]},
+         {"label": "Please select the country or countries you anticipate working in for the role",
+          "fields": [{"name": "b[]", "type": "multi_value_multi_select", "values": countries}]},
+         {"label": "Have you previously worked for Acme?", "fields": [{"name": "c", "type": "input_text"}]}]
+    plan = make_plan(q, profile, tmp_path / "cv.pdf", job_id=1, title="", company="", form_url="", job_url="")
+    assert [(s.name, s.value) for s in plan.steps] == [("a", "Canada"), ("b[]", "Canada")]
+    assert [t.label for t in plan.todo] == ["Have you previously worked for Acme?"]
 
 
 def test_a_country_question_of_its_own_turns_off_the_phone_country(profile, tmp_path):
@@ -284,6 +298,15 @@ class FakeLocator:
         if self.key.startswith("button:"):
             self.frame.page.chooser_open = True
 
+    def filter(self, has_text=None):
+        return FakeLocator(self.frame, f"{self.key}|{_key(has_text)}")
+
+    def get_by_label(self, label, exact=False):
+        return FakeLocator(self.frame, f"{self.key}>label:{label}")
+
+    def check(self, timeout=None):
+        self.frame.log.append(("check", self.key))
+
     def wait_for(self, timeout=None):
         if self.key not in self.frame.elements:
             raise TimeoutError(f"no {self.key}")
@@ -371,12 +394,23 @@ def test_resume_falls_back_to_the_attach_button():
         browser._fill(stuck, Step("Resume/CV", "resume", FILE, "/data/resumes/cv.pdf"))
 
 
+def test_checkbox_choices_are_ticked_by_label():
+    name = "question_7[]"
+    group = f"fieldset:has(input[name='{name}'])"
+    frame = FakeFrame({f"input[name='{name}']:is([type=checkbox], [type=radio])": "INPUT", group: "FIELDSET",
+                       f"{group}>label:Canada": "INPUT"})
+    browser._fill(frame, Step("Countries you'd work in", name, MULTI, "Canada"))
+    assert frame.log == [("check", f"{group}>label:Canada")]
+    with pytest.raises(browser.BrowserError, match="no 'Peru'"):
+        browser._fill(frame, Step("Countries you'd work in", name, MULTI, "Peru"))
+
+
 def test_phone_country():
     pick = r"^\s*Canada\b"
-    dropdown = FakeFrame({"[id='country']": "INPUT", f"option:{pick}": "DIV"})
+    dropdown = FakeFrame({"[id='country']": "INPUT", f"option:*|{pick}": "DIV"})
     assert browser._phone_country(dropdown, "Canada")
     assert dropdown.log == [("click", "[id='country']"), ("fill", "[id='country']", "Canada"),
-                            ("click", f"option:{pick}")]
+                            ("click", f"option:*|{pick}")]
     plain = FakeFrame({"label:Country": "SELECT"}, options=["United States +1", "Canada +1"])
     assert browser._phone_country(plain, "Canada")
     assert plain.log == [("select", "label:Country", "Canada +1")]

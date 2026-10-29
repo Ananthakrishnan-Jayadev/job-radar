@@ -90,10 +90,14 @@ _RULES: list[tuple[str, object, bool]] = [
     (r"github", lambda p, l: p.github or None, False),
     (r"website|portfolio|personal site", lambda p, l: p.website or None, False),
     (r"pronoun", lambda p, l: p.pronouns or None, False),
-    (r"(current|present|most recent|latest) (company|employer)|^(company|employer)( name)?$",
+    # "current company", "current or previous employer", "most recent employer"...
+    (r"\b(current|present|recent|latest|previous|past)\b.{0,25}\b(company|employer)\b|^(company|employer)( name)?$",
      lambda p, l: p.current_company or None, False),
-    (r"(current|present|most recent|latest) (job )?(title|role|position)|^(job )?title$",
+    (r"\b(current|present|recent|latest|previous|past)\b.{0,25}\b(job )?(title|role|position)\b|^(job )?title$",
      lambda p, l: p.current_title or None, False),
+    # "the country where you currently reside", "country or countries you anticipate working in"
+    (r"countr(y|ies)\b.{0,40}\b(reside|live|located|based|anticipate|plan|intend|expect|work)|country of residence",
+     lambda p, l: p.country or None, False),
     (r"sponsor", lambda p, l: _yes_no(p.needs_sponsorship), False),
     (r"(authori[sz]ed|eligible|entitled|permitted|legally able|legal right) to work|work (permit|authori[sz]ation)",
      _work_question, False),
