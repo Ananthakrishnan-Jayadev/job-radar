@@ -322,3 +322,29 @@ export interface JobDraft {
   found: string[];
   note: string;
 }
+
+export interface SavedResume {
+  name: string;
+  size: number;
+  saved_at: string;
+}
+
+/** What "Apply" needs: Playwright, your profile, a résumé (jobradar/web/app.py). */
+export interface ApplySetup {
+  /** How to install the browser, or null when it's ready. */
+  browser: string | null;
+  profile: { ok: boolean; missing: string[]; error: string | null };
+  resumes: SavedResume[];
+}
+
+/** The application window's progress (jobradar/web/applier.py). */
+export interface ApplyState {
+  phase: "opening" | "filling" | "ready" | "submitted" | "closed" | "error" | null;
+  job_id?: number;
+  title?: string;
+  company?: string;
+  resume?: string;
+  message?: string;
+  filled?: { label: string; check: boolean }[];
+  todo?: { label: string; required: boolean; why: string }[];
+}

@@ -7,6 +7,7 @@ __pycache__/
 .env
 data/
 config.local.toml
+profile.local.toml
 *.egg-info/
 build/
 frontend/node_modules/

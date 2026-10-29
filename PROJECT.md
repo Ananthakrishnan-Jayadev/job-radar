@@ -25,8 +25,10 @@ recorded in [`docs/decisions/`](docs/decisions/).
 
 ## 2. Non-goals (version 1)
 
-- Applying to jobs or filling in forms (`agentic_workday` does that; a hand-off
-  may come later).
+- Submitting applications automatically. *Changed 2026-10-29:* Job Radar
+  fills in Greenhouse application forms for you to check and submit
+  yourself; it never submits. Workday stays with `agentic_workday` (a
+  hand-off may come later).
 - Multi-user use, login, hosting, deployment.
 - LinkedIn automation of any kind. Plain "open this search on LinkedIn" links
   are allowed.
