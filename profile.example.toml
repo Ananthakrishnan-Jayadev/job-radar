@@ -20,6 +20,8 @@ website = ""            # portfolio or personal site
 pronouns = ""
 
 [work]
+current_company = ""        # where you work now (or most recently)
+current_title = ""          # your job title there
 # true / false. Empty ("") means: leave the question for me.
 authorized_canada = ""      # legally allowed to work in Canada?
 authorized_us = ""          # ... in the United States?

@@ -96,8 +96,9 @@ application form for you to check and submit:
 
 1. Pick a saved résumé, or upload one (kept in `data/resumes/`).
 2. "Open pre-filled application": a browser window opens the form, filled in
-   from `profile.local.toml`: name, email, phone, résumé, location, LinkedIn
-   and other links, work authorization, sponsorship, "how did you hear about
+   from `profile.local.toml`: name, email, phone (and its country), résumé,
+   location, current company and title, LinkedIn and other links, work
+   authorization, sponsorship, "how did you hear about
    us", notice and salary when you've set them, and your own `[answers]` to
    questions that come up often.
 3. The panel lists what's left for you (questions about this job, anything

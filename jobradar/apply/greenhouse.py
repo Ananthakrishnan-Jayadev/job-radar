@@ -65,6 +65,7 @@ class Plan:
     company: str
     form_url: str
     job_url: str
+    phone_country: str = ""  # the country picker beside the phone number, which the API doesn't list
     steps: list[Step] = field(default_factory=list)
     todo: list[Todo] = field(default_factory=list)
 
@@ -89,6 +90,10 @@ _RULES: list[tuple[str, object, bool]] = [
     (r"github", lambda p, l: p.github or None, False),
     (r"website|portfolio|personal site", lambda p, l: p.website or None, False),
     (r"pronoun", lambda p, l: p.pronouns or None, False),
+    (r"(current|present|most recent|latest) (company|employer)|^(company|employer)( name)?$",
+     lambda p, l: p.current_company or None, False),
+    (r"(current|present|most recent|latest) (job )?(title|role|position)|^(job )?title$",
+     lambda p, l: p.current_title or None, False),
     (r"sponsor", lambda p, l: _yes_no(p.needs_sponsorship), False),
     (r"(authori[sz]ed|eligible|entitled|permitted|legally able|legal right) to work|work (permit|authori[sz]ation)",
      _work_question, False),
@@ -140,7 +145,8 @@ def pick_option(value: str, options: list[str]) -> str | None:
 
 def make_plan(questions: list[dict], profile: Profile, resume: Path, *, job_id: int, title: str, company: str,
               form_url: str, job_url: str) -> Plan:
-    plan = Plan(job_id=job_id, title=title, company=company, form_url=form_url, job_url=job_url)
+    plan = Plan(job_id=job_id, title=title, company=company, form_url=form_url, job_url=job_url,
+                phone_country=profile.country)
     for q in questions:
         label = " ".join(str(q.get("label") or "").split())
         required = bool(q.get("required"))
@@ -167,6 +173,8 @@ def make_plan(questions: list[dict], profile: Profile, resume: Path, *, job_id: 
                 continue
             value = chosen
         plan.steps.append(Step(label, name, kind, value, required, check))
+    if any(" ".join(str(q.get("label") or "").split()).lower() == "country" for q in questions):
+        plan.phone_country = ""  # a Country question of the job's own: answered (or listed) above
     return plan
 
 

@@ -2,6 +2,7 @@
 browser steps (with a stand-in page), and the API. No real browser, no network."""
 
 import asyncio
+import contextlib
 import re
 
 import pytest
@@ -143,6 +144,23 @@ def test_plan(profile, tmp_path):
     assert [(t.label, t.required) for t in plan.todo] == [
         ("Why do you want to work at Acme?", True), ("Are you willing to relocate?", False)]
     assert "Gender" not in steps and "Cover Letter" not in steps and "Hidden" not in steps
+    assert plan.phone_country == "Canada"
+
+
+def test_current_company_and_title(profile, tmp_path):
+    q = [{"label": label, "required": True, "fields": [{"name": f"q{i}", "type": "input_text"}]}
+         for i, label in enumerate(["Current Company", "Current Job Title", "Most recent employer", "Title"])]
+    blank = make_plan(q, profile, tmp_path / "cv.pdf", job_id=1, title="", company="", form_url="", job_url="")
+    assert len(blank.todo) == 4  # nothing in the profile: left for you
+    profile.current_company, profile.current_title = "Acme Corp", "Data Analyst"
+    plan = make_plan(q, profile, tmp_path / "cv.pdf", job_id=1, title="", company="", form_url="", job_url="")
+    assert [s.value for s in plan.steps] == ["Acme Corp", "Data Analyst", "Acme Corp", "Data Analyst"]
+
+
+def test_a_country_question_of_its_own_turns_off_the_phone_country(profile, tmp_path):
+    q = [{"label": "Country", "fields": [{"name": "country", "type": "input_text"}]}]
+    plan = make_plan(q, profile, tmp_path / "cv.pdf", job_id=1, title="", company="", form_url="", job_url="")
+    assert plan.phone_country == ""
 
 
 def test_work_authorization_follows_the_country(profile, tmp_path):
@@ -227,6 +245,10 @@ def test_apply_job_outcomes(conn, tmp_path, settings, profile):
 
 # --- the browser steps, against a stand-in page ----------------------------------------
 
+def _key(name):
+    return name.pattern if isinstance(name, re.Pattern) else name
+
+
 class FakeLocator:
     def __init__(self, frame, key):
         self.frame, self.key = frame, key
@@ -246,9 +268,11 @@ class FakeLocator:
 
     def set_input_files(self, path, timeout=None):
         self.frame.log.append(("file", self.key, path))
+        if self.frame.takes_files:
+            self.frame.elements[f"text:{path.rsplit('/', 1)[-1]}"] = "SPAN"
 
     def evaluate(self, script):
-        return self._el()
+        return self.frame.options if "options" in script else self._el()
 
     def select_option(self, label, timeout=None):
         self.frame.log.append(("select", self.key, label))
@@ -257,13 +281,43 @@ class FakeLocator:
         if self.key.startswith("option:") and self.key not in self.frame.elements:
             raise TimeoutError("no such option")
         self.frame.log.append(("click", self.key))
+        if self.key.startswith("button:"):
+            self.frame.page.chooser_open = True
+
+    def wait_for(self, timeout=None):
+        if self.key not in self.frame.elements:
+            raise TimeoutError(f"no {self.key}")
+
+
+class FakeChooser:
+    def __init__(self, frame):
+        self.frame = frame
+
+    def set_files(self, path):
+        self.frame.log.append(("chooser", path))
+        self.frame.elements[f"text:{path.rsplit('/', 1)[-1]}"] = "SPAN"
+
+
+class FakeChooserPage:
+    def __init__(self, frame):
+        self.frame, self.chooser_open = frame, False
+
+    @contextlib.contextmanager
+    def expect_file_chooser(self, timeout=None):
+        info = type("Info", (), {})()
+        yield info
+        assert self.chooser_open, "no file chooser opened"
+        info.value = FakeChooser(self.frame)
 
 
 class FakeFrame:
     """Elements by selector or label: {key: tag}."""
 
-    def __init__(self, elements, url="https://job-boards.greenhouse.io/embed/job_app"):
+    def __init__(self, elements, url="https://job-boards.greenhouse.io/embed/job_app", takes_files=True,
+                 options=()):
         self.elements, self.url, self.log = elements, url, []
+        self.takes_files, self.options = takes_files, list(options)
+        self.page = FakeChooserPage(self)
 
     def locator(self, selector):
         return FakeLocator(self, selector)
@@ -272,9 +326,11 @@ class FakeFrame:
         return FakeLocator(self, f"label:{label}")
 
     def get_by_role(self, role, name=None, exact=False):
-        return FakeLocator(self, f"option:{name}" if name else "option:*")
+        return FakeLocator(self, f"{role}:{_key(name)}" if name else f"{role}:*")
 
-    def get_by_text(self, pattern):
+    def get_by_text(self, pattern, exact=False):
+        if isinstance(pattern, str):
+            return FakeLocator(self, f"text:{pattern}")
         return FakeLocator(self, "thanks" if "thanks" in self.elements else "no-thanks")
 
 
@@ -296,6 +352,35 @@ def test_fill_finds_fields_by_id_name_or_label():
     ]
     with pytest.raises(browser.BrowserError):
         browser._fill(frame, Step("Missing", "question_9", TEXT, "x"))
+
+
+def test_resume_goes_on_the_file_input_not_a_same_named_element():
+    frame = FakeFrame({"[id='resume']": "DIV", "input[type=file][id='resume']": "INPUT"})
+    browser._fill(frame, Step("Resume/CV", "resume", FILE, "/data/resumes/cv.pdf"))
+    assert frame.log == [("file", "input[type=file][id='resume']", "/data/resumes/cv.pdf")]
+
+
+def test_resume_falls_back_to_the_attach_button():
+    # The hidden input ignores the file (the form never lists it): use Attach, like a person.
+    frame = FakeFrame({"input[type=file]": "INPUT", f"button:{browser._ATTACH.pattern}": "BUTTON"},
+                      takes_files=False)
+    browser._fill(frame, Step("Resume/CV", "resume", FILE, "/data/resumes/cv.pdf"))
+    assert frame.log[-1] == ("chooser", "/data/resumes/cv.pdf")
+    stuck = FakeFrame({"input[type=file]": "INPUT"}, takes_files=False)
+    with pytest.raises(browser.BrowserError, match="no file field or Attach"):
+        browser._fill(stuck, Step("Resume/CV", "resume", FILE, "/data/resumes/cv.pdf"))
+
+
+def test_phone_country():
+    pick = r"^\s*Canada\b"
+    dropdown = FakeFrame({"[id='country']": "INPUT", f"option:{pick}": "DIV"})
+    assert browser._phone_country(dropdown, "Canada")
+    assert dropdown.log == [("click", "[id='country']"), ("fill", "[id='country']", "Canada"),
+                            ("click", f"option:{pick}")]
+    plain = FakeFrame({"label:Country": "SELECT"}, options=["United States +1", "Canada +1"])
+    assert browser._phone_country(plain, "Canada")
+    assert plain.log == [("select", "label:Country", "Canada +1")]
+    assert browser._phone_country(FakeFrame({}), "Canada") is False
 
 
 class FakePage:

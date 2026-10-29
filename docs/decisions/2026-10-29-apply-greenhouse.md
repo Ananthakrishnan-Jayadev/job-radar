@@ -49,7 +49,24 @@ API lists each job's questions.
 - One application window at a time (`web/applier.py`), followed by the
   job page's Apply panel.
 
-**Not verified yet (needs the first real try):** the embed address on
+**After the first real try (2026-10-29):**
+
+- *The résumé didn't attach.* Files now go only on an `input[type=file]`
+  (an element sharing the id "resume" could catch it before), and the form
+  must then show the file's name. If it doesn't, the form's own Attach
+  button is clicked and the file handed to the file chooser, as a person
+  would. If that fails too, the résumé goes on the "for you" list with the
+  reason.
+- *A country dropdown before the phone number* ("Canada +1"): not in the
+  API's questions, so it's set from the profile's `country`, unless the job
+  asks a "Country" question of its own.
+- *Current company and job title*: new `current_company` / `current_title`
+  in the profile's `[work]` (also "most recent employer"). Left empty, they
+  stay on the "for you" list.
+- Every field that can't be filled now says why in the panel, to make the
+  next fix quick.
+
+**Still unverified:** the embed address on
 today's Greenhouse, its field ids, the searchable dropdowns and the
 thank-you detection. Tests use a stand-in page; the user's first application
 is the real check.
