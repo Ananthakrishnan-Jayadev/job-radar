@@ -1,9 +1,10 @@
 import NumberFlow from "@number-flow/react";
-import { Bookmark, Download } from "lucide-react";
+import { Bookmark, Download, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { motion } from "motion/react";
 import { useEffect, useState, type FormEvent } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { api } from "../api";
+import ActiveFilters from "../components/ActiveFilters";
 import JobFilters from "../components/JobFilters";
 import Pagination from "../components/Pagination";
 import StatusSelect from "../components/StatusSelect";
@@ -19,6 +20,30 @@ const SORTS = [
   { value: "company", label: "Company A–Z" },
   { value: "title", label: "Title A–Z" },
 ];
+
+const FILTERS_HIDDEN = "jobradar-filters-hidden";
+
+/** Whether the filter column is hidden, remembered in this browser. */
+function useFiltersHidden(): [boolean, () => void] {
+  const [hidden, setHidden] = useState(() => {
+    try {
+      return localStorage.getItem(FILTERS_HIDDEN) === "1";
+    } catch {
+      return false;
+    }
+  });
+  function toggle() {
+    setHidden((was) => {
+      try {
+        localStorage.setItem(FILTERS_HIDDEN, was ? "0" : "1");
+      } catch {
+        // Storage refused (private window): it still toggles for this visit.
+      }
+      return !was;
+    });
+  }
+  return [hidden, toggle];
+}
 
 /** Hover text for the level cell: the years asked and where the level came from. */
 function levelTitle(job: JobSummary): string | undefined {
@@ -36,6 +61,7 @@ export default function JobsPage() {
 
   const jobs = useLoad(() => api.jobs(params), key);
   const counts = useLoad(() => api.provinceCounts(params), key);
+  const [filtersHidden, toggleFilters] = useFiltersHidden();
 
   useEffect(() => rememberResults(params), [params]);
 
@@ -63,8 +89,8 @@ export default function JobsPage() {
   const isNew = (job: JobSummary) => previousVisit !== null && job.first_seen > previousVisit;
 
   return (
-    <div className="jobs-layout">
-      {meta && (
+    <div className={`jobs-layout${filtersHidden ? " filters-hidden" : ""}`}>
+      {meta && !filtersHidden && (
         <JobFilters
           meta={meta}
           params={params}
@@ -76,6 +102,16 @@ export default function JobsPage() {
 
       <section className="results" aria-busy={jobs.loading}>
         <div className="results-head">
+          <button
+            type="button"
+            className="filters-toggle"
+            aria-pressed={!filtersHidden}
+            title={filtersHidden ? "Show filters" : "Hide filters"}
+            aria-label={filtersHidden ? "Show filters" : "Hide filters"}
+            onClick={toggleFilters}
+          >
+            {filtersHidden ? <PanelLeftOpen size={17} aria-hidden="true" /> : <PanelLeftClose size={17} aria-hidden="true" />}
+          </button>
           <h1>
             {jobs.data ? (
               <>
@@ -101,6 +137,15 @@ export default function JobsPage() {
             Export CSV
           </a>
         </div>
+
+        {meta && (
+          <ActiveFilters
+            meta={meta}
+            params={params}
+            setParams={setParams}
+            companyName={params.has("company") ? jobs.data?.items[0]?.company : undefined}
+          />
+        )}
 
         {jobs.error && (
           <p className="error" role="alert">

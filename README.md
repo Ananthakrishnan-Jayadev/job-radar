@@ -56,8 +56,11 @@ or use `.venv/bin/jobradar serve --dev`, which rebuilds the UI on every save
   `"exact phrases"`, `OR`, `analy*`), a heat map of the ten provinces to
   filter by (live counts; territories are left out but count in "all of
   Canada") plus "Remote anywhere in Canada", and filters for experience level,
-  company size, your status, workplace, date posted (from the last 24 hours to "more than a month ago"), job system and salary. Change a job's status right in the list; new jobs
-  since your last visit have an amber edge. Save a search, export a CSV.
+  company size, your status, workplace, date posted (from the last 24 hours to "more than a month ago"), job system and salary (the less-used ones under "More
+  filters"). The filters in use show as chips above the results, each
+  removed with a click; the filter column can be hidden to give the list the
+  full width. Change a job's status right in the list; new jobs since your
+  last visit have an amber edge. Save a search, export a CSV.
 - **Applications:** where your tracked jobs stand. Counts for saved,
   applied, interviewing, offer and rejected (each opens the Jobs list with
   that status), how many applications heard back, applications per week for

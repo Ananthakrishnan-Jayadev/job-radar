@@ -530,8 +530,60 @@ main {
 .more-body > div {
   display: flex;
   flex-direction: column;
-  gap: 0.2rem;
-  padding-top: 0.6rem;
+  gap: 1.1rem;
+  padding-top: 0.8rem;
+}
+
+/* The checkboxes at the end of "More filters" sit together, as one group. */
+.more-body .check + .check {
+  margin-top: -0.85rem;
+}
+
+/* The filter column folded away: the results take the full width. */
+.jobs-layout.filters-hidden {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.filters-toggle {
+  padding: 0.4rem;
+  color: var(--muted);
+}
+
+.filters-toggle:hover {
+  color: var(--ink);
+}
+
+/* Filters in use, above the results: each one is a chip that removes itself. */
+.active-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+  margin: -0.35rem 0 1rem;
+}
+
+.active-filter {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.15rem 0.45rem 0.15rem 0.65rem;
+  font-size: 0.85rem;
+  border-radius: 999px;
+  background: var(--lake-soft);
+  border-color: transparent;
+  color: var(--ink);
+}
+
+.active-filter svg {
+  opacity: 0.6;
+}
+
+.active-filter:hover {
+  border-color: var(--lake);
+}
+
+.active-filter:hover svg {
+  opacity: 1;
 }
 
 .clear-all {

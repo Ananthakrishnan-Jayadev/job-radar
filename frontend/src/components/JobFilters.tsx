@@ -11,7 +11,7 @@ import ProvinceMap from "./ProvinceMap";
 import TaskStatus from "./TaskStatus";
 
 // "within:7" → posted_within=7; "before:30" → posted_before=30 (older than that).
-const POSTED = [
+export const POSTED = [
   { value: "", label: "Any time" },
   { value: "within:1", label: "Last 24 hours" },
   { value: "within:3", label: "Last 3 days" },
@@ -22,13 +22,13 @@ const POSTED = [
   { value: "before:30", label: "More than a month ago" },
 ];
 
-function postedValue(params: URLSearchParams): string {
+export function postedValue(params: URLSearchParams): string {
   if (params.get("posted_within")) return `within:${params.get("posted_within")}`;
   if (params.get("posted_before")) return `before:${params.get("posted_before")}`;
   return "";
 }
 
-function withPosted(params: URLSearchParams, value: string): URLSearchParams {
+export function withPosted(params: URLSearchParams, value: string): URLSearchParams {
   const [kind, days] = value.split(":");
   const cleared = withParam(withParam(params, "posted_within", null), "posted_before", null);
   return kind ? withParam(cleared, `posted_${kind}`, days) : cleared;
@@ -44,9 +44,11 @@ interface Props {
 
 export default function JobFilters({ meta, params, setParams, provinceCounts, previousVisit }: Props) {
   const [query, setQuery] = useState(params.get("q") ?? "");
-  // Remember whether "More filters" is open; start open if one of its filters is on.
+  // "More filters" starts open when one of its filters is on.
   const [moreOpen, setMoreOpen] = useState(
-    () => params.has("systems") || ["has_salary", "include_closed", "include_ignored"].some((k) => isOn(params, k)),
+    () =>
+      ["roles", "sizes", "workplaces", "systems"].some((k) => params.has(k)) ||
+      ["all_roles", "has_salary", "include_closed", "include_ignored"].some((k) => isOn(params, k)),
   );
   useEffect(() => setQuery(params.get("q") ?? ""), [params]);
 
@@ -57,8 +59,6 @@ export default function JobFilters({ meta, params, setParams, provinceCounts, pr
     event.preventDefault();
     setParams(withParam(params, "q", query.trim() || null));
   }
-
-  const active = [...params.keys()].some((k) => k !== "page" && k !== "sort" && k !== "order");
 
   return (
     <aside className="filters" aria-label="Filters">
@@ -115,44 +115,13 @@ export default function JobFilters({ meta, params, setParams, provinceCounts, pr
         )}
       </fieldset>
 
-      {meta.role_categories.length > 0 && (
-        <fieldset className="field">
-          <Chips
-            legend="Role"
-            options={meta.role_categories.map((r) => ({ value: r.name, label: r.label }))}
-            selected={getList(params, "roles")}
-            onToggle={(v) => setParams(toggleInList(params, "roles", v))}
-          />
-          {!params.has("roles") && (
-            <label className="check">
-              <input type="checkbox" checked={isOn(params, "all_roles")} onChange={(e) => flag("all_roles")(e.target.checked)} />
-              Show all roles, not just {meta.role_categories.filter((r) => r.enabled).map((r) => r.name).join(", ")}
-            </label>
-          )}
-        </fieldset>
-      )}
-
       <LevelFilter meta={meta} params={params} setParams={setParams} />
-
-      <Chips
-        legend="Company size"
-        options={meta.size_bands.map((b) => ({ value: b, label: SIZE_LABEL[b] ?? b }))}
-        selected={getList(params, "sizes")}
-        onToggle={(v) => setParams(toggleInList(params, "sizes", v))}
-      />
 
       <Chips
         legend="My status"
         options={meta.job_statuses.map((s) => ({ value: s, label: JOB_STATUS_LABEL[s] }))}
         selected={getList(params, "status")}
         onToggle={(v) => setParams(toggleInList(params, "status", v))}
-      />
-
-      <Chips
-        legend="Workplace"
-        options={meta.workplaces.map((w) => ({ value: w, label: WORKPLACE_LABEL[w] }))}
-        selected={getList(params, "workplaces")}
-        onToggle={(v) => setParams(toggleInList(params, "workplaces", v))}
       />
 
       <div className="more">
@@ -177,6 +146,37 @@ export default function JobFilters({ meta, params, setParams, provinceCounts, pr
               transition={{ duration: 0.25, ease: [0.3, 0, 0.2, 1] }}
             >
               <div>
+                {meta.role_categories.length > 0 && (
+                  <fieldset className="field">
+                    <Chips
+                      legend="Role"
+                      options={meta.role_categories.map((r) => ({ value: r.name, label: r.label }))}
+                      selected={getList(params, "roles")}
+                      onToggle={(v) => setParams(toggleInList(params, "roles", v))}
+                    />
+                    {!params.has("roles") && (
+                      <label className="check">
+                        <input type="checkbox" checked={isOn(params, "all_roles")} onChange={(e) => flag("all_roles")(e.target.checked)} />
+                        Show all roles, not just {meta.role_categories.filter((r) => r.enabled).map((r) => r.name).join(", ")}
+                      </label>
+                    )}
+                  </fieldset>
+                )}
+
+                <Chips
+                  legend="Company size"
+                  options={meta.size_bands.map((b) => ({ value: b, label: SIZE_LABEL[b] ?? b }))}
+                  selected={getList(params, "sizes")}
+                  onToggle={(v) => setParams(toggleInList(params, "sizes", v))}
+                />
+
+                <Chips
+                  legend="Workplace"
+                  options={meta.workplaces.map((w) => ({ value: w, label: WORKPLACE_LABEL[w] }))}
+                  selected={getList(params, "workplaces")}
+                  onToggle={(v) => setParams(toggleInList(params, "workplaces", v))}
+                />
+
                 <Chips
                   legend="Job system"
                   options={meta.systems_in_use.map((s) => ({ value: s, label: SYSTEM_LABEL[s] ?? s }))}
@@ -201,11 +201,6 @@ export default function JobFilters({ meta, params, setParams, provinceCounts, pr
         </AnimatePresence>
       </div>
 
-      {active && (
-        <button type="button" className="link clear-all" onClick={() => setParams(new URLSearchParams())}>
-          Clear all filters
-        </button>
-      )}
     </aside>
   );
 }
