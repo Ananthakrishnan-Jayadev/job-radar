@@ -4,7 +4,7 @@ from datetime import date
 
 from fastapi.testclient import TestClient
 
-from jobradar import db, tracking
+from jobradar import dashboard, db, tracking
 from jobradar.dashboard import application_dashboard
 from jobradar.models import Location, RawJob
 from jobradar.web import app as web_app
@@ -85,3 +85,16 @@ def test_api(conn, tmp_path, settings):
     d = client.get("/api/applications").json()
     assert d["counts"]["applied"] == 1 and d["applied_total"] == 1
     assert d["active"][0]["company"] == "Acme" and d["active"][0]["days_since_change"] == 0
+
+
+def test_stored_utc_times_count_on_your_local_day(monkeypatch):
+    import time
+    monkeypatch.setenv("TZ", "America/Toronto")
+    time.tzset()
+    try:
+        # 03:45 UTC on the 31st is still the evening of the 30th in Toronto.
+        assert dashboard._day("2026-10-31T03:45:28+00:00") == date(2026, 10, 30)
+        assert dashboard._day("2026-10-31") == date(2026, 10, 31)  # a plain date stays as it is
+    finally:
+        monkeypatch.undo()
+        time.tzset()

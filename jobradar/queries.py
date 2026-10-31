@@ -45,6 +45,7 @@ class JobFilter:
     company_statuses: list[str] = field(default_factory=list)
     include_ignored: bool = False  # jobs of companies marked "ignored"
     posted_within_days: int | None = None
+    posted_before_days: int | None = None  # posted more than this many days ago
     systems: list[str] = field(default_factory=list)
     workplaces: list[str] = field(default_factory=list)
     has_salary: bool = False
@@ -100,6 +101,9 @@ def _where(f: JobFilter) -> tuple[list[str], list, bool]:
     if f.posted_within_days is not None:
         where.append(f"{SORTS['posted']} >= date('now', ?)")
         params.append(f"-{int(f.posted_within_days)} days")
+    if f.posted_before_days is not None:
+        where.append(f"{SORTS['posted']} < date('now', ?)")
+        params.append(f"-{int(f.posted_before_days)} days")
     if f.has_salary:
         where.append("j.salary_text IS NOT NULL")
     if f.new_since:

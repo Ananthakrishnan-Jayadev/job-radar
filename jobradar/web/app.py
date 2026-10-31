@@ -239,6 +239,7 @@ def job_filter(request: Request) -> queries.JobFilter:
         company_statuses=_list(request, "company_status"),
         include_ignored=_flag(request, "include_ignored"),
         posted_within_days=_int(request, "posted_within"),
+        posted_before_days=_int(request, "posted_before"),
         systems=_list(request, "systems"),
         workplaces=_list(request, "workplaces"),
         has_salary=_flag(request, "has_salary"),
