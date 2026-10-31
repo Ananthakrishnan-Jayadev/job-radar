@@ -1,14 +1,14 @@
 import NumberFlow from "@number-flow/react";
 import { Bookmark, Download } from "lucide-react";
 import { motion } from "motion/react";
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { api } from "../api";
 import JobFilters from "../components/JobFilters";
 import Pagination from "../components/Pagination";
 import StatusSelect from "../components/StatusSelect";
 import { LEVEL_LABEL, SIZE_LABEL, formatDate, levelSourceText } from "../format";
-import { savedFilters, withParam } from "../params";
+import { rememberResults, savedFilters, withParam } from "../params";
 import { useApp, useLoad } from "../state";
 import type { JobSummary } from "../types";
 
@@ -36,6 +36,17 @@ export default function JobsPage() {
 
   const jobs = useLoad(() => api.jobs(params), key);
   const counts = useLoad(() => api.provinceCounts(params), key);
+
+  useEffect(() => rememberResults(params), [params]);
+
+  // A page that has emptied (its jobs changed status and left the filter, say):
+  // go to the last page that still has jobs, instead of showing nothing.
+  const data = jobs.data;
+  useEffect(() => {
+    if (!data || data.page <= 1 || data.items.length) return;
+    const last = Math.max(1, Math.ceil(data.total / data.page_size));
+    setParams(withParam(params, "page", last > 1 ? String(last) : null), { replace: true });
+  }, [data]); // params and setParams change with every page; only new data matters
 
   function sortBy(value: string) {
     let next = withParam(params, "sort", value || null);
