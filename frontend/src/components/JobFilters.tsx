@@ -10,15 +10,29 @@ import Chips from "./Chips";
 import ProvinceMap from "./ProvinceMap";
 import TaskStatus from "./TaskStatus";
 
-const POSTED_WITHIN = [
+// "within:7" → posted_within=7; "before:30" → posted_before=30 (older than that).
+const POSTED = [
   { value: "", label: "Any time" },
-  { value: "1", label: "Last 24 hours" },
-  { value: "3", label: "Last 3 days" },
-  { value: "7", label: "Last week" },
-  { value: "14", label: "Last 2 weeks" },
-  { value: "30", label: "Last month" },
-  { value: "90", label: "Last 3 months" },
+  { value: "within:1", label: "Last 24 hours" },
+  { value: "within:3", label: "Last 3 days" },
+  { value: "within:7", label: "Less than a week ago" },
+  { value: "within:14", label: "Last 2 weeks" },
+  { value: "within:30", label: "Less than a month ago" },
+  { value: "within:90", label: "Last 3 months" },
+  { value: "before:30", label: "More than a month ago" },
 ];
+
+function postedValue(params: URLSearchParams): string {
+  if (params.get("posted_within")) return `within:${params.get("posted_within")}`;
+  if (params.get("posted_before")) return `before:${params.get("posted_before")}`;
+  return "";
+}
+
+function withPosted(params: URLSearchParams, value: string): URLSearchParams {
+  const [kind, days] = value.split(":");
+  const cleared = withParam(withParam(params, "posted_within", null), "posted_before", null);
+  return kind ? withParam(cleared, `posted_${kind}`, days) : cleared;
+}
 
 interface Props {
   meta: Meta;
@@ -80,10 +94,10 @@ export default function JobFilters({ meta, params, setParams, provinceCounts, pr
       <fieldset className="field">
         <legend>Posted</legend>
         <select
-          value={params.get("posted_within") ?? ""}
-          onChange={(e) => setParams(withParam(params, "posted_within", e.target.value || null))}
+          value={postedValue(params)}
+          onChange={(e) => setParams(withPosted(params, e.target.value))}
         >
-          {POSTED_WITHIN.map((o) => (
+          {POSTED.map((o) => (
             <option key={o.value} value={o.value}>
               {o.label}
             </option>

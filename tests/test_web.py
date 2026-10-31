@@ -118,6 +118,8 @@ def test_job_summary_fields(seeded):
     ("sizes=200-999", ["Applied AI Engineer", "Data Analyst", "Machine Learning Engineer"]),
     ("sizes=unknown", []),
     ("posted_within=7", ["Applied AI Engineer", "Data Engineer, analytics", "Machine Learning Engineer"]),
+    ("posted_within=30", ["Applied AI Engineer", "Data Engineer, analytics", "Machine Learning Engineer"]),
+    ("posted_before=30", ["Data Analyst"]),
     ("systems=workday", ["Data Engineer, analytics"]),
     ("workplaces=remote,hybrid", ["Applied AI Engineer", "Machine Learning Engineer"]),
     ("has_salary=1", ["Machine Learning Engineer"]),

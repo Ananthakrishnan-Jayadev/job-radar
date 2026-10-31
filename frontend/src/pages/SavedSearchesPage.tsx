@@ -9,6 +9,7 @@ const FILTER_LABEL: Record<string, string> = {
   sizes: "size",
   status: "status",
   posted_within: "posted within (days)",
+  posted_before: "posted more than (days) ago",
   workplaces: "workplace",
   systems: "job system",
   has_salary: "salary listed",

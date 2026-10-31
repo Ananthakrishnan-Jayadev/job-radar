@@ -25,7 +25,14 @@ _ROW = """
 
 
 def _day(text: str | None) -> date | None:
-    return date.fromisoformat(text[:10]) if text else None
+    """Your local day for a stored time (UTC), or a date as it is: an evening
+    change counts as today, not tomorrow."""
+    if not text:
+        return None
+    if len(text) <= 10:
+        return date.fromisoformat(text)
+    moment = datetime.fromisoformat(text)
+    return (moment.astimezone() if moment.tzinfo else moment).date()
 
 
 def _row(r: sqlite3.Row, today: date) -> dict:
