@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { api } from "../api";
 import ApplyPanel from "../components/ApplyPanel";
 import StatusSelect from "../components/StatusSelect";
@@ -13,12 +13,17 @@ import {
   formatDateTime,
   levelSourceText,
 } from "../format";
+import { lastResults } from "../params";
 import { useLoad } from "../state";
 import type { JobDetail, JobStatus } from "../types";
 
 export default function JobPage() {
   const id = Number(useParams().id);
   const navigate = useNavigate();
+  const location = useLocation();
+  // Opened in this tab from somewhere: go back there. Opened in a new tab (nothing
+  // to go back to): the jobs list with the search you last had.
+  const back = () => (location.key !== "default" ? navigate(-1) : navigate(lastResults()));
   const job = useLoad(() => api.job(id), String(id));
 
   if (job.error) return <p className="error" role="alert">{job.error}</p>;
@@ -28,7 +33,7 @@ export default function JobPage() {
 
   return (
     <article className="job-page">
-      <button type="button" className="link back" onClick={() => navigate(-1)}>
+      <button type="button" className="link back" onClick={back}>
         Back to results
       </button>
 

@@ -36,3 +36,24 @@ export function savedFilters(params: URLSearchParams): Record<string, string> {
   });
   return out;
 }
+
+const RESULTS_KEY = "jobradar-results";
+
+/** Remember the jobs list's search, so a job opened in a new tab can go back to it. */
+export function rememberResults(params: URLSearchParams): void {
+  try {
+    localStorage.setItem(RESULTS_KEY, params.toString());
+  } catch {
+    // Storage refused (private window): "Back to results" then opens the plain list.
+  }
+}
+
+/** The jobs list as last seen: "/?q=...", or "/" when there's none. */
+export function lastResults(): string {
+  try {
+    const search = localStorage.getItem(RESULTS_KEY);
+    return search ? `/?${search}` : "/";
+  } catch {
+    return "/";
+  }
+}
