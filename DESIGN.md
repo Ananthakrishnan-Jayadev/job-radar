@@ -2,39 +2,40 @@
 name: Job Radar
 description: A personal departures board for Canadian job postings, built for fast triage on a big monitor.
 colors:
-  board-navy: "#0c1b2c"
-  board-panel: "#132539"
-  board-raised: "#1a304a"
-  strip-navy: "#081422"
-  light-face: "#eef1f4"
-  light-face-muted: "#9fb0c2"
-  board-line: "#24405f"
-  board-row-line: "#1b324c"
-  board-select-wash: "#1b3350"
-  wayfinding-yellow: "#ffc72c"
-  lamp-yellow-print: "#f2b600"
-  select-wash-print: "#fff3cc"
-  concourse: "#e4e9ee"
-  concourse-panel: "#f3f5f8"
-  concourse-raised: "#fbfcfd"
-  concourse-sunken: "#d7dfe7"
-  slate-muted: "#4a5c70"
-  concourse-line: "#c4cfda"
-  concourse-row-line: "#d3dbe4"
-  lake-blue: "#1d5b9e"
-  lake-soft: "#cddcec"
+  evergreen: "#0d211b"
+  evergreen-ink: "#10241c"
+  evergreen-panel: "#132c24"
+  evergreen-raised: "#1a382e"
+  evergreen-strip: "#091812"
+  light-face: "#edf3ee"
+  light-face-muted: "#a3b8ad"
+  evergreen-line: "#24453a"
+  evergreen-row-line: "#1b382e"
+  evergreen-select-wash: "#1b3d31"
+  head-face-print: "#b7cbbf"
+  light-mint: "#a8e6a3"
+  lamp-mint-print: "#7fd27a"
+  mint-wash-print: "#e2f4de"
+  sage: "#e5ebe6"
+  sage-panel: "#f3f6f3"
+  sage-raised: "#fafcfa"
+  sage-sunken: "#d6e0d8"
+  moss-muted: "#4a5f54"
+  sage-line: "#c3d1c7"
+  sage-row-line: "#d3ded6"
+  forest-soft: "#d2e6d7"
   status-saved-print: "#8a5100"
   status-saved: "#f0a431"
   status-applied-print: "#186b3c"
-  status-applied: "#2fb36c"
+  status-applied: "#3fbf73"
   status-closed-print: "#b8372a"
   status-closed: "#ff7a6a"
-  status-not-interested-print: "#56636f"
-  status-not-interested: "#8a9aac"
+  status-not-interested-print: "#56665d"
+  status-not-interested: "#8fa39a"
   status-interviewing-print: "#6a4bb0"
-  status-interviewing: "#b59cff"
+  status-interviewing: "#c4a6ff"
   status-offer-print: "#13703a"
-  status-offer: "#5fd68f"
+  status-offer: "#7fe0a0"
   status-rejected-print: "#9b4a40"
   status-rejected: "#e09a90"
 typography:
@@ -92,64 +93,65 @@ spacing:
   top-strip: "3.25rem"
 components:
   button:
-    backgroundColor: "{colors.concourse-panel}"
-    textColor: "{colors.board-navy}"
+    backgroundColor: "{colors.sage-panel}"
+    textColor: "{colors.evergreen-ink}"
     rounded: "{rounded.control}"
     padding: "0.35rem 0.8rem"
   button-primary:
-    backgroundColor: "{colors.board-navy}"
-    textColor: "{colors.concourse}"
+    backgroundColor: "{colors.evergreen-ink}"
+    textColor: "{colors.sage}"
     rounded: "{rounded.control}"
     padding: "0.35rem 0.8rem"
   button-primary-dark:
     backgroundColor: "{colors.light-face}"
-    textColor: "{colors.board-navy}"
+    textColor: "{colors.evergreen}"
     rounded: "{rounded.control}"
     padding: "0.35rem 0.8rem"
   button-quiet:
-    textColor: "{colors.slate-muted}"
+    textColor: "{colors.moss-muted}"
     rounded: "{rounded.control}"
     padding: "0.35rem 0.8rem"
   chip:
-    textColor: "{colors.board-navy}"
+    textColor: "{colors.evergreen-ink}"
     rounded: "{rounded.pill}"
     padding: "0.2rem 0.6rem"
   chip-on:
-    backgroundColor: "{colors.board-navy}"
-    textColor: "{colors.concourse}"
+    backgroundColor: "{colors.evergreen-ink}"
+    textColor: "{colors.sage}"
     rounded: "{rounded.pill}"
     padding: "0.2rem 0.6rem"
   filter-in-use:
-    backgroundColor: "{colors.lake-soft}"
-    textColor: "{colors.board-navy}"
+    backgroundColor: "{colors.forest-soft}"
+    textColor: "{colors.evergreen-ink}"
     rounded: "{rounded.pill}"
     padding: "0.15rem 0.45rem 0.15rem 0.65rem"
   input:
-    backgroundColor: "{colors.concourse-panel}"
-    textColor: "{colors.board-navy}"
+    backgroundColor: "{colors.sage-panel}"
+    textColor: "{colors.evergreen-ink}"
     rounded: "{rounded.control}"
     padding: "0.35rem 0.5rem"
   top-strip:
-    backgroundColor: "{colors.strip-navy}"
+    backgroundColor: "{colors.evergreen-strip}"
     textColor: "{colors.light-face}"
     height: "{spacing.top-strip}"
   board-head:
-    backgroundColor: "{colors.board-navy}"
+    backgroundColor: "{colors.evergreen-ink}"
+    textColor: "{colors.head-face-print}"
     typography: "{typography.label}"
   board-head-dark:
-    backgroundColor: "{colors.strip-navy}"
+    backgroundColor: "{colors.evergreen-strip}"
     textColor: "{colors.light-face-muted}"
     typography: "{typography.label}"
   board-row:
     typography: "{typography.title}"
     height: "{spacing.row-height}"
   board-row-selected:
-    backgroundColor: "{colors.select-wash-print}"
+    backgroundColor: "{colors.mint-wash-print}"
   board-row-selected-dark:
-    backgroundColor: "{colors.board-select-wash}"
+    backgroundColor: "{colors.evergreen-select-wash}"
   row-mark-selected:
-    backgroundColor: "{colors.wayfinding-yellow}"
-    textColor: "{colors.board-navy}"
+    backgroundColor: "{colors.light-mint}"
+    textColor: "{colors.evergreen-ink}"
   stamp-saved:
     textColor: "{colors.status-saved-print}"
     typography: "{typography.stamp}"
@@ -163,15 +165,15 @@ components:
     textColor: "{colors.status-not-interested-print}"
     typography: "{typography.stamp}"
   gate-screen:
-    backgroundColor: "{colors.concourse-panel}"
+    backgroundColor: "{colors.sage-panel}"
     padding: "1.4rem 1.75rem 2rem"
   session-pill:
-    backgroundColor: "{colors.concourse-raised}"
+    backgroundColor: "{colors.sage-raised}"
     rounded: "{rounded.pill}"
     padding: "0.15rem 0.65rem"
   toast:
-    backgroundColor: "{colors.board-navy}"
-    textColor: "{colors.concourse}"
+    backgroundColor: "{colors.evergreen-ink}"
+    textColor: "{colors.sage}"
     rounded: "{rounded.control}"
     padding: "0.6rem 0.8rem 0.6rem 1rem"
 ---
@@ -182,50 +184,51 @@ components:
 
 **Creative North Star: "The Departures Board"**
 
-Every posting is a departure: one row, one time, one status, read at a glance. The Jobs page is a station departures board (the Pearson board is the reference), not a feed of cards and not a job board of stacked blurbs. Fixed columns are set once for the heads and every row and never reflow when the owner decides; a decision stamps into the status cell in place and the row stays where it is until the list refreshes.
+Every posting is a departure: one row, one time, one status, read at a glance. The Jobs page is a station departures board in its form, not a feed of cards and not a job board of stacked blurbs. Fixed columns are set once for the heads and every row and never reflow when the owner decides; a decision stamps into the status cell in place and the row stays where it is until the list refreshes.
 
-Two themes share one board. **Dark** is the backlit board itself: navy ground and panels, light-face lettering. **Dim** (the default) is the same board printed on a light concourse panel: cool grey-blue grounds, navy ink, and the navy column-head strip and top strip kept from the backlit board. In both, a yellow-ruled navy top strip carries the wayfinding. Density is high and deliberate: the owner works on a big monitor in long sessions, so the board shows every column, the filter rail sits on the left and the selected posting (the gate screen) sits on the right, all three running edge to edge under the top strip.
+The board is set in forest and mint. **Dark** is the backlit board itself: evergreen ground and panels, light-face lettering. **Dim** (the default) is the same board printed on a pale sage panel: green-grey grounds, evergreen ink, and the evergreen column-head strip and top strip kept from the backlit board. In both, a mint-ruled evergreen top strip carries the wayfinding. Density is high and deliberate: the owner works on a big monitor in long sessions, so the board shows every column, the filter rail sits on the left and the selected posting (the gate screen) sits on the right, all three running edge to edge under the top strip.
 
 Motion has one gesture: the stamp. Everything else is colour and border transitions under 0.2s, and all of it switches off under reduced motion.
 
 **Key Characteristics:**
 - Fixed-column board rows (tick, mark, posted, job + company, place, level, size, status) that never move on a decision.
-- Navy top strip under a 3px wayfinding-yellow rule, in both themes.
-- Yellow is rare and means "where you are" or "what's new"; status hues mean decisions.
+- Evergreen top strip under a 3px light-mint rule, in both themes.
+- Light mint is rare and means "where you are" or "what's new"; status hues mean decisions.
 - Capitals only in column heads and status stamps.
 - One typeface, Albert Sans, with tabular figures everywhere.
 - Flat tonal layers and 1px rules; shadow only for floating things.
 
 ## Colors
 
-A navy-and-light-face board with one wayfinding yellow, a lake blue for links and heat in the printed theme, and a fixed set of status hues per theme.
+An evergreen-and-light-face board with one light-mint signal, links in the ink colour of each theme (so green means a decision, never a link), and a fixed set of status hues per theme.
 
 ### Primary
-- **Board Navy** (board-navy): the ground of the dark theme, the ink of the dim theme, the column-head strip in dim, and the fill of the primary button, picked chips, the bulk bar and the toast in dim. It is the board's own material in both themes.
-- **Strip Navy** (strip-navy): the top strip in both themes and the column-head strip in dark; the darkest navy, reserved for the board's header strips.
-- **Light Face** (light-face): lettering on the backlit board: text in dark, top-strip text in both themes. In dark it also replaces lake blue as the link and focus colour, so the backlit board has no blue accent.
+- **Evergreen** (evergreen): the ground of the dark theme, and the colour of text set on light face or mint there.
+- **Evergreen Ink** (evergreen-ink): the ink of the dim theme, the column-head strip in dim, the selected row's outline in dim, and the fill of the primary button, picked chips, the bulk bar and the toast in dim. With Evergreen it is the board's own material in both themes.
+- **Evergreen Strip** (evergreen-strip): the top strip in both themes and the column-head strip in dark; the darkest green, reserved for the board's header strips.
+- **Light Face** (light-face): lettering on the backlit board: text in dark, top-strip text in both themes. In dark it is also the link and focus colour, so the backlit board has no second accent; the top strip's links and focus take it in both themes.
 
 ### Secondary
-- **Wayfinding Yellow** (wayfinding-yellow): the 3px rule on the top strip (and the radar mark's dot and sweep inside it), the selected row's mark cell, the selected row's outline in dark, and the new-since-last-visit lamp in dark. Text on it is Board Navy.
-- **Printed Lamp Yellow** (lamp-yellow-print): the new-since-last-visit lamp in dim, a deeper yellow with a thin navy ring so it reads on a light panel.
+- **Light Mint** (light-mint): the 3px rule on the top strip (and the radar mark's dot and sweep inside it), the selected row's mark cell, the selected row's outline in dark, and the new-since-last-visit lamp in dark. Text on it is evergreen.
+- **Printed Lamp Mint** (lamp-mint-print): the new-since-last-visit lamp in dim, a deeper mint with a thin evergreen ring (50% evergreen ink) so it reads on a light panel.
 
 ### Tertiary
-- **Lake Blue** (lake-blue): links, focus rings, checkbox accents and the province heat map in dim; **Lake Soft** (lake-soft) is the fill of filters-in-use chips. The heat map steps through five mixes of lake into the panel (steps 1-3 take dark text, 4-5 light).
-- **Status hues**, one per decision and one set per theme (the `-print` tokens are dim, the bare tokens dark): Saved amber, Applied green, Closed red, Not interested grey; Interviewing violet, Offer green and Rejected muted red serve the Applications pipeline. The same hue drives a job's stamp, its status dot and the wash of a decision button that's on.
+- **Links and focus** use the theme's ink (evergreen ink in dim, light face in dark; the CSS custom property is still named `--lake`). A separate link green was dropped because it was too close to the Applied stamp. **Forest Soft** (forest-soft) is the fill of filters-in-use chips. The dim heat map steps through five mixes of evergreen ink into the panel (steps 1-3 take dark text, 4-5 light); dark uses five fixed evergreen steps, lightening as counts rise.
+- **Status hues**, one per decision and one set per theme (the `-print` tokens are dim, the bare tokens dark): Saved amber, Applied green, Closed red, Not interested grey-green; Interviewing violet, Offer green and Rejected muted red serve the Applications pipeline. The same hue drives a job's stamp, its status dot and the wash of a decision button that's on. Not reviewed's status dot takes the muted text colour.
 
 ### Neutral
-- **Concourse** (concourse), **Concourse Panel** (concourse-panel), **Concourse Raised** (concourse-raised), **Concourse Sunken** (concourse-sunken): the dim theme's ground, panels (filter rail, gate screen, controls), raised pills and sunken tags.
-- **Board Panel** (board-panel), **Board Raised** (board-raised): the dark theme's panels and raised pills.
-- **Slate Muted** (slate-muted) / **Light Face Muted** (light-face-muted): secondary text (company line, hints, size text, column heads in dark).
-- **Concourse Line** / **Board Line**: 1px panel and control borders. **Row lines** (concourse-row-line, board-row-line) are a step quieter than panel lines, so the board's rows read as one surface.
-- **Select wash** (select-wash-print in dim, board-select-wash in dark): the fill of the row you're on.
+- **Sage** (sage), **Sage Panel** (sage-panel), **Sage Raised** (sage-raised), **Sage Sunken** (sage-sunken): the dim theme's ground, panels (filter rail, gate screen, controls), raised pills and sunken tags.
+- **Evergreen Panel** (evergreen-panel), **Evergreen Raised** (evergreen-raised): the dark theme's panels and raised pills.
+- **Moss Muted** (moss-muted) / **Light Face Muted** (light-face-muted): secondary text (company line, hints, size text, column heads in dark). **Printed Head Face** (head-face-print) is the column-head lettering on the evergreen strip in dim.
+- **Sage Line** / **Evergreen Line**: 1px panel and control borders. **Row lines** (sage-row-line, evergreen-row-line) are a step quieter than panel lines, so the board's rows read as one surface.
+- **Select wash** (mint-wash-print in dim, evergreen-select-wash in dark): the fill of the row you're on.
 
 ### Named Rules
-**The Wayfinding Yellow Rule.** Yellow appears in exactly three places: the top strip, the selected row's mark cell (and its outline in dark), and new-since-last-visit lamps. Never on buttons, chips, headings, charts or status.
+**The Light Mint Rule.** Light mint appears in exactly three places: the top strip, the selected row's mark cell (and its outline in dark), and new-since-last-visit lamps. Never on buttons, chips, headings, charts or status. Forest green and the status greens are separate roles, not mint.
 
-**The Printed Board Rule.** In dim the selected row is outlined in navy (2px inset), not yellow: yellow cannot hold an outline on a light panel. Its mark cell still turns yellow, and the row takes the pale yellow wash.
+**The Printed Board Rule.** In dim the selected row is outlined in evergreen (2px inset), not mint: mint cannot hold an outline on a light panel. Its mark cell still turns mint, and the row takes the pale mint wash.
 
-**The Stamp Hue Rule.** Saved is amber, Applied green, Closed red, Not interested grey. "Not reviewed" has no stamp and no hue on the board; an empty status cell is the unreviewed state.
+**The Stamp Hue Rule.** Saved is amber, Applied green, Closed red, Not interested grey-green. "Not reviewed" has no stamp and no hue on the board; an empty status cell is the unreviewed state.
 
 ## Typography
 
@@ -260,10 +263,10 @@ Under 900px window width the whole page becomes one column: the top strip wraps 
 
 ## Elevation & Depth
 
-Flat by default. Depth is tonal: ground, panel, raised and sunken steps of the same navy or concourse grey, separated by 1px lines. The board itself has no shadow; the row you're on is marked by wash, a 2px inset outline and the yellow mark cell, not by lifting.
+Flat by default. Depth is tonal: ground, panel, raised and sunken steps of the same evergreen or sage, separated by 1px lines. The board itself has no shadow; the row you're on is marked by wash, a 2px inset outline and the mint mark cell, not by lifting.
 
 ### Shadow Vocabulary
-- **Ambient** (`box-shadow: 0 1px 2px rgb(12 27 44 / 0.06), 0 4px 14px -6px rgb(12 27 44 / 0.14)` in dim; `0 1px 2px rgb(0 0 0 / 0.3), 0 6px 18px -8px rgb(0 0 0 / 0.55)` in dark): province tiles and the few card-like panels on other pages.
+- **Ambient** (`box-shadow: 0 1px 2px rgb(16 36 28 / 0.06), 0 4px 14px -6px rgb(16 36 28 / 0.14)` in dim; `0 1px 2px rgb(0 0 0 / 0.3), 0 6px 18px -8px rgb(0 0 0 / 0.55)` in dark): province tiles and the few card-like panels on other pages.
 - **Floating** (`box-shadow: 0 8px 28px -10px rgb(0 0 0 / 0.45)`): the undo toast, the one element that floats over the board.
 
 ### Named Rules
@@ -278,26 +281,26 @@ Gently squared controls (6px) for buttons, inputs, selects, tiles and the toast;
 ### Buttons
 Quiet, sentence-case controls that recede until needed.
 - **Shape:** gently squared (6px), 1px line border, panel fill, 0.35rem by 0.8rem.
-- **Primary:** lettering lit up: filled with ink, text in the ground colour, 700 weight (navy with concourse text in dim; light face with navy text in dark and in the top strip).
+- **Primary:** lettering lit up: filled with ink, text in the ground colour, 700 weight (evergreen ink with sage text in dim; light face with evergreen text in dark and in the top strip).
 - **Quiet:** transparent with muted text; gains the line border and panel fill on hover.
-- **Hover / Focus:** border darkens to muted; focus is a 2px lake (or light-face) outline at 2px offset. Colour transitions 0.18s ease.
+- **Hover / Focus:** border darkens to muted; focus is a 2px ink (evergreen in dim, light face in dark) outline at 2px offset. Colour transitions 0.18s ease.
 
 ### Decision buttons
 The three decisions (Save S, Not interested X, Applied A), each with a line icon and, on the gate screen, its keycap. A decision that's on takes its status hue: a 22% wash of the hue, the full hue as border and icon colour, ink text. Pressing it again takes the job back to Not reviewed.
 
 ### Chips
 - **Filter chips:** pill, control-line border at 3:1 against the panel, 0.85rem text, wrap inside the rail. On: filled with ink, ground-colour text.
-- **Filters in use:** pill in lake soft with a small x that brightens on hover; each removes itself. Shown above the board so nothing filters silently.
+- **Filters in use:** pill in forest soft with a small x that brightens on hover; each removes itself. Shown above the board so nothing filters silently.
 
 ### Inputs / Fields
-- **Style:** 1px line border, panel fill, 6px radius, 0.35rem by 0.5rem. Placeholders in muted at full opacity. Checkboxes take the lake accent.
+- **Style:** 1px line border, panel fill, 6px radius, 0.35rem by 0.5rem. Placeholders in muted at full opacity. Checkboxes take the ink accent.
 - **Focus:** the shared 2px outline.
 
 ### Navigation
-The top strip: strip navy under a 3px wayfinding-yellow rule, both themes, with its own backlit-board palette so controls in it read as lit. Brand mark (radar with a yellow dot whose sweep turns only while a scan runs) and name at 800; nav links muted at 500, current page in light face at 650 with a 2px light underline that slides between links.
+The top strip: evergreen strip under a 3px light-mint rule, both themes, with its own backlit-board palette so controls in it read as lit. Brand mark (radar with a mint dot whose sweep turns only while a scan runs) and name at 800; nav links muted at 500, current page in light face at 650 with a 2px light underline that slides between links.
 
 ### Board row (signature)
-The departure line. Head: navy strip, column labels in the label style. Row: tick box, mark cell, posted date, job title over the company line, place, level, size dot and text, status cell. Hover adds a 4% ink wash; ticked adds a 7% neutral wash; the row you're on takes the select wash, a 2px inset outline (navy in dim, yellow in dark) and a yellow mark cell with a navy chevron.
+The departure line. Head: evergreen strip, column labels in the label style. Row: tick box, mark cell, posted date, job title over the company line, place, level, size dot and text, status cell. Hover adds a 4% ink wash; ticked adds a 7% neutral wash; the row you're on takes the select wash, a 2px inset outline (evergreen in dim, mint in dark) and a mint mark cell with an evergreen chevron.
 
 ### Status stamp (signature)
 A decision stamps into the status cell in its hue and the board's capitals: it enters from 1.4x scale and transparent to rest in 0.22s on `cubic-bezier(0.16, 1, 0.3, 1)`, and leaves in 0.1s. The row never moves. Closed adds a red CLOSED stamp that stays alongside any decision.
@@ -313,14 +316,14 @@ The session count is a raised pill beside the job count. The undo toast is an in
 ### Do:
 - **Do** set every board column once in the shared grid template so heads and rows align and nothing reflows on a decision.
 - **Do** fold Place (under 760px board width) and then Level (under 480px) into the company line instead of squeezing columns.
-- **Do** outline the selected row in navy in dim and in yellow in dark; turn its mark cell yellow in both.
+- **Do** outline the selected row in evergreen in dim and in mint in dark; turn its mark cell mint in both.
 - **Do** colour a status the same everywhere it appears: stamp, dot and decision-button wash.
-- **Do** keep the navy top strip and its yellow rule in both themes.
+- **Do** keep the evergreen top strip and its mint rule in both themes.
 - **Do** use tabular figures and Albert Sans for every surface.
 - **Do** keep motion to the stamp, the gate screen's entrance and short colour transitions, and honour reduced motion.
 
 ### Don't:
-- **Don't** use yellow outside the top strip, the selected row's mark cell and outline, and new-since-last-visit lamps.
+- **Don't** use light mint outside the top strip, the selected row's mark cell and outline, and new-since-last-visit lamps.
 - **Don't** set capitals anywhere but column heads and status stamps.
 - **Don't** give Not reviewed a stamp or a hue on the board.
 - **Don't** turn the board into cards or stacked blurbs, or move a row when its status changes.
