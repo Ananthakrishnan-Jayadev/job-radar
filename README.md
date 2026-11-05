@@ -51,16 +51,25 @@ or use `.venv/bin/jobradar serve --dev`, which rebuilds the UI on every save
 
 ### The pages
 
-- **Jobs:** shows only the roles you want (software, data, AI; see "Which
-  roles" below), with a "Show all roles" switch and role chips. Search (words,
-  `"exact phrases"`, `OR`, `analy*`), a heat map of the ten provinces to
-  filter by (live counts; territories are left out but count in "all of
-  Canada") plus "Remote anywhere in Canada", and filters for experience level,
-  company size, your status, workplace, date posted (from the last 24 hours to "more than a month ago"), job system and salary (the less-used ones under "More
-  filters"). The filters in use show as chips above the results, each
-  removed with a click; the filter column can be hidden to give the list the
-  full width. Change a job's status right in the list; new jobs since your
-  last visit have an amber edge. Save a search, export a CSV.
+- **Jobs:** built for working through postings. Shows only the roles you
+  want (software, data, AI; see "Which roles" below), with a "Show all roles"
+  switch. Search (words, `"exact phrases"`, `OR`, `analy*`), a heat map of the
+  ten provinces to filter by (live counts) plus "Remote anywhere in Canada",
+  and filters for date posted, experience level, years asked and your status;
+  role, company size, workplace, job system and salary sit under "More
+  filters". The filters in use show as chips above the results; when nothing
+  matches, the page says which filter to take off and how many jobs that
+  would bring back.
+  - **Side by side** on a wide screen: the list on the left, the selected
+    posting on the right, with **Save**, **Not interested** and **Applied**
+    at its top. Deciding moves on to the next job; every decision can be
+    undone.
+  - **Keys:** `J`/`K` next and previous job, `S` save, `X` not interested,
+    `A` applied (press again to take it back), `U` undo, `O` open the full
+    page, `/` search. Tick several jobs to save or dismiss them together.
+  - A small amber dot marks jobs new since your last visit. The filter column
+    can be hidden for more room. Save a search, export a CSV; in Saved
+    searches, pick one to open the Jobs page with (your "radar").
 - **Applications:** where your tracked jobs stand. Counts for saved,
   applied, interviewing, offer and rejected (each opens the Jobs list with
   that status), how many applications heard back, applications per week for

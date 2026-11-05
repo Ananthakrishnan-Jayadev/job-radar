@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { api } from "../api";
 import ApplyPanel from "../components/ApplyPanel";
+import DecisionBar from "../components/DecisionBar";
 import StatusSelect from "../components/StatusSelect";
 import {
   JOB_STATUS_LABEL,
@@ -30,6 +31,11 @@ export default function JobPage() {
   if (!job.data) return <p className="loading">Loading…</p>;
   const j = job.data;
   const update = (change: Partial<JobDetail>) => job.setData((d) => (d ? { ...d, ...change } : d));
+  const decide = async (status: JobStatus) => {
+    const t = await api.patchJob(j.id, { status });
+    update({ status: t.status, applied_at: t.applied_at });
+    job.reload();
+  };
 
   return (
     <article className="job-page">
@@ -115,8 +121,9 @@ export default function JobPage() {
           {j.system === "greenhouse" && !j.closed_at && <ApplyPanel jobId={j.id} onApplied={job.reload} />}
           <section className="panel">
             <h2>My tracking</h2>
+            <DecisionBar status={j.status} onDecide={decide} />
             <label className="stack">
-              Status
+              Any status
               <StatusSelect
                 jobId={j.id}
                 status={j.status}

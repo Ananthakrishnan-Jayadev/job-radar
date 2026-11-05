@@ -1,6 +1,7 @@
 import NumberFlow from "@number-flow/react";
 import { motion } from "motion/react";
 import type { CSSProperties } from "react";
+import { REMOTE } from "../jobFilters";
 
 // The ten provinces as a 5 x 2 grid, west to east, with the number of
 // matching jobs on each. Clicking a tile filters by it. The territories
@@ -19,8 +20,6 @@ const TILES: { code: string; row: number; col: number }[] = [
   { code: "PE", row: 2, col: 4 },
   { code: "NL", row: 2, col: 5 },
 ];
-
-export const REMOTE = "REMOTE";
 
 interface Props {
   names: Record<string, string>;
@@ -53,6 +52,7 @@ export default function ProvinceMap({ names, selected, counts, onToggle, onClear
               style={{ gridRow: row, gridColumn: col, "--weight": weight } as CSSProperties}
               aria-pressed={on}
               title={`${names[code] ?? code}: ${count.toLocaleString("en-CA")} jobs`}
+              aria-label={`${names[code] ?? code}, ${count.toLocaleString("en-CA")} ${count === 1 ? "job" : "jobs"}`}
               onClick={() => onToggle(code)}
             >
               <span className="code">{code}</span>

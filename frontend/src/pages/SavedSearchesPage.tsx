@@ -1,5 +1,7 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { api } from "../api";
+import { setStartSearch, startSearch } from "../params";
 import { useLoad } from "../state";
 import type { SavedSearch } from "../types";
 
@@ -30,6 +32,13 @@ function describe(search: SavedSearch): string {
 
 export default function SavedSearchesPage() {
   const searches = useLoad(() => api.savedSearches(), "all");
+  const [start, setStart] = useState(startSearch);
+
+  function toggleStart(query: string) {
+    const next = start === query ? null : query;
+    setStartSearch(next);
+    setStart(next);
+  }
 
   async function toggleSources(search: SavedSearch) {
     const updated = await api.patchSavedSearch(search.id, { use_for_sources: !search.use_for_sources });
@@ -46,7 +55,8 @@ export default function SavedSearchesPage() {
     <div className="narrow">
       <h1>Saved searches</h1>
       <p className="lead">
-        Save a search from the jobs list to come back to it in one click. Searches you mark for big job boards are
+        Save a search from the jobs list to come back to it in one click. Pick one to open the Jobs page with,
+        such as the roles, places and levels you're applying for; Clear all on the Jobs page still shows everything. Searches you mark for big job boards are
         also what large Workday sites (TD, RBC, BMO, CIBC) get searched for during a scan, since those sites have
         too many jobs to read in full.
       </p>
@@ -72,6 +82,14 @@ export default function SavedSearchesPage() {
               </div>
               <p>{s.query ? <q>{s.query}</q> : <span className="hint">No keywords</span>}</p>
               <p className="hint">{describe(s)}</p>
+              <label className="check">
+                <input
+                  type="checkbox"
+                  checked={start === query.toString()}
+                  onChange={() => toggleStart(query.toString())}
+                />
+                Open the Jobs page with this search
+              </label>
               <label className="check">
                 <input type="checkbox" checked={s.use_for_sources} onChange={() => toggleSources(s)} />
                 Use these keywords when scanning big job boards

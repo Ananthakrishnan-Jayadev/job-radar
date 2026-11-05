@@ -57,3 +57,23 @@ export function lastResults(): string {
     return "/";
   }
 }
+
+const START_KEY = "jobradar-start-search";
+
+/** The saved search the Jobs page opens with (its address query), or null for all jobs. */
+export function startSearch(): string | null {
+  try {
+    return localStorage.getItem(START_KEY);
+  } catch {
+    return null;
+  }
+}
+
+export function setStartSearch(search: string | null): void {
+  try {
+    if (search) localStorage.setItem(START_KEY, search);
+    else localStorage.removeItem(START_KEY);
+  } catch {
+    // Storage refused (private window): the Jobs page opens on all jobs.
+  }
+}
