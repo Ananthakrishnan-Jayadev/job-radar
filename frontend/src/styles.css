@@ -29,6 +29,8 @@
   --danger: #9a3a32;
   --warn-bg: #e9dfc6;
   --shadow: 0 1px 2px rgb(28 42 46 / 0.06), 0 4px 14px -6px rgb(28 42 46 / 0.12);
+  /* Borders of controls (chips, empty tiles): 3:1 against the surface. */
+  --control-line: color-mix(in srgb, var(--muted) 80%, var(--surface));
 
   --s-new: #2a6582;
   --s-saved: #a86f10;
@@ -58,6 +60,7 @@
   --danger: #e07b70;
   --warn-bg: #34301f;
   --shadow: 0 1px 2px rgb(0 0 0 / 0.3), 0 6px 18px -8px rgb(0 0 0 / 0.5);
+  --control-line: color-mix(in srgb, var(--muted) 65%, var(--surface));
 
   --s-new: #78b2cf;
   --s-saved: #e2a948;
@@ -119,6 +122,26 @@ html.theme-fade * {
 @layer components {
 * {
   box-sizing: border-box;
+}
+
+html {
+  scrollbar-color: color-mix(in srgb, var(--muted) 45%, transparent) transparent;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--lake) 30%, transparent);
+  color: var(--ink);
+}
+
+::placeholder {
+  color: var(--muted);
+  opacity: 1;
+}
+
+p,
+li,
+.hint {
+  text-wrap: pretty;
 }
 
 body {
@@ -198,6 +221,20 @@ button.primary {
 button.primary:hover:not(:disabled) {
   border-color: var(--lake);
   background: color-mix(in srgb, var(--lake) 88%, var(--ink));
+}
+
+button.quiet,
+.button.quiet {
+  border-color: transparent;
+  background: transparent;
+  color: var(--muted);
+}
+
+button.quiet:hover:not(:disabled),
+.button.quiet:hover {
+  border-color: var(--line);
+  background: var(--surface);
+  color: var(--ink);
 }
 
 button.link {
@@ -491,6 +528,7 @@ main {
 }
 
 .chip {
+  border-color: var(--control-line);
   padding: 0.2rem 0.6rem;
   font-size: 0.85rem;
   border-radius: 999px;
@@ -623,9 +661,9 @@ main {
 }
 
 .tile .count {
-  font-size: 0.68rem;
+  font-size: 0.74rem;
   font-weight: 500;
-  opacity: 0.8;
+  opacity: 0.92;
 }
 
 /* Dark tiles get light text. */
@@ -635,7 +673,7 @@ main {
 
 .tile.none {
   background: transparent;
-  border: 1px dashed var(--line);
+  border: 1px dashed var(--control-line);
   color: var(--muted);
 }
 
@@ -649,10 +687,10 @@ main {
 }
 
 .tile.on {
-  background: var(--amber);
-  border-color: color-mix(in srgb, var(--amber) 70%, var(--ink));
-  color: var(--amber-ink);
-  box-shadow: 0 4px 12px -4px color-mix(in srgb, var(--amber) 80%, transparent);
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--bg);
+  box-shadow: 0 4px 12px -4px color-mix(in srgb, var(--ink) 55%, transparent);
 }
 
 .tile.remote {
@@ -677,8 +715,8 @@ main {
 }
 
 .tile.remote.on {
-  background: var(--amber);
-  border-color: color-mix(in srgb, var(--amber) 70%, var(--ink));
+  background: var(--ink);
+  border-color: var(--ink);
 }
 
 .province-map .hint {
@@ -748,11 +786,6 @@ table.jobs tbody tr:hover {
   background: color-mix(in srgb, var(--sunken) 50%, transparent);
 }
 
-/* New since last visit: an amber edge, nothing louder. */
-table.jobs tr.is-new td:first-child {
-  box-shadow: inset 3px 0 0 var(--amber);
-}
-
 tr.is-closed td {
   color: var(--muted);
 }
@@ -804,12 +837,6 @@ a.job-title:hover {
   background: var(--sunken);
   color: var(--muted);
   margin-right: 0.25rem;
-}
-
-.tag.new {
-  background: var(--amber);
-  color: var(--amber-ink);
-  font-weight: 600;
 }
 
 .tag.warn {
@@ -869,7 +896,7 @@ a.job-title:hover {
 }
 
 .job-head {
-  max-width: 60rem;
+  max-width: calc(75ch + 24rem);
 }
 
 .job-sub {
@@ -882,10 +909,23 @@ a.job-title:hover {
 
 .job-columns {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 20rem;
-  gap: 2rem;
+  grid-template-columns: minmax(0, 75ch) 24rem;
+  justify-content: start;
+  gap: 3rem;
   margin-top: 1.5rem;
   align-items: start;
+}
+
+.job-side {
+  position: sticky;
+  top: 4.5rem;
+  max-height: calc(100vh - 5.5rem);
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+.job-side .decision-bar {
+  margin-bottom: 0.9rem;
 }
 
 .facts {
@@ -1486,6 +1526,390 @@ td.actions button + button {
 
 /* --- small screens ------------------------------------------------------ */
 
+/* --- triage: the jobs list, and the selected job beside it ---------------- */
+
+.skip-link {
+  position: absolute;
+  left: 1rem;
+  top: -3rem;
+  z-index: 30;
+  padding: 0.4rem 0.8rem;
+  border-radius: var(--radius);
+  background: var(--ink);
+  color: var(--bg);
+}
+
+.skip-link:focus {
+  top: 4.4rem;
+}
+
+.results:focus {
+  outline: none;
+}
+
+.filters-toggle {
+  padding: 0.35rem 0.6rem;
+}
+
+.triage.split {
+  display: grid;
+  grid-template-columns: minmax(24rem, 34rem) minmax(0, 1fr);
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.job-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.job-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 0.75rem;
+  align-items: start;
+  padding: 0.6rem 0.9rem 0.6rem 0.75rem;
+  border-bottom: 1px solid var(--line);
+  cursor: default;
+}
+
+.job-row:last-child {
+  border-bottom: 0;
+}
+
+.job-row:hover {
+  background: color-mix(in srgb, var(--sunken) 45%, transparent);
+}
+
+.job-row.checked {
+  background: color-mix(in srgb, var(--lake) 8%, var(--surface));
+}
+
+.job-row.selected {
+  background: color-mix(in srgb, var(--lake) 14%, var(--surface));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--lake) 45%, transparent);
+}
+
+.row-check {
+  margin: 0.3rem 0 0;
+}
+
+.row-main {
+  min-width: 0;
+}
+
+.row-top {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.row-top .job-title {
+  flex: 1;
+  min-width: 0;
+}
+
+.row-date {
+  flex: none;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+/* New since your last visit: one small amber dot, the only amber in the list. */
+.new-dot {
+  flex: none;
+  align-self: center;
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  background: var(--amber);
+}
+
+.row-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.15rem 0.9rem;
+  margin-top: 0.15rem;
+  font-size: 0.86rem;
+  color: var(--muted);
+}
+
+.row-meta .row-company {
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.row-meta .row-company:hover {
+  color: var(--lake);
+  text-decoration: underline;
+}
+
+.row-salary {
+  color: var(--spruce);
+}
+
+.job-row.is-closed .job-title {
+  color: var(--muted);
+  text-decoration: line-through;
+  text-decoration-color: var(--muted);
+}
+
+.row-side {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 1.6rem;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.8rem;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.status-badge::before {
+  content: "";
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--dot);
+}
+
+/* One-column list: the three decisions, shown on the row you're on. */
+.row-actions {
+  display: flex;
+  gap: 0.1rem;
+  opacity: 0;
+}
+
+.job-row:hover .row-actions,
+.job-row:focus-within .row-actions,
+.job-row.selected .row-actions {
+  opacity: 1;
+}
+
+.row-actions button {
+  padding: 0.3rem;
+}
+
+.row-actions button[aria-pressed="true"] {
+  color: var(--lake);
+}
+
+.bulk-bar {
+  position: sticky;
+  top: 4.4rem;
+  z-index: 3;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.6rem;
+  padding: 0.45rem 0.6rem 0.45rem 0.9rem;
+  border-radius: var(--radius);
+  background: var(--ink);
+  color: var(--bg);
+}
+
+.bulk-bar span {
+  margin-right: auto;
+  font-weight: 600;
+}
+
+.bulk-bar button:not(.link) {
+  background: transparent;
+  border-color: color-mix(in srgb, var(--bg) 40%, transparent);
+  color: var(--bg);
+}
+
+.bulk-bar button.link {
+  color: var(--bg);
+}
+
+/* The selected posting, beside the list and always in view. */
+.preview {
+  position: sticky;
+  top: 4.4rem;
+  max-height: calc(100vh - 5.4rem);
+  overflow-y: auto;
+  scrollbar-width: thin;
+  padding: 1.1rem 1.4rem 1.6rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.preview-head h2 {
+  margin: 0;
+  font-size: 1.3rem;
+  line-height: 1.25;
+  text-wrap: balance;
+}
+
+.preview-head h2 a {
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.preview-head h2 a:hover {
+  color: var(--lake);
+  text-decoration: underline;
+}
+
+.preview-decide {
+  position: sticky;
+  top: -1.1rem;
+  z-index: 2;
+  margin: 0.9rem -1.4rem 1rem;
+  padding: 0.75rem 1.4rem;
+  background: var(--surface);
+  border-block: 1px solid var(--line);
+}
+
+.preview-more {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.6rem;
+}
+
+.preview-more .status-select {
+  margin-right: auto;
+}
+
+.preview .facts {
+  margin-bottom: 1.2rem;
+}
+
+.preview .description {
+  max-width: 75ch;
+}
+
+.preview-loading {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+/* Experience, then years asked: two filters, not one block. */
+.field > .chips + .chips {
+  margin-top: 0.9rem;
+}
+
+.decision-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.decision {
+  font-weight: 500;
+}
+
+.decision kbd {
+  margin-left: 0.15rem;
+}
+
+.decision.on {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--bg);
+}
+
+.decision.on kbd {
+  border-color: color-mix(in srgb, var(--bg) 40%, transparent);
+  color: var(--bg);
+}
+
+kbd {
+  display: inline-block;
+  min-width: 1.3em;
+  padding: 0 0.3em;
+  border: 1px solid var(--control-line);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  font: 600 0.72rem/1.35 var(--font);
+  text-align: center;
+  color: var(--muted);
+}
+
+.keys {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem 1.1rem;
+  margin: 0.6rem 0 0;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.keys kbd + kbd {
+  margin-left: 0.2rem;
+}
+
+/* "0 jobs": which filter to take off, with what it would bring back. */
+.unblock {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0.4rem 0 0;
+  padding: 0;
+}
+
+.unblock button .muted {
+  margin-left: 0.4rem;
+}
+
+/* Undo, after every decision. */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 1.5rem;
+  z-index: 40;
+  translate: -50% 0;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  max-width: min(36rem, calc(100vw - 2rem));
+  padding: 0.6rem 0.8rem 0.6rem 1rem;
+  border-radius: var(--radius);
+  background: var(--ink);
+  color: var(--bg);
+  box-shadow: 0 8px 28px -10px rgb(0 0 0 / 0.45);
+}
+
+.toast.error {
+  background: var(--danger);
+}
+
+.toast-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.toast button.link {
+  color: var(--bg);
+  font-weight: 600;
+}
+
+.toast kbd {
+  border-color: color-mix(in srgb, var(--bg) 40%, transparent);
+  color: var(--bg);
+}
+
 @media (max-width: 900px) {
   main {
     padding: 1rem;
@@ -1516,6 +1940,11 @@ td.actions button + button {
     grid-template-columns: minmax(0, 1fr);
   }
 
+  .job-side {
+    position: static;
+    max-height: none;
+  }
+
   .filters {
     position: static;
     max-height: none;
@@ -1540,7 +1969,7 @@ textarea {
 }
 
 .status-select::before {
-  transition: background-color 0.3s ease, transform 0.3s cubic-bezier(0.3, 1.6, 0.5, 1);
+  transition: background-color 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .skeleton {

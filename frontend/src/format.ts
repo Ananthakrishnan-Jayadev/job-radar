@@ -3,7 +3,7 @@
 import type { CompanyStatus, JobStatus, Workplace } from "./types";
 
 export const JOB_STATUS_LABEL: Record<JobStatus, string> = {
-  new: "New",
+  new: "Not reviewed",
   saved: "Saved",
   applied: "Applied",
   interviewing: "Interviewing",
@@ -34,7 +34,7 @@ export const LEVEL_LABEL: Record<string, string> = {
   mid: "Mid",
   senior: "Senior",
   lead: "Lead+",
-  unknown: "Unknown",
+  unknown: "Not stated",
 };
 
 export const YEARS_LABEL: Record<string, string> = {
@@ -141,4 +141,10 @@ export function boardLabel(system: string, slugOrUrl: string): string {
     return `${name}: ${site ?? slugOrUrl}`;
   }
   return `${name}: ${slugOrUrl}`;
+}
+
+/** "Toronto, ON +3" for a job listed in several places; the full list goes in a tooltip. */
+export function shortLocation(location: string): string {
+  const places = location.split(";").map((p) => p.trim()).filter(Boolean);
+  return places.length > 1 ? `${places[0]} +${places.length - 1}` : location;
 }

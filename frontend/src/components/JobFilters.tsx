@@ -3,36 +3,13 @@ import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useState, type FormEvent } from "react";
 import { api } from "../api";
 import { JOB_STATUS_LABEL, LEVEL_LABEL, SIZE_LABEL, SYSTEM_LABEL, WORKPLACE_LABEL, YEARS_LABEL } from "../format";
+import { POSTED, postedValue, withPosted } from "../jobFilters";
 import { getList, isOn, toggleInList, withParam } from "../params";
 import { useApp } from "../state";
 import type { Meta } from "../types";
 import Chips from "./Chips";
 import ProvinceMap from "./ProvinceMap";
 import TaskStatus from "./TaskStatus";
-
-// "within:7" → posted_within=7; "before:30" → posted_before=30 (older than that).
-export const POSTED = [
-  { value: "", label: "Any time" },
-  { value: "within:1", label: "Last 24 hours" },
-  { value: "within:3", label: "Last 3 days" },
-  { value: "within:7", label: "Less than a week ago" },
-  { value: "within:14", label: "Last 2 weeks" },
-  { value: "within:30", label: "Less than a month ago" },
-  { value: "within:90", label: "Last 3 months" },
-  { value: "before:30", label: "More than a month ago" },
-];
-
-export function postedValue(params: URLSearchParams): string {
-  if (params.get("posted_within")) return `within:${params.get("posted_within")}`;
-  if (params.get("posted_before")) return `before:${params.get("posted_before")}`;
-  return "";
-}
-
-export function withPosted(params: URLSearchParams, value: string): URLSearchParams {
-  const [kind, days] = value.split(":");
-  const cleared = withParam(withParam(params, "posted_within", null), "posted_before", null);
-  return kind ? withParam(cleared, `posted_${kind}`, days) : cleared;
-}
 
 interface Props {
   meta: Meta;
@@ -61,7 +38,7 @@ export default function JobFilters({ meta, params, setParams, provinceCounts, pr
   }
 
   return (
-    <aside className="filters" aria-label="Filters">
+    <aside className="filters" id="job-filters" aria-label="Filters">
       <form className="search" onSubmit={search} role="search">
         <label htmlFor="q">Search jobs</label>
         <div className="search-row">
