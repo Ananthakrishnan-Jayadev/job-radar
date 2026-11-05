@@ -1,7 +1,8 @@
-/* Job Radar. A departures board: backlit navy, light-face lettering, and
-   wayfinding yellow only for the top strip, the row you're on and what's new.
-   Two themes on <html data-theme>: "dim" (the board printed on a light
-   concourse panel, the default) and "dark" (the backlit board). */
+/* Job Radar. A departures board in forest and mint: evergreen panels,
+   light-face lettering, and light mint only for the top strip, the row
+   you're on and what's new. Two themes on <html data-theme>: "dim" (the
+   board printed on a pale sage panel, the default) and "dark" (the backlit
+   board). */
 
 /* Tailwind's theme and utilities, without its reset (preflight): the pages below
    rely on normal paragraph and list spacing. Unlayered rules beat every layer,
@@ -14,95 +15,95 @@
 
 :root,
 [data-theme="dim"] {
-  --bg: #e4e9ee;
-  --surface: #f3f5f8;
-  --raised: #fbfcfd;
-  --sunken: #d7dfe7;
-  --ink: #0c1b2c;
-  --muted: #4a5c70;
-  --line: #c4cfda;
-  --lake: #1d5b9e;
-  --lake-ink: #f4f8fc;
-  --lake-soft: #cddcec;
-  --spruce: #1c7a45;
-  --amber: #9a5b00;
-  --amber-soft: #f1e2bf;
+  --bg: #e5ebe6;
+  --surface: #f3f6f3;
+  --raised: #fafcfa;
+  --sunken: #d6e0d8;
+  --ink: #10241c;
+  --muted: #4a5f54;
+  --line: #c3d1c7;
+  --lake: #10241c;
+  --lake-ink: #f3f8f4;
+  --lake-soft: #d2e6d7;
+  --spruce: #186b3c;
+  --amber: #8a5100;
+  --amber-soft: #f0e2c0;
   --amber-ink: #2a1d06;
   --danger: #b8372a;
-  --warn-bg: #efe3c2;
-  --shadow: 0 1px 2px rgb(12 27 44 / 0.06), 0 4px 14px -6px rgb(12 27 44 / 0.14);
-  /* Wayfinding yellow, and what sits on it. */
-  --signal: #ffc72c;
-  --signal-ink: #0c1b2c;
-  /* What's new: yellow needs a darker edge to show on a light panel. */
-  --new-dot: #f2b600;
-  --new-ring: rgb(12 27 44 / 0.45);
-  /* The row you're on: yellow can't outline on a light panel, so navy does. */
-  --select-line: #0c1b2c;
-  --select-wash: #fff3cc;
+  --warn-bg: #eee3c3;
+  --shadow: 0 1px 2px rgb(16 36 28 / 0.06), 0 4px 14px -6px rgb(16 36 28 / 0.14);
+  /* Light mint, and what sits on it. */
+  --signal: #a8e6a3;
+  --signal-ink: #10241c;
+  /* What's new: mint needs a darker edge to show on a light panel. */
+  --new-dot: #7fd27a;
+  --new-ring: rgb(16 36 28 / 0.5);
+  /* The row you're on: mint can't outline on a light panel, so evergreen does. */
+  --select-line: #10241c;
+  --select-wash: #e2f4de;
   /* The board's column-head strip, and the rules between rows. */
-  --board-head: #0c1b2c;
-  --row-line: #d3dbe4;
+  --board-head: #10241c;
+  --row-line: #d3ded6;
   /* Borders of controls (chips, empty tiles): 3:1 against the surface. */
   --control-line: color-mix(in srgb, var(--muted) 80%, var(--surface));
-  /* Province heat, five steps: 1-3 take dark text, 4-5 light. */
+  /* Province heat, five steps of green: 1-3 take dark text, 4-5 light. */
   --heat-1: color-mix(in srgb, var(--lake) 10%, var(--surface));
   --heat-2: color-mix(in srgb, var(--lake) 24%, var(--surface));
   --heat-3: color-mix(in srgb, var(--lake) 40%, var(--surface));
   --heat-4: color-mix(in srgb, var(--lake) 80%, var(--ink));
   --heat-5: color-mix(in srgb, var(--lake) 55%, var(--ink));
 
-  --s-new: #1d5b9e;
+  --s-new: var(--muted);
   --s-saved: #8a5100;
   --s-applied: #186b3c;
   --s-interviewing: #6a4bb0;
   --s-offer: #13703a;
   --s-rejected: #9b4a40;
-  --s-not_interested: #56636f;
+  --s-not_interested: #56665d;
   --s-closed: #b8372a;
   color-scheme: light;
 }
 
 [data-theme="dark"] {
-  --bg: #0c1b2c;
-  --surface: #132539;
-  --raised: #1a304a;
-  --sunken: #081422;
-  --ink: #eef1f4;
-  --muted: #9fb0c2;
-  --line: #24405f;
-  --lake: #eef1f4;
-  --lake-ink: #0c1b2c;
-  --lake-soft: #1a304a;
-  --spruce: #2fb36c;
+  --bg: #0d211b;
+  --surface: #132c24;
+  --raised: #1a382e;
+  --sunken: #091812;
+  --ink: #edf3ee;
+  --muted: #a3b8ad;
+  --line: #24453a;
+  --lake: #edf3ee;
+  --lake-ink: #0d211b;
+  --lake-soft: #1a382e;
+  --spruce: #3fbf73;
   --amber: #f0a431;
   --amber-soft: #3a2f1a;
   --amber-ink: #1c1405;
   --danger: #ff7a6a;
   --warn-bg: #3a321c;
   --shadow: 0 1px 2px rgb(0 0 0 / 0.3), 0 6px 18px -8px rgb(0 0 0 / 0.55);
-  --signal: #ffc72c;
-  --signal-ink: #0c1b2c;
-  --new-dot: #ffc72c;
+  --signal: #a8e6a3;
+  --signal-ink: #0d211b;
+  --new-dot: #a8e6a3;
   --new-ring: transparent;
-  --select-line: #ffc72c;
-  --select-wash: #1b3350;
-  --board-head: #081422;
-  --row-line: #1b324c;
+  --select-line: #a8e6a3;
+  --select-wash: #1b3d31;
+  --board-head: #091812;
+  --row-line: #1b382e;
   --control-line: color-mix(in srgb, var(--muted) 60%, var(--surface));
-  --heat-1: #183049;
-  --heat-2: #1e3d5e;
-  --heat-3: #27507a;
-  --heat-4: #33597f;
-  --heat-5: #3f6f9d;
+  --heat-1: #17342a;
+  --heat-2: #1d4336;
+  --heat-3: #245544;
+  --heat-4: #2c6a53;
+  --heat-5: #367f63;
 
   --s-new: var(--muted);
   --s-saved: #f0a431;
-  --s-applied: #2fb36c;
-  --s-interviewing: #b59cff;
-  --s-offer: #5fd68f;
+  --s-applied: #3fbf73;
+  --s-interviewing: #c4a6ff;
+  --s-offer: #7fe0a0;
   --s-rejected: #e09a90;
-  --s-not_interested: #8a9aac;
+  --s-not_interested: #8fa39a;
   --s-closed: #ff7a6a;
   color-scheme: dark;
 }
@@ -385,18 +386,18 @@ input[type="checkbox"] {
 
 /* --- frame ------------------------------------------------------------- */
 
-/* The wayfinding strip: navy under a yellow rule in both themes, so its
+/* The wayfinding strip: evergreen under a mint rule in both themes, so its
    controls take the backlit board's colours wherever they sit. */
 .topbar {
-  --bg: #0c1b2c;
-  --surface: #132539;
-  --sunken: #081422;
-  --ink: #eef1f4;
-  --muted: #a9b9ca;
-  --line: #2a4766;
-  --lake: #8cc0f5;
-  --lake-soft: #1d3c5e;
-  --control-line: #4a6584;
+  --bg: #0d211b;
+  --surface: #132c24;
+  --sunken: #091812;
+  --ink: #edf3ee;
+  --muted: #a9bdb1;
+  --line: #2a4d40;
+  --lake: #edf3ee;
+  --lake-soft: #1a382e;
+  --control-line: #4d6d60;
   position: sticky;
   top: 0;
   z-index: 10;
@@ -406,8 +407,8 @@ input[type="checkbox"] {
   height: var(--top);
   padding: 0 1.25rem;
   border-top: 3px solid var(--signal);
-  border-bottom: 1px solid #1b324c;
-  background: #081422;
+  border-bottom: 1px solid #1b382e;
+  background: #091812;
   color: var(--ink);
 }
 
@@ -1692,8 +1693,8 @@ main.board-main {
 :root:not([data-theme]) .board-head,
 [data-theme="dim"] th,
 :root:not([data-theme]) th {
-  border-bottom-color: #0c1b2c;
-  color: #b4c2d1;
+  border-bottom-color: #10241c;
+  color: #b7cbbf;
 }
 
 .board-head {
@@ -1716,7 +1717,7 @@ main.board-main {
 }
 
 /* Ticked: a quiet neutral wash (the box says it too). The row you're on:
-   lit, outlined, and its mark cell turns yellow. */
+   lit, outlined, and its mark cell turns mint. */
 .job-row.checked {
   background: color-mix(in srgb, var(--ink) 7%, transparent);
 }
@@ -1749,7 +1750,7 @@ main.board-main {
   color: var(--signal-ink);
 }
 
-/* New since your last visit: a small yellow lamp. */
+/* New since your last visit: a small mint lamp. */
 .new-dot {
   flex: none;
   width: 0.5rem;
