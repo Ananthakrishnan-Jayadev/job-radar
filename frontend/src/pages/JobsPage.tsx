@@ -247,7 +247,11 @@ export default function JobsPage() {
     : [{ value: "", label: "Newest posted" }, ...SORTS.filter((s) => s.value !== "" && s.value !== "posted")];
   const sortValue = !hasQuery && params.get("sort") === "posted" ? "" : params.get("sort") ?? "";
 
-  const isNew = (job: JobSummary) => previousVisit !== null && job.first_seen > previousVisit;
+  // Amber marks what's new since your last visit; when that's every job on
+  // the page, one line says so instead of a dot on every row.
+  const newSince = (job: JobSummary) => previousVisit !== null && job.first_seen > previousVisit;
+  const allNew = items.length > 1 && items.every(newSince);
+  const isNew = (job: JobSummary) => !allNew && newSince(job);
   const selected = items.find((j) => j.id === selectedId);
 
   function toggleCheck(id: number) {
@@ -325,6 +329,13 @@ export default function JobsPage() {
             setParams={setParams}
             companyName={params.has("company") ? items[0]?.company : undefined}
           />
+        )}
+
+        {allNew && (
+          <p className="all-new">
+            <span className="new-dot" aria-hidden="true" />
+            Every job on this page is new since your last visit.
+          </p>
         )}
 
         {jobs.error && (
