@@ -1565,9 +1565,12 @@ td.actions button + button {
   padding: 0.35rem 0.6rem;
 }
 
+/* The list takes what's left; the posting stops at a reading width (75ch of
+   text plus its padding), so hiding the filters widens the list, not the
+   posting. */
 .triage.split {
   display: grid;
-  grid-template-columns: minmax(24rem, 34rem) minmax(0, 1fr);
+  grid-template-columns: minmax(26rem, 1fr) minmax(30rem, 47rem);
   gap: 1.5rem;
   align-items: start;
 }
@@ -1675,6 +1678,26 @@ td.actions button + button {
 
 .row-salary {
   color: var(--spruce);
+}
+
+/* Decided jobs step back so the ones still to review stand out. */
+.job-row.decided .job-title {
+  font-weight: 500;
+  color: color-mix(in srgb, var(--ink) 72%, var(--surface));
+}
+
+/* The session count sits beside the job count. */
+.results-head:has(.session-count) h1 {
+  margin-right: 0;
+}
+
+.session-count {
+  margin-right: auto;
+  padding: 0.1rem 0.6rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--s-applied) 16%, transparent);
+  color: color-mix(in srgb, var(--ink) 80%, var(--s-applied));
+  font-size: 0.84rem;
 }
 
 .job-row.is-closed .job-title {

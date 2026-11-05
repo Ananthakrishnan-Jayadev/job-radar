@@ -68,3 +68,20 @@ spruce; amber only for "new"):
 - **Dark theme:** the Scan button's coloured glow is a plain shadow.
 
 The design checker reports nothing on the Jobs page in either theme.
+
+## Second critique round (same day)
+
+- **Room for the list:** the posting stops at reading width (about 47rem);
+  the list takes the rest, so hiding the filters widens the list.
+- **Progress:** "N decided this session" beside the job count (jobs moved
+  from Not reviewed to a decision in this tab; undo and taking a job back
+  count down). Decided rows step back with a lighter title.
+- **Keyboard:** `T` or Space ticks the selected job; Shift-click ticks a
+  range; `S`/`X`/`A` act on the ticked jobs when there are any (before, `A`
+  hit the selected job instead); `J` past the last job opens the next page,
+  `K` before the first the previous one. `S`/`X`/`A` also work on the full
+  job page. Bulk has Applied too.
+- **Honest dates:** a posting with no date shows "Found Nov 5" in the list,
+  and "Posted: Not given" plus "Found" in the preview.
+- Descriptions lose runs of blank lines; a failed load says what to do
+  instead of "500 Internal Server Error".

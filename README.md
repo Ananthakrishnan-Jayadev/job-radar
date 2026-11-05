@@ -64,9 +64,11 @@ or use `.venv/bin/jobradar serve --dev`, which rebuilds the UI on every save
     posting on the right, with **Save**, **Not interested** and **Applied**
     at its top. Deciding moves on to the next job; every decision can be
     undone.
-  - **Keys:** `J`/`K` next and previous job, `S` save, `X` not interested,
+  - **Keys:** `J`/`K` next and previous job (on to the next page at the end), `S` save, `X` not interested,
     `A` applied (press again to take it back), `U` undo, `O` open the full
-    page, `/` search. Tick several jobs to save or dismiss them together.
+    page, `/` search, `T` or Space to tick (Shift-click ticks a range). With
+    jobs ticked, `S`/`X`/`A` act on all of them. A count beside the job count
+    shows how many you've decided this session.
   - A small amber dot marks jobs new since your last visit. The filter column
     can be hidden for more room. Save a search, export a CSV; in Saved
     searches, pick one to open the Jobs page with (your "radar").

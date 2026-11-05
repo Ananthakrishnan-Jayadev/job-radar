@@ -1,5 +1,5 @@
 import NumberFlow from "@number-flow/react";
-import { Bookmark, Download, EyeOff, PanelLeftClose, PanelLeftOpen } from "lucide-react";
+import { Bookmark, CircleCheck, Download, EyeOff, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useRef, useState, type FormEvent, type MouseEvent } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
@@ -71,7 +71,19 @@ function levelTitle(job: JobSummary): string | undefined {
 }
 
 type Before = Pick<JobSummary, "id" | "status" | "applied_at">;
-type Notice = { text: string; before?: Before[]; error?: boolean };
+type Notice = { text: string; before?: Before[]; counted?: number; error?: boolean };
+
+// Jobs taken from "Not reviewed" to a decision in this browser tab, so a long
+// session shows how far it got.
+const SESSION_KEY = "jobradar-decided";
+
+function readDecided(): number {
+  try {
+    return Number(sessionStorage.getItem(SESSION_KEY)) || 0;
+  } catch {
+    return 0;
+  }
+}
 
 // Typing in a box keeps its keys; a tick box or button doesn't take letters.
 const isTyping = (target: EventTarget | null) =>
@@ -98,7 +110,23 @@ export default function JobsPage() {
   const [checked, setChecked] = useState<Set<number>>(new Set());
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState<Notice | null>(null);
+  const [decided, setDecided] = useState(readDecided);
   const rows = useRef(new Map<number, HTMLLIElement>());
+  const lastTicked = useRef<number | null>(null);
+  // Moving past the end of a page with J/K opens the next one: which end to land on.
+  const landOn = useRef<{ end: "first" | "last"; page: number } | null>(null);
+
+  function countDecided(change: number) {
+    setDecided((n) => {
+      const next = Math.max(0, n + change);
+      try {
+        sessionStorage.setItem(SESSION_KEY, String(next));
+      } catch {
+        // Storage refused: the count still shows for this page.
+      }
+      return next;
+    });
+  }
 
   // The Jobs page opens on your start search, if you picked one (Saved searches).
   const opened = useRef(false);
@@ -132,6 +160,17 @@ export default function JobsPage() {
   const items = data?.items ?? [];
   useEffect(() => {
     setChecked(new Set());
+    lastTicked.current = null;
+    // Wait for the page that was asked for: the old one is still showing at first.
+    const land = landOn.current;
+    if (land && data?.page !== land.page) return;
+    landOn.current = null;
+    if (land && items.length) {
+      const id = (land.end === "first" ? items[0] : items[items.length - 1]).id;
+      setSelectedId(id);
+      window.requestAnimationFrame(() => rows.current.get(id)?.scrollIntoView({ block: "nearest" }));
+      return;
+    }
     setSelectedId((id) => (id !== null && items.some((j) => j.id === id) ? id : split ? items[0]?.id ?? null : null));
   }, [data?.page, data?.total, params.toString()]); // a new page or search, not each status change
   useEffect(() => {
@@ -158,8 +197,20 @@ export default function JobsPage() {
   }
 
   function move(step: number) {
-    if (!items.length) return;
+    if (!items.length || !data) return;
     const at = items.findIndex((j) => j.id === selectedId);
+    const pages = Math.ceil(data.total / data.page_size);
+    // Past either end of the page: on to the next or previous page.
+    if (at === items.length - 1 && step > 0 && data.page < pages) {
+      landOn.current = { end: "first", page: data.page + 1 };
+      setParams(withParam(params, "page", String(data.page + 1)));
+      return;
+    }
+    if (at === 0 && step < 0 && data.page > 1) {
+      landOn.current = { end: "last", page: data.page - 1 };
+      setParams(withParam(params, "page", data.page > 2 ? String(data.page - 1) : null));
+      return;
+    }
     const next = at === -1 ? 0 : Math.min(items.length - 1, Math.max(0, at + step));
     select(items[next].id, true);
   }
@@ -173,7 +224,13 @@ export default function JobsPage() {
       const done = await Promise.all(ids.map((id) => api.patchJob(id, { status })));
       patchItems(done.map(({ id, status, applied_at }) => ({ id, status, applied_at })));
       const what = ids.length === 1 ? items.find((j) => j.id === ids[0])?.title ?? "1 job" : `${ids.length} jobs`;
-      setNotice({ text: `${JOB_STATUS_LABEL[status]}: ${what}`, before });
+      // Reviewed for the first time counts up; taken back to "Not reviewed" counts down.
+      const counted =
+        status === "new"
+          ? -before.filter((b) => b.status !== "new").length
+          : before.filter((b) => b.status === "new").length;
+      countDecided(counted);
+      setNotice({ text: `${JOB_STATUS_LABEL[status]}: ${what}`, before, counted });
       if (ids.length > 1) setChecked(new Set());
       if (advance && ids.length === 1 && ids[0] === selectedId) move(1);
     } catch (err) {
@@ -192,6 +249,7 @@ export default function JobsPage() {
         before.map((b) => api.patchJob(b.id, { status: b.status, applied_at: b.applied_at })),
       );
       patchItems(done.map(({ id, status, applied_at }) => ({ id, status, applied_at })));
+      countDecided(-(notice?.counted ?? 0));
       setNotice({ text: "Undone." });
     } catch (err) {
       setNotice({ text: err instanceof Error ? err.message : String(err), error: true });
@@ -215,13 +273,17 @@ export default function JobsPage() {
       }
     } else if (k === "j") move(1);
     else if (k === "k") move(-1);
+    else if ((k === "t" || k === " ") && selected) {
+      e.preventDefault(); // Space would scroll the page
+      toggleCheck(selected.id);
+    }
     else if (k === "u") undo();
     else if (k === "escape") setChecked(new Set());
     else if ((k === "o" || (k === "enter" && e.target === document.body)) && selected) navigate(`/jobs/${selected.id}`);
     else {
       const decision = DECISIONS.find((d) => d.key === k);
       if (!decision || busy) return;
-      if (checked.size && decision.status !== "applied") {
+      if (checked.size) {
         decide([...checked], decision.status);
       } else if (selected) {
         const next = selected.status === decision.status ? "new" : decision.status;
@@ -254,13 +316,20 @@ export default function JobsPage() {
   const isNew = (job: JobSummary) => !allNew && newSince(job);
   const selected = items.find((j) => j.id === selectedId);
 
-  function toggleCheck(id: number) {
+  /** Tick or untick a job; with Shift, tick every job from the last one ticked to this one. */
+  function toggleCheck(id: number, range = false) {
+    const at = items.findIndex((j) => j.id === id);
+    const from = lastTicked.current;
     setChecked((was) => {
       const next = new Set(was);
-      if (next.has(id)) next.delete(id);
+      if (range && from !== null && from !== at) {
+        const [a, b] = from < at ? [from, at] : [at, from];
+        for (const job of items.slice(a, b + 1)) next.add(job.id);
+      } else if (next.has(id)) next.delete(id);
       else next.add(id);
       return next;
     });
+    lastTicked.current = at;
   }
 
   return (
@@ -305,6 +374,11 @@ export default function JobsPage() {
               "Jobs"
             )}
           </h1>
+          {decided > 0 && (
+            <span className="session-count" title="Jobs you moved from Not reviewed to a decision in this tab">
+              {decided} decided this session
+            </span>
+          )}
           <label className="sort">
             Sort
             <select value={sortValue} onChange={(e) => sortBy(e.target.value)}>
@@ -340,7 +414,8 @@ export default function JobsPage() {
 
         {jobs.error && (
           <p className="error" role="alert">
-            {jobs.error}
+            Couldn't load the jobs ({jobs.error}). Reload the page; if it keeps happening, the terminal running
+            jobradar serve says why.
           </p>
         )}
 
@@ -366,6 +441,10 @@ export default function JobsPage() {
                     <EyeOff size={14} aria-hidden="true" />
                     Not interested
                   </button>
+                  <button type="button" disabled={busy} onClick={() => decide([...checked], "applied")}>
+                    <CircleCheck size={14} aria-hidden="true" />
+                    Applied
+                  </button>
                   <button type="button" className="link" onClick={() => setChecked(new Set())}>
                     Untick all
                   </button>
@@ -387,7 +466,7 @@ export default function JobsPage() {
                       else rows.current.delete(job.id);
                     }}
                     onSelect={() => select(job.id)}
-                    onCheck={() => toggleCheck(job.id)}
+                    onCheck={(range) => toggleCheck(job.id, range)}
                     onDecide={(status) => {
                       select(job.id);
                       decide([job.id], status);
@@ -451,7 +530,7 @@ interface RowProps {
   busy: boolean;
   rowRef: (el: HTMLLIElement | null) => void;
   onSelect: () => void;
-  onCheck: () => void;
+  onCheck: (range: boolean) => void;
   onDecide: (status: JobStatus) => void;
 }
 
@@ -469,13 +548,21 @@ function JobRow({ job, isNew, selected, checked, split, busy, rowRef, onSelect, 
   return (
     <li
       ref={rowRef}
-      className={`job-row${selected ? " selected" : ""}${checked ? " checked" : ""}${job.closed_at ? " is-closed" : ""}`}
+      className={`job-row${selected ? " selected" : ""}${checked ? " checked" : ""}${job.status !== "new" ? " decided" : ""}${job.closed_at ? " is-closed" : ""}`}
       aria-current={selected ? "true" : undefined}
       onClick={(e) => {
         if (!(e.target instanceof HTMLElement && e.target.closest("a, button, input, select"))) onSelect();
       }}
     >
-      <input type="checkbox" className="row-check" checked={checked} aria-label={`Tick ${job.title}`} onChange={onCheck} />
+      <input
+        type="checkbox"
+        className="row-check"
+        checked={checked}
+        aria-label={`Tick ${job.title}`}
+        title="Tick (T); Shift-click ticks a range"
+        onChange={() => undefined}
+        onClick={(e) => onCheck(e.shiftKey)}
+      />
       <div className="row-main">
         <div className="row-top">
           {isNew && (
@@ -486,9 +573,15 @@ function JobRow({ job, isNew, selected, checked, split, busy, rowRef, onSelect, 
           <Link to={`/jobs/${job.id}`} className="job-title" onClick={openTitle}>
             {job.title}
           </Link>
-          <time className="row-date" dateTime={job.posted_at ?? job.first_seen}>
-            {formatDate(job.posted_at ?? job.first_seen)}
-          </time>
+          {job.posted_at ? (
+            <time className="row-date" dateTime={job.posted_at} title="Posted">
+              {formatDate(job.posted_at)}
+            </time>
+          ) : (
+            <time className="row-date" dateTime={job.first_seen} title="The posting gives no date: first found then">
+              Found {formatDate(job.first_seen)}
+            </time>
+          )}
         </div>
         <div className="row-meta">
           <Link to={`/companies/${job.company_id}`} className="row-company">
