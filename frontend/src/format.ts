@@ -148,3 +148,11 @@ export function shortLocation(location: string): string {
   const places = location.split(";").map((p) => p.trim()).filter(Boolean);
   return places.length > 1 ? `${places[0]} +${places.length - 1}` : location;
 }
+
+/** A description as text to read: no runs of blank lines, no trailing spaces. */
+export function tidyText(text: string): string {
+  return text
+    .replace(/[ \t]+\n/g, "\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+}

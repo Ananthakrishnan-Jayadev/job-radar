@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { api } from "../api";
 import ApplyPanel from "../components/ApplyPanel";
-import DecisionBar from "../components/DecisionBar";
+import DecisionBar, { DECISIONS } from "../components/DecisionBar";
 import StatusSelect from "../components/StatusSelect";
 import {
   JOB_STATUS_LABEL,
@@ -13,6 +13,7 @@ import {
   formatDate,
   formatDateTime,
   levelSourceText,
+  tidyText,
 } from "../format";
 import { lastResults } from "../params";
 import { useLoad } from "../state";
@@ -27,15 +28,32 @@ export default function JobPage() {
   const back = () => (location.key !== "default" ? navigate(-1) : navigate(lastResults()));
   const job = useLoad(() => api.job(id), String(id));
 
+  // The same decision keys as the jobs list: S, X, A (again to take it back).
+  const onKey = useRef<(e: KeyboardEvent) => void>(() => undefined);
+  onKey.current = (e: KeyboardEvent) => {
+    const target = e.target as HTMLElement | null;
+    if (e.ctrlKey || e.metaKey || e.altKey || !job.data) return;
+    if (target && (["TEXTAREA", "SELECT"].includes(target.tagName) || (target.tagName === "INPUT" && (target as HTMLInputElement).type !== "checkbox"))) return;
+    const decision = DECISIONS.find((d) => d.key === e.key.toLowerCase());
+    if (decision) decide(job.data.status === decision.status ? "new" : decision.status);
+  };
+  useEffect(() => {
+    const listener = (e: KeyboardEvent) => onKey.current(e);
+    window.addEventListener("keydown", listener);
+    return () => window.removeEventListener("keydown", listener);
+  }, []);
+
+  async function decide(status: JobStatus) {
+    if (!job.data) return;
+    const t = await api.patchJob(job.data.id, { status });
+    job.setData((d) => (d ? { ...d, status: t.status, applied_at: t.applied_at } : d));
+    job.reload();
+  }
+
   if (job.error) return <p className="error" role="alert">{job.error}</p>;
   if (!job.data) return <p className="loading">Loading…</p>;
   const j = job.data;
   const update = (change: Partial<JobDetail>) => job.setData((d) => (d ? { ...d, ...change } : d));
-  const decide = async (status: JobStatus) => {
-    const t = await api.patchJob(j.id, { status });
-    update({ status: t.status, applied_at: t.applied_at });
-    job.reload();
-  };
 
   return (
     <article className="job-page">
@@ -107,7 +125,7 @@ export default function JobPage() {
 
           <h2>Description</h2>
           {j.description ? (
-            <div className="description">{j.description}</div>
+            <div className="description">{tidyText(j.description)}</div>
           ) : (
             <p className="hint">
               {j.system === "workday"
@@ -121,7 +139,7 @@ export default function JobPage() {
           {j.system === "greenhouse" && !j.closed_at && <ApplyPanel jobId={j.id} onApplied={job.reload} />}
           <section className="panel">
             <h2>My tracking</h2>
-            <DecisionBar status={j.status} onDecide={decide} />
+            <DecisionBar status={j.status} showKeys onDecide={decide} />
             <label className="stack">
               Any status
               <StatusSelect

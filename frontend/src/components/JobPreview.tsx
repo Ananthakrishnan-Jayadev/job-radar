@@ -4,7 +4,7 @@
 import { ExternalLink, Maximize2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { api } from "../api";
-import { LEVEL_LABEL, SIZE_LABEL, SYSTEM_LABEL, WORKPLACE_LABEL, formatDate, levelSourceText } from "../format";
+import { LEVEL_LABEL, SIZE_LABEL, SYSTEM_LABEL, WORKPLACE_LABEL, formatDate, levelSourceText, tidyText } from "../format";
 import { useLoad } from "../state";
 import type { JobStatus, JobSummary } from "../types";
 import DecisionBar from "./DecisionBar";
@@ -74,7 +74,9 @@ export default function JobPreview({ job, busy, onDecide }: Props) {
         <dt>Workplace</dt>
         <dd>{WORKPLACE_LABEL[job.workplace]}</dd>
         <dt>Posted</dt>
-        <dd>{formatDate(job.posted_at ?? job.first_seen)}</dd>
+        <dd>{job.posted_at ? formatDate(job.posted_at) : <span className="muted">Not given</span>}</dd>
+        <dt>Found</dt>
+        <dd>{formatDate(job.first_seen)}</dd>
         {job.salary && (
           <>
             <dt>Salary</dt>
@@ -105,7 +107,7 @@ export default function JobPreview({ job, busy, onDecide }: Props) {
       )}
       {d &&
         (d.description ? (
-          <div className="description">{d.description}</div>
+          <div className="description">{tidyText(d.description)}</div>
         ) : (
           <p className="hint">
             {d.system === "workday"
