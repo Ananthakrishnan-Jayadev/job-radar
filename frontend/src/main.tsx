@@ -1,4 +1,4 @@
-import "@fontsource-variable/instrument-sans";
+import "@fontsource-variable/albert-sans";
 import { MotionConfig } from "motion/react";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";

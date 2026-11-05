@@ -1,5 +1,7 @@
-/* Job Radar. Granite, lake and spruce; amber only for "new".
-   Two themes on <html data-theme>: "dim" (default, low-glare light) and "dark". */
+/* Job Radar. A departures board: backlit navy, light-face lettering, and
+   wayfinding yellow only for the top strip, the row you're on and what's new.
+   Two themes on <html data-theme>: "dim" (the board printed on a light
+   concourse panel, the default) and "dark" (the backlit board). */
 
 /* Tailwind's theme and utilities, without its reset (preflight): the pages below
    rely on normal paragraph and list spacing. Unlayered rules beat every layer,
@@ -12,74 +14,96 @@
 
 :root,
 [data-theme="dim"] {
-  --bg: #dde3e1;
-  --surface: #e8ecea;
-  --raised: #f1f3f2;
-  --sunken: #d0d7d4;
-  --ink: #1c2a2e;
-  --muted: #546569;
-  --line: #c2cbc7;
-  --lake: #2a6582;
-  --lake-ink: #f4f8fa;
-  --lake-soft: #c6d9e3;
-  --spruce: #36684a;
-  --amber: #b67812;
-  --amber-soft: #ecdcbc;
+  --bg: #e4e9ee;
+  --surface: #f3f5f8;
+  --raised: #fbfcfd;
+  --sunken: #d7dfe7;
+  --ink: #0c1b2c;
+  --muted: #4a5c70;
+  --line: #c4cfda;
+  --lake: #1d5b9e;
+  --lake-ink: #f4f8fc;
+  --lake-soft: #cddcec;
+  --spruce: #1c7a45;
+  --amber: #9a5b00;
+  --amber-soft: #f1e2bf;
   --amber-ink: #2a1d06;
-  --danger: #9a3a32;
-  --warn-bg: #e9dfc6;
-  --shadow: 0 1px 2px rgb(28 42 46 / 0.06), 0 4px 14px -6px rgb(28 42 46 / 0.12);
+  --danger: #b8372a;
+  --warn-bg: #efe3c2;
+  --shadow: 0 1px 2px rgb(12 27 44 / 0.06), 0 4px 14px -6px rgb(12 27 44 / 0.14);
+  /* Wayfinding yellow, and what sits on it. */
+  --signal: #ffc72c;
+  --signal-ink: #0c1b2c;
+  /* What's new: yellow needs a darker edge to show on a light panel. */
+  --new-dot: #f2b600;
+  --new-ring: rgb(12 27 44 / 0.45);
+  /* The row you're on: yellow can't outline on a light panel, so navy does. */
+  --select-line: #0c1b2c;
+  --select-wash: #fff3cc;
+  /* The board's column-head strip, and the rules between rows. */
+  --board-head: #0c1b2c;
+  --row-line: #d3dbe4;
   /* Borders of controls (chips, empty tiles): 3:1 against the surface. */
   --control-line: color-mix(in srgb, var(--muted) 80%, var(--surface));
   /* Province heat, five steps: 1-3 take dark text, 4-5 light. */
-  --heat-1: color-mix(in srgb, var(--lake) 12%, var(--lake-soft));
-  --heat-2: color-mix(in srgb, var(--lake) 28%, var(--lake-soft));
-  --heat-3: color-mix(in srgb, var(--lake) 45%, var(--lake-soft));
-  --heat-4: color-mix(in srgb, var(--lake) 88%, var(--lake-soft));
-  --heat-5: var(--lake);
+  --heat-1: color-mix(in srgb, var(--lake) 10%, var(--surface));
+  --heat-2: color-mix(in srgb, var(--lake) 24%, var(--surface));
+  --heat-3: color-mix(in srgb, var(--lake) 40%, var(--surface));
+  --heat-4: color-mix(in srgb, var(--lake) 80%, var(--ink));
+  --heat-5: color-mix(in srgb, var(--lake) 55%, var(--ink));
 
-  --s-new: #2a6582;
-  --s-saved: #a86f10;
-  --s-applied: #36684a;
-  --s-interviewing: #654893;
-  --s-offer: #1d7438;
-  --s-rejected: #85544f;
-  --s-not_interested: #87949a;
+  --s-new: #1d5b9e;
+  --s-saved: #8a5100;
+  --s-applied: #186b3c;
+  --s-interviewing: #6a4bb0;
+  --s-offer: #13703a;
+  --s-rejected: #9b4a40;
+  --s-not_interested: #56636f;
+  --s-closed: #b8372a;
   color-scheme: light;
 }
 
 [data-theme="dark"] {
-  --bg: #121a1d;
-  --surface: #182226;
-  --raised: #1f2b30;
-  --sunken: #0f1619;
-  --ink: #dce6e3;
-  --muted: #8fa1a6;
-  --line: #29373c;
-  --lake: #78b2cf;
-  --lake-ink: #0d1a21;
-  --lake-soft: #1c3a49;
-  --spruce: #84b896;
-  --amber: #e2a948;
-  --amber-soft: #3a301c;
+  --bg: #0c1b2c;
+  --surface: #132539;
+  --raised: #1a304a;
+  --sunken: #081422;
+  --ink: #eef1f4;
+  --muted: #9fb0c2;
+  --line: #24405f;
+  --lake: #eef1f4;
+  --lake-ink: #0c1b2c;
+  --lake-soft: #1a304a;
+  --spruce: #2fb36c;
+  --amber: #f0a431;
+  --amber-soft: #3a2f1a;
   --amber-ink: #1c1405;
-  --danger: #e07b70;
-  --warn-bg: #34301f;
-  --shadow: 0 1px 2px rgb(0 0 0 / 0.3), 0 6px 18px -8px rgb(0 0 0 / 0.5);
-  --control-line: color-mix(in srgb, var(--muted) 65%, var(--surface));
-  --heat-1: color-mix(in srgb, var(--lake) 10%, var(--lake-soft));
-  --heat-2: color-mix(in srgb, var(--lake) 20%, var(--lake-soft));
-  --heat-3: color-mix(in srgb, var(--lake) 30%, var(--lake-soft));
-  --heat-4: color-mix(in srgb, var(--lake) 70%, var(--lake-soft));
-  --heat-5: color-mix(in srgb, var(--lake) 92%, var(--lake-soft));
+  --danger: #ff7a6a;
+  --warn-bg: #3a321c;
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.3), 0 6px 18px -8px rgb(0 0 0 / 0.55);
+  --signal: #ffc72c;
+  --signal-ink: #0c1b2c;
+  --new-dot: #ffc72c;
+  --new-ring: transparent;
+  --select-line: #ffc72c;
+  --select-wash: #1b3350;
+  --board-head: #081422;
+  --row-line: #1b324c;
+  --control-line: color-mix(in srgb, var(--muted) 60%, var(--surface));
+  --heat-1: #183049;
+  --heat-2: #1e3d5e;
+  --heat-3: #27507a;
+  --heat-4: #33597f;
+  --heat-5: #3f6f9d;
 
-  --s-new: #78b2cf;
-  --s-saved: #e2a948;
-  --s-applied: #84b896;
-  --s-interviewing: #ad94d8;
-  --s-offer: #6fcf8f;
-  --s-rejected: #c4948e;
-  --s-not_interested: #7a878b;
+  --s-new: var(--muted);
+  --s-saved: #f0a431;
+  --s-applied: #2fb36c;
+  --s-interviewing: #b59cff;
+  --s-offer: #5fd68f;
+  --s-rejected: #e09a90;
+  --s-not_interested: #8a9aac;
+  --s-closed: #ff7a6a;
   color-scheme: dark;
 }
 
@@ -99,7 +123,7 @@
   --color-amber: var(--amber);
   --color-amber-soft: var(--amber-soft);
   --color-danger: var(--danger);
-  --font-sans: "Instrument Sans Variable", "Instrument Sans", "Segoe UI", system-ui, sans-serif;
+  --font-sans: "Albert Sans Variable", "Albert Sans", "Segoe UI", system-ui, sans-serif;
   --animate-sweep: sweep 2.4s linear infinite;
   --animate-shimmer: shimmer 1.4s ease-in-out infinite;
 
@@ -120,7 +144,9 @@
 }
 
 :root {
-  --radius: 7px;
+  --radius: 6px;
+  /* The top bar's height: sticky panels sit just under it. */
+  --top: 3.25rem;
   --font: var(--font-sans);
 }
 
@@ -171,15 +197,15 @@ a {
 
 h1 {
   font-size: 1.6rem;
-  line-height: 1.2;
-  font-weight: 650;
+  line-height: 1.15;
+  font-weight: 800;
   letter-spacing: -0.01em;
   margin: 0;
 }
 
 h2 {
   font-size: 1rem;
-  font-weight: 650;
+  font-weight: 700;
   margin: 1.5rem 0 0.5rem;
 }
 
@@ -221,21 +247,17 @@ button:disabled {
   cursor: default;
 }
 
+/* The main action is lettering lit up: the board's light face on its ground. */
 button.primary {
-  background: var(--lake);
-  border-color: var(--lake);
-  color: var(--lake-ink);
-  font-weight: 600;
-  box-shadow: 0 1px 0 rgb(255 255 255 / 0.15) inset, 0 2px 8px -3px color-mix(in srgb, var(--lake) 60%, transparent);
-}
-
-[data-theme="dark"] button.primary {
-  box-shadow: 0 1px 0 rgb(255 255 255 / 0.15) inset, 0 2px 6px -2px rgb(0 0 0 / 0.6);
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--bg);
+  font-weight: 700;
 }
 
 button.primary:hover:not(:disabled) {
-  border-color: var(--lake);
-  background: color-mix(in srgb, var(--lake) 88%, var(--ink));
+  border-color: var(--ink);
+  background: color-mix(in srgb, var(--ink) 84%, var(--bg));
 }
 
 button.quiet,
@@ -363,24 +385,38 @@ input[type="checkbox"] {
 
 /* --- frame ------------------------------------------------------------- */
 
+/* The wayfinding strip: navy under a yellow rule in both themes, so its
+   controls take the backlit board's colours wherever they sit. */
 .topbar {
+  --bg: #0c1b2c;
+  --surface: #132539;
+  --sunken: #081422;
+  --ink: #eef1f4;
+  --muted: #a9b9ca;
+  --line: #2a4766;
+  --lake: #8cc0f5;
+  --lake-soft: #1d3c5e;
+  --control-line: #4a6584;
   position: sticky;
   top: 0;
   z-index: 10;
   display: flex;
   align-items: center;
-  gap: 1.5rem;
-  padding: 0.55rem 1.5rem;
-  background: color-mix(in srgb, var(--surface) 82%, transparent);
-  backdrop-filter: saturate(1.4) blur(12px);
-  border-bottom: 1px solid var(--line);
+  gap: 1.75rem;
+  height: var(--top);
+  padding: 0 1.25rem;
+  border-top: 3px solid var(--signal);
+  border-bottom: 1px solid #1b324c;
+  background: #081422;
+  color: var(--ink);
 }
 
 .brand {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  font-weight: 700;
+  gap: 0.55rem;
+  font-weight: 800;
+  font-size: 1.05rem;
   color: var(--ink);
   text-decoration: none;
 }
@@ -389,19 +425,19 @@ input[type="checkbox"] {
   width: 22px;
   height: 22px;
   fill: none;
-  stroke: var(--lake);
-  stroke-width: 1.6;
+  stroke: var(--ink);
+  stroke-width: 1.4;
   overflow: visible;
 }
 
 .brand .dot {
-  fill: var(--amber);
+  fill: var(--signal);
   stroke: none;
 }
 
 /* The radar's sweep: still when idle, turning while a scan runs. */
 .brand .sweep {
-  fill: color-mix(in srgb, var(--lake) 30%, transparent);
+  fill: color-mix(in srgb, var(--signal) 45%, transparent);
   stroke: none;
   transform-box: view-box;
   transform-origin: 8px 8px;
@@ -409,35 +445,36 @@ input[type="checkbox"] {
 
 .topbar nav {
   display: flex;
-  gap: 0.25rem;
+  align-self: stretch;
+  gap: 0.15rem;
   flex: 1;
 }
 
 .topbar nav a {
   position: relative;
-  isolation: isolate;
-  padding: 0.3rem 0.7rem;
-  border-radius: var(--radius);
+  display: flex;
+  align-items: center;
+  padding: 0 0.75rem;
   color: var(--muted);
+  font-weight: 500;
   text-decoration: none;
 }
 
-.topbar nav a:hover {
-  color: var(--ink);
-}
-
+.topbar nav a:hover,
 .topbar nav a.active {
   color: var(--ink);
 }
 
-/* The highlight behind the current page; it slides between links. */
+.topbar nav a.active {
+  font-weight: 650;
+}
+
+/* The current page is underlined in light; the rule slides between links. */
 .topbar nav .pill {
   position: absolute;
-  inset: 0;
-  z-index: -1;
-  border-radius: var(--radius);
-  background: var(--sunken);
-  box-shadow: inset 0 0 0 1px var(--line);
+  inset: auto 0.6rem -1px;
+  height: 2px;
+  background: var(--ink);
 }
 
 .scan-progress {
@@ -489,7 +526,7 @@ main {
 
 .filters {
   position: sticky;
-  top: 4.2rem;
+  top: calc(var(--top) + 0.75rem);
   max-height: calc(100vh - 5rem);
   overflow-y: auto;
   overflow-x: hidden;
@@ -684,6 +721,8 @@ main {
 .tile.heat-3 { background: var(--heat-3); }
 .tile.heat-4 { background: var(--heat-4); color: var(--lake-ink); }
 .tile.heat-5 { background: var(--heat-5); color: var(--lake-ink); }
+[data-theme="dark"] .tile.heat-4,
+[data-theme="dark"] .tile.heat-5 { color: var(--ink); }
 
 .tile.none {
   background: transparent;
@@ -776,13 +815,17 @@ table {
   border-collapse: collapse;
 }
 
+/* Column heads in the board's capitals: with the stamped statuses, the only
+   capitals in the app. */
 th {
-  background: color-mix(in srgb, var(--sunken) 45%, var(--surface));
+  background: var(--board-head);
   text-align: left;
-  font-weight: 600;
-  font-size: 0.82rem;
+  font-weight: 700;
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
   color: var(--muted);
-  padding: 0.55rem 0.75rem;
+  padding: 0.6rem 0.75rem 0.5rem;
   border-bottom: 1px solid var(--line);
 }
 
@@ -807,35 +850,6 @@ tr.is-closed td {
 tr.is-closed .job-title {
   text-decoration: line-through;
   text-decoration-color: var(--muted);
-}
-
-.job-cell {
-  min-width: 18rem;
-}
-
-.job-title {
-  display: block;
-  font-weight: 600;
-  color: var(--ink);
-  text-decoration: none;
-}
-
-a.job-title:hover {
-  color: var(--lake);
-  text-decoration: underline;
-}
-
-.job-company {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.4rem;
-  font-size: 0.88rem;
-  color: var(--muted);
-}
-
-.job-company a {
-  color: var(--muted);
 }
 
 .salary {
@@ -932,8 +946,8 @@ a.job-title:hover {
 
 .job-side {
   position: sticky;
-  top: 4.5rem;
-  max-height: calc(100vh - 5.5rem);
+  top: calc(var(--top) + 1rem);
+  max-height: calc(100vh - var(--top) - 2rem);
   overflow-y: auto;
   scrollbar-width: thin;
 }
@@ -1554,7 +1568,7 @@ td.actions button + button {
 }
 
 .skip-link:focus {
-  top: 4.4rem;
+  top: calc(var(--top) + 0.5rem);
 }
 
 .results:focus {
@@ -1565,114 +1579,247 @@ td.actions button + button {
   padding: 0.35rem 0.6rem;
 }
 
-/* The list takes what's left; the posting stops at a reading width (75ch of
-   text plus its padding), so hiding the filters widens the list, not the
-   posting. */
+/* --- the board: the Jobs page ------------------------------------------ */
+
+/* Its panels run edge to edge under the top bar: filters, the board, and the
+   selected job beside it. */
+main.board-main {
+  padding: 0;
+  max-width: none;
+}
+
+.board-main .jobs-layout {
+  grid-template-columns: 17.5rem minmax(0, 1fr);
+  gap: 0;
+}
+
+.board-main .jobs-layout.filters-hidden {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.board-main .filters {
+  top: var(--top);
+  height: calc(100vh - var(--top));
+  max-height: none;
+  padding: 1.1rem 1.1rem 2rem;
+  background: var(--surface);
+  border-right: 1px solid var(--line);
+}
+
+.board-main .results-head {
+  align-items: flex-end;
+  gap: 0.6rem 0.75rem;
+  margin: 0;
+  padding: 1rem 1.25rem 0.75rem;
+}
+
+.board-main .results-head .filters-toggle {
+  align-self: center;
+}
+
+/* The count is the board's display line; everything else is small. */
+.results-head h1 {
+  font-size: 2.75rem;
+  line-height: 0.95;
+  font-weight: 800;
+  letter-spacing: -0.015em;
+}
+
+.results-head h1 small {
+  margin-left: 0.15em;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0;
+  color: var(--muted);
+}
+
+.board-main .active-filters,
+.board-main .all-new,
+.board-main .results > .error,
+.board-main .results > .empty {
+  margin-inline: 0;
+  padding-inline: 1.25rem;
+}
+
+.board-main .active-filters {
+  margin: 0 0 0.75rem;
+}
+
+/* The list takes what's left; the posting stops at a reading width. */
 .triage.split {
   display: grid;
-  grid-template-columns: minmax(26rem, 1fr) minmax(30rem, 47rem);
-  gap: 1.5rem;
+  grid-template-columns: minmax(0, 1fr) minmax(26rem, min(38rem, 42%));
+  gap: 0;
   align-items: start;
+}
+
+/* The columns, set once for the heads and every row: tick, mark, posted,
+   job, place, level, size, status (and the decision buttons when the list
+   is alone). They never move when a job is decided. */
+.triage-list {
+  container: board / inline-size;
+  --cols: 2.25rem 1rem 3.75rem minmax(0, 1fr) 9.5rem 4.5rem 6.5rem 8.25rem;
+}
+
+.triage:not(.split) .triage-list {
+  --cols: 2.25rem 1rem 3.75rem minmax(0, 1fr) 10rem 4.5rem 6.5rem 8.25rem 6.25rem;
 }
 
 .job-list {
   list-style: none;
   margin: 0;
   padding: 0;
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  overflow: hidden;
+  border-top: 1px solid var(--line);
 }
 
 .job-row {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
-  gap: 0.75rem;
-  align-items: start;
-  padding: 0.6rem 0.9rem 0.6rem 0.75rem;
-  border-bottom: 1px solid var(--line);
+  grid-template-columns: var(--cols);
+  column-gap: 0.6rem;
+  align-items: center;
+  min-height: 3.35rem;
+  padding: 0.45rem 1rem 0.45rem 0.25rem;
+  border-bottom: 1px solid var(--row-line);
+  font-size: 0.86rem;
   cursor: default;
 }
 
-.job-row:last-child {
-  border-bottom: 0;
-}
-
-.job-row:hover {
-  background: color-mix(in srgb, var(--sunken) 45%, transparent);
-}
-
-/* Ticked: a quiet neutral wash (the box says it too). Selected: lake, with
-   a full lake outline, so the two never read alike. */
-.job-row.checked {
-  background: color-mix(in srgb, var(--ink) 6%, var(--surface));
-}
-
-.job-row.selected {
-  background: color-mix(in srgb, var(--lake) 14%, var(--surface));
-  box-shadow: inset 0 0 0 2px var(--lake);
-}
-
-/* Secondary text on the lake wash: tinted from ink and lake, not grey. */
-.job-row.selected .row-meta,
-.job-row.selected .row-date {
-  color: color-mix(in srgb, var(--ink) 70%, var(--lake));
-}
-
-.row-check {
-  margin: 0.3rem 0 0;
-}
-
-.row-main {
+.job-row > * {
   min-width: 0;
 }
 
-.row-top {
-  display: flex;
-  align-items: baseline;
-  gap: 0.5rem;
+[data-theme="dim"] .board-head,
+:root:not([data-theme]) .board-head,
+[data-theme="dim"] th,
+:root:not([data-theme]) th {
+  border-bottom-color: #0c1b2c;
+  color: #b4c2d1;
 }
 
-.row-top .job-title {
-  flex: 1;
-  min-width: 0;
-}
-
-.row-date {
-  flex: none;
-  font-size: 0.82rem;
+.board-head {
+  position: sticky;
+  top: var(--top);
+  z-index: 2;
+  min-height: 0;
+  padding-block: 0.55rem 0.45rem;
+  background: var(--board-head);
+  border-bottom: 1px solid var(--line);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
   color: var(--muted);
 }
 
-/* New since your last visit: one small amber dot, the only amber in the list. */
+.job-row:not(.board-head):hover {
+  background: color-mix(in srgb, var(--ink) 4%, transparent);
+}
+
+/* Ticked: a quiet neutral wash (the box says it too). The row you're on:
+   lit, outlined, and its mark cell turns yellow. */
+.job-row.checked {
+  background: color-mix(in srgb, var(--ink) 7%, transparent);
+}
+
+.job-row.selected,
+.job-row.selected:hover {
+  background: var(--select-wash);
+  box-shadow: inset 0 0 0 2px var(--select-line);
+}
+
+.cell-check {
+  display: flex;
+  justify-content: center;
+}
+
+.cell-check input {
+  margin: 0;
+}
+
+.cell-mark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: stretch;
+  margin-block: -0.45rem;
+}
+
+.job-row.selected .cell-mark {
+  background: var(--signal);
+  color: var(--signal-ink);
+}
+
+/* New since your last visit: a small yellow lamp. */
 .new-dot {
   flex: none;
-  align-self: center;
-  width: 0.45rem;
-  height: 0.45rem;
+  width: 0.5rem;
+  height: 0.5rem;
   border-radius: 50%;
-  background: var(--amber);
+  background: var(--new-dot);
+  box-shadow: 0 0 0 1px var(--new-ring);
 }
 
-.row-meta {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 0.15rem 0.9rem;
-  margin-top: 0.15rem;
-  font-size: 0.86rem;
+.cell-posted {
+  font-weight: 650;
+  line-height: 1.15;
+  white-space: nowrap;
+}
+
+.cell-posted small {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 500;
   color: var(--muted);
 }
 
-.row-meta .row-company {
+.board-head .cell-posted {
+  font-weight: 700;
+}
+
+.job-title {
+  display: block;
   color: var(--ink);
   text-decoration: none;
 }
 
+a.job-title:hover {
+  text-decoration: underline;
+}
+
+.cell-job .job-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.row-meta {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  margin-top: 0.05rem;
+  overflow: hidden;
+  white-space: nowrap;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.row-meta > * {
+  flex: none;
+}
+
+.row-meta .row-company {
+  flex: 0 0 auto;
+  max-width: 55%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--muted);
+  text-decoration: none;
+}
+
 .row-meta .row-company:hover {
-  color: var(--lake);
+  color: var(--ink);
   text-decoration: underline;
 }
 
@@ -1680,10 +1827,88 @@ td.actions button + button {
   color: var(--spruce);
 }
 
+/* Place and level live in their own columns; on a narrow board they move
+   into the company line instead. */
+.inline-place,
+.inline-level {
+  display: none;
+}
+
+.row-meta .inline-place {
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cell-place,
+.cell-level {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cell-size {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  white-space: nowrap;
+}
+
+.size-dot {
+  flex: none;
+  border-radius: 50%;
+  background: var(--ink);
+}
+
+.size-dot.unknown {
+  width: 8px;
+  height: 8px;
+  background: transparent;
+  box-shadow: inset 0 0 0 1.5px var(--muted);
+}
+
+.size-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 0.74rem;
+  color: var(--muted);
+}
+
 /* Decided jobs step back so the ones still to review stand out. */
 .job-row.decided .job-title {
-  font-weight: 500;
+  font-weight: 550;
   color: color-mix(in srgb, var(--ink) 72%, var(--surface));
+}
+
+.job-row.is-closed .job-title {
+  color: var(--muted);
+  text-decoration: line-through;
+  text-decoration-color: var(--s-closed);
+}
+
+/* Statuses stamp into their cell in the board's capitals, each in its hue.
+   Closed cancels in red and stays. */
+.cell-status {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.1rem;
+}
+
+.stamp {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--dot);
+}
+
+.status-closed {
+  --dot: var(--s-closed);
 }
 
 /* The session count sits beside the job count. */
@@ -1692,45 +1917,77 @@ td.actions button + button {
 }
 
 .session-count {
-  margin-right: auto;
-  padding: 0.1rem 0.6rem;
+  margin: 0 auto 0.2rem 0;
+  padding: 0.15rem 0.65rem;
   border-radius: 999px;
-  background: color-mix(in srgb, var(--s-applied) 16%, transparent);
-  color: color-mix(in srgb, var(--ink) 80%, var(--s-applied));
-  font-size: 0.84rem;
-}
-
-.job-row.is-closed .job-title {
-  color: var(--muted);
-  text-decoration: line-through;
-  text-decoration-color: var(--muted);
-}
-
-.row-side {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  min-height: 1.6rem;
-}
-
-.status-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  padding: 0.05rem 0.5rem 0.05rem 0.4rem;
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--dot) 16%, transparent);
+  background: var(--raised);
+  box-shadow: inset 0 0 0 1px var(--line);
   font-size: 0.8rem;
-  color: color-mix(in srgb, var(--ink) 80%, var(--dot));
-  white-space: nowrap;
+  font-weight: 600;
 }
 
-.status-badge::before {
-  content: "";
-  width: 0.5rem;
-  height: 0.5rem;
-  border-radius: 50%;
-  background: var(--dot);
+.board-main .results-head .sort,
+.board-main .results-head .save-search,
+.board-main .results-head > .button {
+  margin-bottom: 0.1rem;
+}
+
+@container board (max-width: 860px) {
+  .size-text {
+    display: none;
+  }
+
+  .job-row {
+    grid-template-columns: 2.25rem 1rem 3.75rem minmax(0, 1fr) 8.5rem 4.25rem 2.5rem 8.25rem;
+  }
+
+  .triage:not(.split) .job-row {
+    grid-template-columns: 2.25rem 1rem 3.75rem minmax(0, 1fr) 8.5rem 4.25rem 2.5rem 8.25rem 6.25rem;
+  }
+
+}
+
+/* Narrow board: place goes under the company. */
+@container board (max-width: 760px) {
+  .job-row {
+    grid-template-columns: 2.25rem 1rem 3.75rem minmax(0, 1fr) 4.25rem 2.5rem 8.25rem;
+  }
+
+  .triage:not(.split) .job-row {
+    grid-template-columns: 2.25rem 1rem 3.75rem minmax(0, 1fr) 4.25rem 2.5rem 8.25rem 6.25rem;
+  }
+
+  .cell-place {
+    display: none;
+  }
+
+  .inline-place {
+    display: inline;
+  }
+}
+
+/* Phone width: level joins the company line too, and the size mark goes. */
+@container board (max-width: 480px) {
+  .job-row,
+  .triage:not(.split) .job-row {
+    grid-template-columns: 2rem 0.75rem 3.25rem minmax(0, 1fr) 5.75rem;
+    column-gap: 0.45rem;
+    padding-right: 0.6rem;
+  }
+
+  .job-row .cell-level,
+  .job-row .cell-size,
+  .job-row .row-actions {
+    display: none;
+  }
+
+  .inline-level {
+    display: inline;
+  }
+
+  .stamp {
+    white-space: normal;
+  }
 }
 
 /* One-column list: the three decisions, shown on the row you're on. */
@@ -1754,17 +2011,16 @@ td.actions button + button {
   color: var(--lake);
 }
 
+/* Ticked jobs: the bar covers the column heads while it's needed. */
 .bulk-bar {
   position: sticky;
-  top: 4.4rem;
+  top: var(--top);
   z-index: 3;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 0.5rem;
-  margin-bottom: 0.6rem;
-  padding: 0.45rem 0.6rem 0.45rem 0.9rem;
-  border-radius: var(--radius);
+  padding: 0.4rem 1rem 0.4rem 1.25rem;
   background: var(--ink);
   color: var(--bg);
 }
@@ -1784,24 +2040,25 @@ td.actions button + button {
   color: var(--bg);
 }
 
-/* The selected posting, beside the list and always in view. */
+/* The selected posting, beside the list and always in view: the gate
+   screen, with the decisions at the top. */
 .preview {
   position: sticky;
-  top: 4.4rem;
-  max-height: calc(100vh - 5.4rem);
+  top: var(--top);
+  height: calc(100vh - var(--top));
   overflow-y: auto;
   scrollbar-width: thin;
-  padding: 1.1rem 1.4rem 1.6rem;
+  padding: 1.4rem 1.75rem 2rem;
   background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
+  border-left: 1px solid var(--line);
 }
 
 .preview-head h2 {
   margin: 0;
-  font-size: 1.3rem;
-  line-height: 1.25;
+  font-size: 1.75rem;
+  line-height: 1.12;
+  font-weight: 800;
+  letter-spacing: -0.01em;
   text-wrap: balance;
 }
 
@@ -1811,18 +2068,33 @@ td.actions button + button {
 }
 
 .preview-head h2 a:hover {
-  color: var(--lake);
   text-decoration: underline;
+  text-decoration-thickness: 2px;
+}
+
+.preview-head .job-sub {
+  margin-top: 0.45rem;
+  font-size: 0.95rem;
+}
+
+.preview-head .job-sub a {
+  color: var(--ink);
+  font-weight: 650;
+  text-underline-offset: 3px;
 }
 
 .preview-decide {
   position: sticky;
-  top: -1.1rem;
+  top: -1.4rem;
   z-index: 2;
-  margin: 0.9rem -1.4rem 1rem;
-  padding: 0.75rem 1.4rem;
+  margin: 1rem -1.75rem 0;
+  padding: 0.85rem 1.75rem 0.8rem;
   background: var(--surface);
-  border-block: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.preview-decide .decision {
+  padding: 0.45rem 0.85rem;
 }
 
 .preview-more {
@@ -1837,8 +2109,25 @@ td.actions button + button {
   margin-right: auto;
 }
 
+/* The facts as a three-across grid, label over value. */
 .preview .facts {
-  margin-bottom: 1.2rem;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.9rem 1rem;
+  margin: 0 0 1.25rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.preview .facts dt {
+  font-size: 0.76rem;
+  font-weight: 600;
+}
+
+.preview .facts dd {
+  margin-top: 0.1rem;
+  font-weight: 600;
+  overflow-wrap: anywhere;
 }
 
 .preview .description {
@@ -1993,17 +2282,35 @@ kbd {
 
   .topbar {
     flex-wrap: wrap;
-    gap: 0.75rem;
-    padding: 0.6rem 1rem;
+    gap: 0.5rem 0.75rem;
+    position: static;
+    height: auto;
+    padding: 0.5rem 1rem 0;
   }
 
   .topbar nav {
     order: 3;
     flex-basis: 100%;
     overflow-x: auto;
+    margin-inline: -0.75rem;
+  }
+
+  .topbar nav a {
+    padding-block: 0.55rem;
+    white-space: nowrap;
+  }
+
+  .topbar > :last-child {
+    margin-left: auto;
+  }
+
+  .board-head,
+  .bulk-bar {
+    top: 0;
   }
 
   .jobs-layout,
+  .board-main .jobs-layout,
   .job-columns {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -2013,10 +2320,22 @@ kbd {
     max-height: none;
   }
 
-  .filters {
+  .filters,
+  .board-main .filters {
     position: static;
+    height: auto;
     max-height: none;
     overflow: visible;
+  }
+
+  .board-main .filters {
+    order: 2;
+    border-right: 0;
+    border-top: 1px solid var(--line);
+  }
+
+  .results-head h1 {
+    font-size: 2.1rem;
   }
 
   .scan-progress {

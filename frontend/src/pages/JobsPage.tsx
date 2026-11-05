@@ -1,5 +1,5 @@
 import NumberFlow from "@number-flow/react";
-import { Bookmark, CircleCheck, Download, EyeOff, PanelLeftClose, PanelLeftOpen } from "lucide-react";
+import { Bookmark, ChevronRight, CircleCheck, Download, EyeOff, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useRef, useState, type FormEvent, type MouseEvent } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
@@ -364,7 +364,7 @@ export default function JobsPage() {
             {data ? (
               <>
                 <span aria-hidden="true">
-                  <NumberFlow value={data.total} locales="en-CA" /> {data.total === 1 ? "job" : "jobs"}
+                  <NumberFlow value={data.total} locales="en-CA" /> <small>{data.total === 1 ? "job" : "jobs"}</small>
                 </span>
                 <span className="sr-only">
                   {data.total.toLocaleString("en-CA")} {data.total === 1 ? "job" : "jobs"}
@@ -451,6 +451,7 @@ export default function JobsPage() {
                 </div>
               )}
 
+              <BoardHead split={split} />
               <ul className="job-list" aria-label="Jobs">
                 {items.map((job) => (
                   <JobRow
@@ -534,7 +535,28 @@ interface RowProps {
   onDecide: (status: JobStatus) => void;
 }
 
-/** One job: title and date, then company, size, place, level and salary. */
+// Company size as a mark: the dot grows with the head count, like a star's
+// magnitude on a chart. Unknown is an empty ring.
+const SIZE_DOT: Record<string, number> = { "<50": 4, "50-199": 6, "200-999": 8, "1000-4999": 11, "5000+": 14 };
+
+/** The board's column heads; the rows below use the same columns. */
+function BoardHead({ split }: { split: boolean }) {
+  return (
+    <div className="board-head job-row" aria-hidden="true">
+      <span className="cell-check" />
+      <span className="cell-mark" />
+      <span className="cell-posted">Posted</span>
+      <span className="cell-job">Job</span>
+      <span className="cell-place">Place</span>
+      <span className="cell-level">Level</span>
+      <span className="cell-size">Size</span>
+      <span className="cell-status">Status</span>
+      {!split && <span className="row-actions" />}
+    </div>
+  );
+}
+
+/** One job as a line on the board: posted, job and company, place, level, size, status. */
 function JobRow({ job, isNew, selected, checked, split, busy, rowRef, onSelect, onCheck, onDecide }: RowProps) {
   // Side by side, a plain click on the title shows the job beside the list;
   // a new-tab click (or any click in the single-column list) opens its page.
@@ -544,6 +566,9 @@ function JobRow({ job, isNew, selected, checked, split, busy, rowRef, onSelect, 
       onSelect();
     }
   }
+  const size = SIZE_LABEL[job.size_band] ?? job.size_band;
+  const dot = SIZE_DOT[job.size_band];
+  const level = job.level ? LEVEL_LABEL[job.level] : null;
 
   return (
     <li
@@ -554,44 +579,54 @@ function JobRow({ job, isNew, selected, checked, split, busy, rowRef, onSelect, 
         if (!(e.target instanceof HTMLElement && e.target.closest("a, button, input, select"))) onSelect();
       }}
     >
-      <input
-        type="checkbox"
-        className="row-check"
-        checked={checked}
-        aria-label={`Tick ${job.title}`}
-        title="Tick (T); Shift-click ticks a range"
-        onChange={() => undefined}
-        onClick={(e) => onCheck(e.shiftKey)}
-      />
-      <div className="row-main">
-        <div className="row-top">
-          {isNew && (
+      <span className="cell-check">
+        <input
+          type="checkbox"
+          checked={checked}
+          aria-label={`Tick ${job.title}`}
+          title="Tick (T); Shift-click ticks a range"
+          onChange={() => undefined}
+          onClick={(e) => onCheck(e.shiftKey)}
+        />
+      </span>
+      <span className="cell-mark">
+        {selected ? (
+          <ChevronRight size={14} strokeWidth={3} aria-hidden="true" />
+        ) : (
+          isNew && (
             <span className="new-dot" title="New since your last visit">
-              <span className="sr-only">New since your last visit: </span>
+              <span className="sr-only">New since your last visit</span>
             </span>
-          )}
-          <Link to={`/jobs/${job.id}`} className="job-title" onClick={openTitle}>
-            {job.title}
-          </Link>
-          {job.posted_at ? (
-            <time className="row-date" dateTime={job.posted_at} title="Posted">
-              {formatDate(job.posted_at)}
-            </time>
-          ) : (
-            <time className="row-date" dateTime={job.first_seen} title="The posting gives no date: first found then">
-              Found {formatDate(job.first_seen)}
-            </time>
-          )}
-        </div>
+          )
+        )}
+      </span>
+      {job.posted_at ? (
+        <time className="cell-posted" dateTime={job.posted_at} title="Posted">
+          {formatDate(job.posted_at)}
+        </time>
+      ) : (
+        <time className="cell-posted" dateTime={job.first_seen} title="The posting gives no date: first found then">
+          {formatDate(job.first_seen)}
+          <small>found</small>
+        </time>
+      )}
+      <div className="cell-job">
+        <Link to={`/jobs/${job.id}`} className="job-title" onClick={openTitle}>
+          {job.title}
+        </Link>
         <div className="row-meta">
           <Link to={`/companies/${job.company_id}`} className="row-company">
             {job.company}
           </Link>
-          <span title="Employees">{SIZE_LABEL[job.size_band] ?? job.size_band}</span>
-          <span title={job.location}>{shortLocation(job.location)}</span>
-          {job.level && <span title={levelTitle(job)}>{LEVEL_LABEL[job.level]}</span>}
+          <span className="inline-place" title={job.location}>
+            {shortLocation(job.location)}
+          </span>
+          {level && (
+            <span className="inline-level" title={levelTitle(job)}>
+              {level}
+            </span>
+          )}
           {job.salary && <span className="row-salary">{job.salary}</span>}
-          {job.closed_at && <span className="tag">Closed</span>}
           {!job.board_confirmed && (
             <span className="tag warn" title="This board was matched by name and isn't confirmed yet">
               Unconfirmed
@@ -599,29 +634,56 @@ function JobRow({ job, isNew, selected, checked, split, busy, rowRef, onSelect, 
           )}
         </div>
       </div>
-      <div className="row-side">
-        {job.status !== "new" && (
-          <span className={`status-badge status-${job.status}`}>{JOB_STATUS_LABEL[job.status]}</span>
-        )}
-        {!split && (
-          <span className="row-actions">
-            {DECISIONS.map(({ status, label, key, icon: Icon }) => (
-              <button
-                key={status}
-                type="button"
-                className="quiet"
-                disabled={busy}
-                aria-pressed={job.status === status}
-                aria-label={label}
-                title={`${label} (${key.toUpperCase()})`}
-                onClick={() => onDecide(job.status === status ? "new" : status)}
-              >
-                <Icon size={15} aria-hidden="true" />
-              </button>
-            ))}
-          </span>
-        )}
-      </div>
+      <span className="cell-place" title={job.location}>
+        {shortLocation(job.location)}
+      </span>
+      <span className="cell-level" title={levelTitle(job)}>
+        {level ?? <span className="muted">Not stated</span>}
+      </span>
+      <span className="cell-size" title={`${size} employees`}>
+        <span
+          className={`size-dot${dot ? "" : " unknown"}`}
+          style={dot ? { width: dot, height: dot } : undefined}
+          aria-hidden="true"
+        />
+        <span className="size-text">{size}</span>
+      </span>
+      <span className="cell-status">
+        {/* A decision stamps into this cell; the row itself never moves. */}
+        <AnimatePresence initial={false} mode="popLayout">
+          {job.status !== "new" && (
+            <motion.span
+              key={job.status}
+              className={`stamp status-${job.status}`}
+              initial={{ opacity: 0, scale: 1.4 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, transition: { duration: 0.1 } }}
+              transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+            >
+              {JOB_STATUS_LABEL[job.status]}
+            </motion.span>
+          )}
+        </AnimatePresence>
+        {job.closed_at && <span className="stamp status-closed">Closed</span>}
+      </span>
+      {!split && (
+        <span className="row-actions">
+          {DECISIONS.map(({ status, label, key, icon: Icon }) => (
+            <button
+              key={status}
+              type="button"
+              className="quiet"
+              disabled={busy}
+              aria-pressed={job.status === status}
+              aria-label={label}
+              title={`${label} (${key.toUpperCase()})`}
+              onClick={() => onDecide(job.status === status ? "new" : status)}
+            >
+              <Icon size={15} aria-hidden="true" />
+            </button>
+          ))}
+        </span>
+      )}
     </li>
   );
 }

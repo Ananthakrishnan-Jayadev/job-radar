@@ -61,40 +61,52 @@ export default function JobPreview({ job, busy, onDecide }: Props) {
       </div>
 
       <dl className="facts">
-        <dt>Where</dt>
-        <dd>{places}</dd>
-        <dt>Level</dt>
-        <dd>
-          {job.level ? LEVEL_LABEL[job.level] : "Not stated"}
-          {job.min_years !== null && <>, asks for {job.min_years}+ years</>}
-          {job.level && levelSourceText(job.level_source) && (
-            <span className="hint"> ({levelSourceText(job.level_source)})</span>
-          )}
-        </dd>
-        <dt>Workplace</dt>
-        <dd>{WORKPLACE_LABEL[job.workplace]}</dd>
-        <dt>Posted</dt>
-        <dd>{job.posted_at ? formatDate(job.posted_at) : <span className="muted">Not given</span>}</dd>
-        <dt>Found</dt>
-        <dd>{formatDate(job.first_seen)}</dd>
+        <div>
+          <dt>Where</dt>
+          <dd>{places}</dd>
+        </div>
+        <div>
+          <dt>Level</dt>
+          <dd>
+            {job.level ? LEVEL_LABEL[job.level] : "Not stated"}
+            {job.min_years !== null && <>, asks for {job.min_years}+ years</>}
+            {job.level && levelSourceText(job.level_source) && (
+              <span className="hint"> ({levelSourceText(job.level_source)})</span>
+            )}
+          </dd>
+        </div>
+        <div>
+          <dt>Workplace</dt>
+          <dd>{WORKPLACE_LABEL[job.workplace]}</dd>
+        </div>
+        <div>
+          <dt>Posted</dt>
+          <dd>{job.posted_at ? formatDate(job.posted_at) : <span className="muted">Not given</span>}</dd>
+        </div>
+        <div>
+          <dt>Found</dt>
+          <dd>{formatDate(job.first_seen)}</dd>
+        </div>
         {job.salary && (
-          <>
+          <div>
             <dt>Salary</dt>
             <dd>{job.salary}</dd>
-          </>
+          </div>
         )}
-        <dt>Source</dt>
-        <dd>
-          {SYSTEM_LABEL[job.system] ?? job.system}
-          {job.system === "greenhouse" && !job.closed_at && (
-            <>
-              {" "}
-              <Link to={`/jobs/${job.id}`} className="hint">
-                Apply with a pre-filled form
-              </Link>
-            </>
-          )}
-        </dd>
+        <div>
+          <dt>Source</dt>
+          <dd>
+            {SYSTEM_LABEL[job.system] ?? job.system}
+            {job.system === "greenhouse" && !job.closed_at && (
+              <>
+                {" "}
+                <Link to={`/jobs/${job.id}`} className="hint">
+                  Apply with a pre-filled form
+                </Link>
+              </>
+            )}
+          </dd>
+        </div>
       </dl>
 
       {detail.error && <p className="error">{detail.error}</p>}
