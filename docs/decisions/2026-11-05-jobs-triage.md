@@ -47,3 +47,24 @@ decision far from the text.
 is its own posting, with its own status, on the company's board; grouping
 needs a decision on what a status on the group means. Next/previous on the
 full job page (the split view covers it).
+
+## Colour pass (same day)
+
+Colour now carries state, within the existing palette (granite, lake,
+spruce; amber only for "new"):
+
+- **Province map in five steps** of lake instead of a smooth ramp. The
+  middle of the ramp failed contrast with both dark and light text (2.9:1);
+  steps 1–3 take dark text, 4–5 light, all at 4.5:1 or better in both themes.
+- **Selected vs ticked:** selected is a lake wash with a 2px lake outline;
+  ticked is a neutral wash plus the tick. Before, they differed by 6% of lake.
+  Secondary text on the selected row is tinted from ink and lake (4.2:1 grey
+  before).
+- **Statuses in their own colour:** a decided row's badge is a soft wash of
+  its status hue; an active Save / Not interested / Applied button takes the
+  same hue as its border and icon, with ink text.
+- **"New" dots** disappear when every job on the page is new; one line says
+  so instead.
+- **Dark theme:** the Scan button's coloured glow is a plain shadow.
+
+The design checker reports nothing on the Jobs page in either theme.

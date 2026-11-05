@@ -38,8 +38,10 @@ export default function ProvinceMap({ names, selected, counts, onToggle, onClear
         {TILES.map(({ code, row, col }) => {
           const count = counts?.[code] ?? 0;
           const on = selected.includes(code);
-          // Tile shade follows its share of jobs, so busy provinces stand out.
-          const weight = count === 0 ? 0 : 0.15 + 0.85 * Math.sqrt(count / max);
+          // Five shades by share of jobs (square root, so small provinces still
+          // register). Steps, not a smooth ramp: the middle of a smooth ramp is
+          // too dark for dark text and too light for light text.
+          const heat = count === 0 ? 0 : Math.max(1, Math.ceil(Math.sqrt(count / max) * 5));
           return (
             <motion.button
               key={code}
@@ -48,8 +50,8 @@ export default function ProvinceMap({ names, selected, counts, onToggle, onClear
               whileTap={{ scale: 0.92 }}
               animate={{ scale: on ? 1.06 : 1 }}
               transition={{ type: "spring", stiffness: 500, damping: 24 }}
-              className={`tile${on ? " on" : ""}${count === 0 ? " none" : ""}${weight > 0.55 ? " deep" : ""}`}
-              style={{ gridRow: row, gridColumn: col, "--weight": weight } as CSSProperties}
+              className={`tile heat-${heat}${on ? " on" : ""}${count === 0 ? " none" : ""}`}
+              style={{ gridRow: row, gridColumn: col } as CSSProperties}
               aria-pressed={on}
               title={`${names[code] ?? code}: ${count.toLocaleString("en-CA")} jobs`}
               aria-label={`${names[code] ?? code}, ${count.toLocaleString("en-CA")} ${count === 1 ? "job" : "jobs"}`}
