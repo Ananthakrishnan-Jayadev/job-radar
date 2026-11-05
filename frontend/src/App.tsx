@@ -53,7 +53,8 @@ export default function App() {
           <ThemeToggle />
         </div>
       </header>
-      <main>
+      {/* The Jobs page is the board: its panels run edge to edge. */}
+      <main className={location.pathname === "/" ? "board-main" : undefined}>
         {/* Pages cross-fade; filter changes (same path, new query) don't. */}
         <AnimatePresence mode="wait" initial={false}>
           <motion.div
