@@ -20,6 +20,7 @@ from __future__ import annotations
 import asyncio
 import html
 import json
+import os
 import re
 import sqlite3
 import unicodedata
@@ -248,7 +249,11 @@ async def ask_ollama(conn: sqlite3.Connection, settings: Settings, *, model: str
     o = settings.ollama
     summary = AskSummary(model=model or o.model)
     rows = jobs_to_ask(conn)[:limit] if limit else jobs_to_ask(conn)
-    async with httpx.AsyncClient(base_url=o.url, timeout=o.timeout_seconds, transport=transport) as client:
+    # Ollama's cloud (url = "https://ollama.com") takes an API key; a local Ollama needs none.
+    key = os.environ.get("OLLAMA_API_KEY", "").strip()
+    headers = {"Authorization": f"Bearer {key}"} if key else None
+    async with httpx.AsyncClient(base_url=o.url, timeout=o.timeout_seconds, transport=transport,
+                                 headers=headers) as client:
         for i, row in enumerate(rows):
             if progress:
                 progress(i, len(rows))
@@ -263,7 +268,8 @@ async def ask_ollama(conn: sqlite3.Connection, settings: Settings, *, model: str
                 summary.failed += 1
                 continue
             except httpx.TransportError as exc:
-                raise LevelsError(f"Can't reach Ollama at {o.url}. Is it running (`ollama serve`)?") from exc
+                hint = "Check the address and your internet connection." if key else "Is it running (`ollama serve`)?"
+                raise LevelsError(f"Can't reach Ollama at {o.url}. {hint}") from exc
             if response.status_code != 200:
                 summary.stopped = _stop_reason(response, summary.model)
                 break

@@ -1,0 +1,21 @@
+# Job Radar on a home server, reachable on your Wi-Fi at http://<server-ip>:8000.
+# It has no login: keep it on your home network (don't forward this port on
+# the router). Setup and updates: deploy/README.md.
+services:
+  jobradar:
+    build: .
+    image: jobradar:local
+    container_name: jobradar
+    restart: unless-stopped
+    # Runs as your user, so files in ./data stay yours (set in .env; 1000 is
+    # the first user on Ubuntu).
+    user: "${UID:-1000}:${GID:-1000}"
+    ports:
+      - "8000:8000"
+    environment:
+      TZ: America/Toronto
+      # Ollama's cloud, for "Ask AI" about job levels (set in .env).
+      OLLAMA_API_KEY: ${OLLAMA_API_KEY:-}
+    volumes:
+      - ./data:/app/data
+      - ./config.local.toml:/app/config.local.toml:ro

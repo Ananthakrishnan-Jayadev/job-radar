@@ -1,0 +1,10 @@
+# Job Radar on the server. Add with:  crontab -e   (then paste these lines,
+# changing /home/YOU to your home folder). Times are the server's local time.
+
+# A scan every morning at 7:00, so new jobs are waiting when you open it.
+0 7 * * * /home/YOU/job-radar/deploy/scan.sh >> /home/YOU/job-radar/data/cron.log 2>&1
+
+# A checked copy of the database every night at 3:00 (keeps the last 14).
+# To also copy it to another disk, put BACKUP_COPY_DIR=/path in front:
+#   0 3 * * * BACKUP_COPY_DIR=/mnt/usb/jobradar /home/YOU/job-radar/deploy/backup.sh ...
+0 3 * * * /home/YOU/job-radar/deploy/backup.sh >> /home/YOU/job-radar/data/cron.log 2>&1

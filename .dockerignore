@@ -1,0 +1,19 @@
+# Only the code goes into the image; your data and settings stay outside it.
+data/
+.venv/
+**/node_modules/
+jobradar/web/static/
+**/__pycache__/
+*.egg-info/
+.git/
+.claude/
+.impeccable/
+.opencode/
+config.local.toml
+profile.local.toml
+.env
+*.xlsx
+*.csv
+*.pdf
+tests/
+docs/

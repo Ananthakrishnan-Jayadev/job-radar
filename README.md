@@ -129,6 +129,14 @@ or use `.venv/bin/jobradar serve --dev`, which rebuilds the UI on every save
   switch each off (or fix it on its company page). Backups: when the newest
   is, a reminder after a week, and "Back up now".
 
+## On a home server (Docker)
+
+`docker-compose.yml` runs Job Radar on an always-on machine on your network
+(`http://<server-ip>:8000`), with the database kept in `data/` on the server,
+scheduled scans and nightly backups, and one-command updates from GitHub.
+Step-by-step setup: [deploy/README.md](deploy/README.md). Applying isn't
+available there (it needs a browser window).
+
 ## Applying (Greenhouse)
 
 On a Greenhouse job's page, **Apply** fills in the company's real
@@ -194,8 +202,10 @@ years only when the posting states a number. Each job is read once; a
 changed description is read again. Each job is asked about once; the answer is saved as
 it comes, so stopping keeps what it got. The model is set in `config.toml`
 (`[ollama] model`, default `gemma4:31b-cloud`); cloud models need
-`ollama signin` once. Hover over a level in the list, or open the job, to see
-the years asked and where the level came from.
+`ollama signin` once. Without Ollama installed, use Ollama's cloud directly:
+set `[ollama] url = "https://ollama.com"` in `config.local.toml` and an API
+key in the `OLLAMA_API_KEY` environment variable. Hover over a level in the
+list, or open the job, to see the years asked and where the level came from.
 
 ## Job systems it reads (16)
 
@@ -375,5 +385,7 @@ roles.toml           which roles you want (edit freely)
 seeds/               starting company list
 tests/               pytest tests and recorded API responses
 docs/                research and decisions
+deploy/              running it on a home server: guide, deploy/backup/scan scripts
+Dockerfile, docker-compose.yml   the server image and service
 data/                the database and backups (git-ignored)
 ```
