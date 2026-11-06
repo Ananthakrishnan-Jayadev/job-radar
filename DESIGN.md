@@ -188,7 +188,7 @@ Every posting is a departure: one row, one time, one status, read at a glance. T
 
 The board is set in forest and mint. **Dark** is the backlit board itself: evergreen ground and panels, light-face lettering. **Dim** (the default) is the same board printed on a pale sage panel: green-grey grounds, evergreen ink, and the evergreen column-head strip and top strip kept from the backlit board. In both, a mint-ruled evergreen top strip carries the wayfinding. Density is high and deliberate: the owner works on a big monitor in long sessions, so the board shows every column, the filter rail sits on the left and the selected posting (the gate screen) sits on the right, all three running edge to edge under the top strip.
 
-Motion has one gesture: the stamp. Everything else is colour and border transitions under 0.2s, and all of it switches off under reduced motion.
+Motion answers actions and never decorates. The stamp is the signature: a decision stamps into the status cell. Around it, every action gets one short reply in the same ease (cubic-bezier(0.16, 1, 0.3, 1), 0.15-0.28s, exits faster): the mint board cursor slides to the row you move to; the selected job's panel settles in; bulk bars and confirm panels drop in from above; the board dims while a new search loads; company rows slide to their new place when re-sorted and fade out when removed; a status just set glows once in its cell; buttons settle a touch when pressed. Spatial movement switches off under reduced motion; colour and state changes stay.
 
 **Key Characteristics:**
 - Fixed-column board rows (tick, mark, posted, job + company, place, level, size, status) that never move on a decision.
@@ -320,7 +320,7 @@ The session count is a raised pill beside the job count. The undo toast is an in
 - **Do** colour a status the same everywhere it appears: stamp, dot and decision-button wash.
 - **Do** keep the evergreen top strip and its mint rule in both themes.
 - **Do** use tabular figures and Albert Sans for every surface.
-- **Do** keep motion to the stamp, the gate screen's entrance and short colour transitions, and honour reduced motion.
+- **Do** give each action one short reply (cursor slide, panel settle, row slide or fade, status glow) in the shared ease, and honour reduced motion.
 
 ### Don't:
 - **Don't** use light mint outside the top strip, the selected row's mark cell and outline, and new-since-last-visit lamps.

@@ -3,6 +3,7 @@
 // keeps companies with saved or applied jobs unless you confirm those too.
 
 import { Trash2 } from "lucide-react";
+import { motion } from "motion/react";
 import { useState } from "react";
 import { api } from "../api";
 import type { RemoveResult } from "../types";
@@ -40,7 +41,14 @@ export default function RemoveCompanies({ companies, onRemoved, onClose }: Props
 
   const one = companies.length === 1;
   return (
-    <div className="remove-panel" role="alertdialog" aria-label="Remove companies">
+    <motion.div
+      className="remove-panel"
+      role="alertdialog"
+      aria-label="Remove companies"
+      initial={{ opacity: 0, y: -6 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+    >
       {kept ? (
         <>
           <p>
@@ -86,7 +94,7 @@ export default function RemoveCompanies({ companies, onRemoved, onClose }: Props
           {error}
         </p>
       )}
-    </div>
+    </motion.div>
   );
 }
 

@@ -248,6 +248,22 @@ button:disabled {
   cursor: default;
 }
 
+/* A main action that can't run yet (nothing to save) is an outline, not a
+   grey slab. */
+button.primary:disabled {
+  opacity: 1;
+  background: transparent;
+  border-color: var(--line);
+  color: var(--muted);
+}
+
+/* Every press answers: buttons settle a touch under the pointer. */
+button:not(:disabled):active,
+.button:active {
+  transform: scale(0.97);
+  transition: transform 0.08s ease;
+}
+
 /* The main action is lettering lit up: the board's light face on its ground. */
 button.primary {
   background: var(--ink);
@@ -978,11 +994,11 @@ tr.is-closed .job-title {
   line-height: 1.6;
 }
 
+/* Panels are flat, like the board: a line, never a shadow. */
 .panel {
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  box-shadow: var(--shadow);
   padding: 1rem;
   margin-bottom: 1rem;
 }
@@ -1093,6 +1109,33 @@ th.sortable button:focus-visible {
   outline-offset: -2px;
 }
 
+/* A status just set: its cell glows once and settles. */
+@keyframes settle {
+  from {
+    background-color: color-mix(in srgb, var(--spruce) 28%, transparent);
+  }
+  to {
+    background-color: transparent;
+  }
+}
+
+td.just-changed {
+  animation: settle 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+table.companies td {
+  transition: background-color 0.15s ease;
+}
+
+/* While a new search loads, the board dims so the old rows read as old. */
+.results[aria-busy="true"] .job-list {
+  opacity: 0.55;
+}
+
+.job-list {
+  transition: opacity 0.15s ease;
+}
+
 /* Removing companies: tick boxes, the bulk bar, and one confirm panel. */
 th.tick-col,
 td.tick-col {
@@ -1171,9 +1214,18 @@ button.danger:hover:not(:disabled) {
   position: relative;
 }
 
-.remove-company {
-  margin-top: 0.75rem;
+.remove-company,
+.remove-company:hover:not(:disabled) {
+  margin-top: 0.6rem;
+  padding-inline: 0;
+  border-color: transparent;
+  background: none;
   color: var(--danger);
+}
+
+.remove-company:hover:not(:disabled) {
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 /* --- saved searches and scans --------------------------------------------- */
@@ -1637,8 +1689,14 @@ td.actions button + button {
 }
 
 /* A company's open roles: the app's lake blue, not the "applied" green. */
+/* A company's open roles: a quiet ink, so the bars read as a measure, not a slab. */
 .company-history .bar {
-  background: var(--lake);
+  background: color-mix(in srgb, var(--ink) 55%, var(--surface));
+}
+
+.company-history .col.on .bar,
+.company-history .col:hover .bar {
+  background: var(--ink);
 }
 
 .company-history {
@@ -1812,6 +1870,7 @@ main.board-main {
 }
 
 .job-row {
+  transition: background-color 0.15s ease, box-shadow 0.15s ease;
   display: grid;
   grid-template-columns: var(--cols);
   column-gap: 0.6rem;
@@ -1883,7 +1942,17 @@ main.board-main {
   margin-block: -0.45rem;
 }
 
-.job-row.selected .cell-mark {
+/* The board cursor: one mint cell that slides to the row you move to. */
+.cell-mark {
+  position: relative;
+}
+
+.board-cursor {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background: var(--signal);
   color: var(--signal-ink);
 }

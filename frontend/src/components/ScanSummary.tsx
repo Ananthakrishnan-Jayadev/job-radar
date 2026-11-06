@@ -2,6 +2,7 @@
 // you open them, close it, or start another scan.
 
 import { X } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
 import { useNavigate } from "react-router-dom";
 import { plural } from "../format";
 import { useApp } from "../state";
@@ -9,8 +10,28 @@ import { useApp } from "../state";
 export default function ScanSummary() {
   const { scanDone, dismissScanDone } = useApp();
   const navigate = useNavigate();
-  if (!scanDone) return null;
-  const { found, postings, closed, failed, since } = scanDone;
+  return (
+    <AnimatePresence>
+      {scanDone && (
+        <motion.div
+          key={scanDone.since}
+          className="scan-summary-wrap"
+          initial={{ opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, transition: { duration: 0.12 } }}
+          transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+        >
+          <Summary {...scanDone} onOpen={(to) => { navigate(to); dismissScanDone(); }} onClose={dismissScanDone} />
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
+
+function Summary({ found, postings, closed, failed, since, onOpen, onClose }: {
+  found: number; postings: number; closed: number; failed: number; since: string;
+  onOpen: (to: string) => void; onClose: () => void;
+}) {
 
   const extra = [
     `${plural(postings, "new posting")} in all`,
@@ -30,15 +51,12 @@ export default function ScanSummary() {
         <button
           type="button"
           className="primary"
-          onClick={() => {
-            navigate(`/?new_since=${encodeURIComponent(since)}`);
-            dismissScanDone();
-          }}
+          onClick={() => onOpen(`/?new_since=${encodeURIComponent(since)}`)}
         >
           Show {found === 1 ? "it" : "them"}
         </button>
       )}
-      <button type="button" className="quiet" aria-label="Close" onClick={dismissScanDone}>
+      <button type="button" className="quiet" aria-label="Close" onClick={onClose}>
         <X size={16} aria-hidden="true" />
       </button>
     </div>

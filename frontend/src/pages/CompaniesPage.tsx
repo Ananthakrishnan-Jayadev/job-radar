@@ -1,4 +1,5 @@
-import { useState, type FormEvent } from "react";
+import { AnimatePresence, motion } from "motion/react";
+import { useRef, useState, type FormEvent } from "react";
 import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { api } from "../api";
 import Chips from "../components/Chips";
@@ -45,6 +46,14 @@ function compare(a: Company, b: Company, { key, dir }: Sort<SortKey>): number {
 export default function CompaniesPage() {
   const { meta, dataVersion, task, watchTask, refresh } = useApp();
   const [bulkBusy, setBulkBusy] = useState(false);
+  // Companies whose status just changed: their status cell flashes once.
+  const [changed, setChanged] = useState<Set<number>>(new Set());
+  const changedTimer = useRef<number>();
+  function flash(ids: number[]) {
+    setChanged(new Set(ids));
+    window.clearTimeout(changedTimer.current);
+    changedTimer.current = window.setTimeout(() => setChanged(new Set()), 900);
+  }
   const [taskError, setTaskError] = useState<string | null>(null);
   const [params, setParams] = useSearchParams();
   const companies = useLoad(() => api.companies(params), `${params}|${dataVersion}`);
@@ -99,6 +108,7 @@ export default function CompaniesPage() {
       const done = await Promise.all(tickedRows.map((c) => api.patchCompany(c.id, { status })));
       const byId = new Map(done.map((c) => [c.id, c]));
       companies.setData((list) => list?.map((c) => byId.get(c.id) ?? c));
+      flash(done.map((c) => c.id));
       setRemovedNote(`${COMPANY_STATUS_LABEL[status]}: ${done.length === 1 ? done[0].name : `${done.length} companies`}.`);
       setTicked(new Set());
     } catch (err) {
@@ -113,6 +123,7 @@ export default function CompaniesPage() {
   async function setStatus(company: Company, status: CompanyStatus) {
     const updated = await api.patchCompany(company.id, { status });
     companies.setData((list) => list?.map((c) => (c.id === updated.id ? updated : c)));
+    flash([updated.id]);
   }
 
   return (
@@ -166,13 +177,30 @@ export default function CompaniesPage() {
         <p className="empty">No companies match. Clear the filters, or add one above.</p>
       )}
       {removedNote && (
-        <p className="notice removed-note" role="status">
+        <motion.p
+          key={removedNote}
+          className="notice removed-note"
+          role="status"
+          initial={{ opacity: 0, y: -4 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+        >
           {removedNote}
-        </p>
+        </motion.p>
       )}
 
+      <AnimatePresence initial={false}>
       {tickedRows.length > 0 && !removing && (
-        <div className="bulk-bar companies-bulk" role="group" aria-label="Ticked companies">
+        <motion.div
+          key="bulk"
+          className="bulk-bar companies-bulk"
+          role="group"
+          aria-label="Ticked companies"
+          initial={{ opacity: 0, y: -6 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -6, transition: { duration: 0.12 } }}
+          transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
+        >
           <span>{tickedRows.length} ticked</span>
           <label className="bulk-status">
             <span className="sr-only">Set the status of the ticked companies</span>
@@ -195,8 +223,9 @@ export default function CompaniesPage() {
           <button type="button" className="link" onClick={() => setTicked(new Set())}>
             Untick all
           </button>
-        </div>
+        </motion.div>
       )}
+      </AnimatePresence>
       {removing && tickedRows.length > 0 && (
         <RemoveCompanies
           companies={tickedRows}
@@ -262,8 +291,16 @@ export default function CompaniesPage() {
               </tr>
             </thead>
             <tbody>
+              {/* Rows slide to their new place when the sort changes; removed ones fade out. */}
+              <AnimatePresence initial={false}>
               {rows.map((c) => (
-                <tr key={c.id} className={`${c.status === "ignored" ? "is-closed" : ""}${ticked.has(c.id) ? " ticked" : ""}`}>
+                <motion.tr
+                  key={c.id}
+                  layout="position"
+                  exit={{ opacity: 0, transition: { duration: 0.2 } }}
+                  transition={{ layout: { duration: 0.28, ease: [0.16, 1, 0.3, 1] } }}
+                  className={`${c.status === "ignored" ? "is-closed" : ""}${ticked.has(c.id) ? " ticked" : ""}`}
+                >
                   <td className="tick-col">
                     <input
                       type="checkbox"
@@ -303,7 +340,7 @@ export default function CompaniesPage() {
                       </span>
                     ))}
                   </td>
-                  <td>
+                  <td className={changed.has(c.id) ? "just-changed" : undefined}>
                     <select
                       aria-label={`Status for ${c.name}`}
                       value={c.status}
@@ -316,8 +353,9 @@ export default function CompaniesPage() {
                       ))}
                     </select>
                   </td>
-                </tr>
+                </motion.tr>
               ))}
+              </AnimatePresence>
             </tbody>
           </table>
         </div>

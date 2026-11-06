@@ -483,8 +483,17 @@ export default function JobsPage() {
         {items.length > 0 && (
           <div className={`triage${split ? " split" : ""}`}>
             <div className="triage-list">
+              <AnimatePresence initial={false}>
               {checked.size > 0 && (
-                <div className="bulk-bar" role="group" aria-label="Ticked jobs">
+                <motion.div
+                  className="bulk-bar"
+                  role="group"
+                  aria-label="Ticked jobs"
+                  initial={{ opacity: 0, y: -6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -6, transition: { duration: 0.12 } }}
+                  transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
+                >
                   <span>
                     {checked.size} ticked
                   </span>
@@ -503,8 +512,9 @@ export default function JobsPage() {
                   <button type="button" className="link" onClick={() => setChecked(new Set())}>
                     Untick all
                   </button>
-                </div>
+                </motion.div>
               )}
+              </AnimatePresence>
 
               <BoardHead split={split} />
               <ul className="job-list" aria-label="Jobs">
@@ -555,7 +565,7 @@ export default function JobsPage() {
         )}
       </section>
 
-      {helpOpen && <KeyHelp onClose={() => setHelpOpen(false)} />}
+      <AnimatePresence>{helpOpen && <KeyHelp onClose={() => setHelpOpen(false)} />}</AnimatePresence>
 
       <AnimatePresence>
         {notice && (
@@ -667,7 +677,13 @@ function JobRow({ job, pattern, isNew, selected, checked, split, busy, rowRef, o
       </span>
       <span className="cell-mark">
         {selected ? (
-          <ChevronRight size={14} strokeWidth={3} aria-hidden="true" />
+          <motion.span
+            className="board-cursor"
+            layoutId="board-cursor"
+            transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <ChevronRight size={14} strokeWidth={3} aria-hidden="true" />
+          </motion.span>
         ) : (
           isNew && (
             <span className="new-dot" title="New since your last visit">
