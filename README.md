@@ -93,7 +93,9 @@ or use `.venv/bin/jobradar serve --dev`, which rebuilds the UI on every save
 - **Job page:** description, Canadian locations, notes, applied date, status
   history, and links to the posting, the careers page and a LinkedIn search.
 - **Companies:** roles matching yours, open roles in Canada and worldwide,
-  size, job boards, your status. Buttons to fill in company sizes and to find job boards for
+  size, job boards, your status. Click a column heading to sort by it (names
+  A to Z, counts and sizes highest first); click again to reverse. The sort
+  is remembered. Buttons to fill in company sizes and to find job boards for
   companies that have none. Add a company (paste its careers link and let the
   app find its job board). Tick companies (or tick all shown) and **Remove**
   them: their boards and jobs go too and scans stop checking them. A copy is
