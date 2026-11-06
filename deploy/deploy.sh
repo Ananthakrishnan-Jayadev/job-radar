@@ -22,7 +22,7 @@ docker image prune -f >/dev/null
 
 echo -n "Waiting for Job Radar to answer"
 for _ in $(seq 1 30); do
-  if curl -fsS -o /dev/null http://127.0.0.1:8000/api/meta; then
+  if curl -fs -o /dev/null http://127.0.0.1:8000/api/meta 2>/dev/null; then
     echo " - up at http://$(hostname -I | awk '{print $1}'):8000"
     exit 0
   fi
