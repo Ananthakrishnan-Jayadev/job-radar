@@ -46,8 +46,9 @@ built UI. It looks like a departures board in forest green and light mint,
 with two themes, dim (light sage, the default) and dark (evergreen); the
 moon/sun button in the top bar switches them and is remembered. `DESIGN.md`
 describes the colours, type (Albert Sans) and rules. It's built with React,
-Tailwind CSS, Motion (animations; turned off if your system
-asks for reduced motion), Lucide icons and NumberFlow (animated counts). After changing anything in `frontend/`, run `npm run build` again,
+Tailwind CSS, Motion (each action gets a short animation: the selection
+sliding between rows, statuses stamping in, rows re-sorting; movement is
+turned off if your system asks for reduced motion), Lucide icons and NumberFlow (animated counts). After changing anything in `frontend/`, run `npm run build` again,
 or use `.venv/bin/jobradar serve --dev`, which rebuilds the UI on every save
 (reload the page to see it).
 
@@ -210,6 +211,11 @@ the years asked and where the level came from.
 | Teamtailor | Its RSS job feed | commonsku |
 | Humi | The careers page's HTML (no feed; the most fragile) | Ecopia.AI, Hypercare |
 | HiBob | The careers app's JSON (undocumented) | Xanadu |
+
+Not read (yet): iCIMS, Avature, Oracle Cloud, ADP, Taleo and Eploy (FDM
+Group's careers site, which pages its list with form posts). Adding such a
+company by link finds no board; track its jobs one at a time with **Add a
+job by link** on the Applications page.
 
 Only jobs with a location in Canada are kept (or, for Canadian companies,
 postings that say nothing but "Remote"). Where a list has no job
