@@ -89,7 +89,7 @@ export default function JobPage() {
             </dd>
             <dt>Level</dt>
             <dd>
-              {j.level ? LEVEL_LABEL[j.level] : "Not clear"}
+              {j.level ? LEVEL_LABEL[j.level] : "Not stated"}
               {j.min_years !== null && <>, asks for {j.min_years}+ years</>}
               {j.level && levelSourceText(j.level_source) && (
                 <span className="hint"> ({levelSourceText(j.level_source)})</span>

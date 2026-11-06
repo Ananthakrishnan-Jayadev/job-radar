@@ -2,6 +2,7 @@
 // buttons at the top so you can read and decide without leaving the list.
 
 import { ExternalLink, Maximize2 } from "lucide-react";
+import { motion } from "motion/react";
 import { Link } from "react-router-dom";
 import { api } from "../api";
 import { LEVEL_LABEL, SIZE_LABEL, SYSTEM_LABEL, WORKPLACE_LABEL, formatDate, groupPlaces, levelSourceText, tidyText } from "../format";
@@ -25,7 +26,14 @@ export default function JobPreview({ job, pattern, busy, onDecide }: Props) {
   const places = d ? d.locations.filter((l) => l.in_canada).map((l) => l.label).join("; ") || d.location : job.location;
 
   return (
-    <article className="preview" aria-label={`Selected job: ${job.title}`}>
+    <motion.article
+      key={job.id}
+      className="preview"
+      aria-label={`Selected job: ${job.title}`}
+      initial={{ opacity: 0.35, y: 4 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
+    >
       <header className="preview-head">
         <h2>
           <Link to={`/jobs/${job.id}`}>
@@ -156,6 +164,6 @@ export default function JobPreview({ job, pattern, busy, onDecide }: Props) {
               : "This job board doesn't include descriptions. Open the posting to read it."}
           </p>
         ))}
-    </article>
+    </motion.article>
   );
 }

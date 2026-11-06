@@ -2,6 +2,7 @@
 // click outside closes it.
 
 import { X } from "lucide-react";
+import { motion } from "motion/react";
 import { useEffect, useRef } from "react";
 
 const KEYS: [string[], string][] = [
@@ -26,9 +27,20 @@ export default function KeyHelp({ onClose }: { onClose: () => void }) {
   }, []);
 
   return (
-    <div className="key-help-backdrop" onClick={onClose}>
-      <div
+    <motion.div
+      className="key-help-backdrop"
+      onClick={onClose}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0, transition: { duration: 0.12 } }}
+      transition={{ duration: 0.18 }}
+    >
+      <motion.div
         ref={box}
+        initial={{ opacity: 0, scale: 0.97, y: 6 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.98, transition: { duration: 0.12 } }}
+        transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
         className="key-help"
         role="dialog"
         aria-modal="true"
@@ -58,7 +70,7 @@ export default function KeyHelp({ onClose }: { onClose: () => void }) {
           With jobs ticked, S, X and A decide all of them. A job posted for several places is decided everywhere at
           once.
         </p>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }
