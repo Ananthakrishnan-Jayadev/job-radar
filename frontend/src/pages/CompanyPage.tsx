@@ -18,7 +18,7 @@ import type { Company, CompanyStatus } from "../types";
 
 export default function CompanyPage() {
   const id = Number(useParams().id);
-  const { meta, scan, startScan, dataVersion } = useApp();
+  const { meta, scan, startScan, dataVersion, refresh } = useApp();
   const company = useLoad(() => api.company(id), `${id}|${dataVersion}`);
   const [error, setError] = useState<string | null>(null);
   const [removing, setRemoving] = useState(false);
@@ -70,7 +70,10 @@ export default function CompanyPage() {
         <RemoveCompanies
           companies={[c]}
           onRemoved={(result) => {
-            if (result.removed.length) navigate("/companies", { state: { removed: removedText(result) } });
+            if (result.removed.length) {
+              refresh();
+              navigate("/companies", { state: { removed: removedText(result) } });
+            }
           }}
           onClose={() => setRemoving(false)}
         />

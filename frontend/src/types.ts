@@ -66,6 +66,18 @@ export interface JobSummary {
   min_years: number | null;
   /** "title", "years", "none" or "ollama:<model>"; null when not worked out. */
   level_source: string | null;
+  /** The same job posted for other places (same company, same title), this one
+   * included; null when it's the only one. One decision covers them all. */
+  group: GroupMember[] | null;
+}
+
+export interface GroupMember {
+  id: number;
+  url: string;
+  status: JobStatus;
+  applied_at: string | null;
+  closed_at: string | null;
+  location: string;
 }
 
 export interface JobPage {

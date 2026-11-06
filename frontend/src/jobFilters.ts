@@ -2,7 +2,7 @@
 // choices, the filters in use (each with a way to take it off), and a check
 // that the address only holds filters the list understands.
 
-import { JOB_STATUS_LABEL, LEVEL_LABEL, SIZE_LABEL, SYSTEM_LABEL, WORKPLACE_LABEL, YEARS_LABEL } from "./format";
+import { JOB_STATUS_LABEL, LEVEL_LABEL, SIZE_LABEL, SYSTEM_LABEL, WORKPLACE_LABEL, YEARS_LABEL, formatDateTime } from "./format";
 import { getList, toggleInList, withParam } from "./params";
 import type { Meta } from "./types";
 
@@ -80,7 +80,13 @@ export function activeFilters(meta: Meta, params: URLSearchParams, companyName?:
     active.push({ key: "posted", label: `Posted ${posted.label.toLowerCase()}`, remove: () => withPosted(params, "") });
   }
   if (params.has("new_since")) {
-    active.push({ key: "new_since", label: "New since my last visit", remove: () => withParam(params, "new_since", null) });
+    // From the "new since my last visit" box, or from a scan's "Show them".
+    const since = params.get("new_since") ?? "";
+    active.push({
+      key: "new_since",
+      label: `Found since ${formatDateTime(since)}`,
+      remove: () => withParam(params, "new_since", null),
+    });
   }
   if (params.has("company")) {
     active.push({ key: "company", label: companyName ?? "One company", remove: () => withParam(params, "company", null) });

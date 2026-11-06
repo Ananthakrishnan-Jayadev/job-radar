@@ -332,7 +332,27 @@ def connect(path: Path | str) -> sqlite3.Connection:
     if str(path) != ":memory:":
         conn.execute("PRAGMA journal_mode = WAL")
     migrate(conn)
+    _tidy_locations(conn)
     return conn
+
+
+def _tidy_locations(conn: sqlite3.Connection) -> None:
+    """Once per database: re-read Canadian places stored with stray commas
+    ("Mississauga,") or the province inside the city ("Brampton, Ontario")."""
+    if get_setting(conn, "locations_tidied_v1"):
+        return
+    from .locations import from_parts
+
+    rows = conn.execute(
+        "SELECT id, city, province, country, remote, raw FROM job_locations "
+        "WHERE (city LIKE '%,%') AND COALESCE(country, 'CA') = 'CA'"
+    ).fetchall()
+    with conn:
+        for r in rows:
+            loc = from_parts(r["city"], r["province"], r["country"], remote=bool(r["remote"]), raw=r["raw"] or "")
+            conn.execute("UPDATE job_locations SET city = ?, province = ?, country = ? WHERE id = ?",
+                         (loc.city, loc.province, loc.country, r["id"]))
+    set_setting(conn, "locations_tidied_v1", True)
 
 
 def schema_version(conn: sqlite3.Connection) -> int:
