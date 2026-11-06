@@ -19,7 +19,7 @@ from fastapi import Depends, FastAPI, File, HTTPException, Request, UploadFile
 from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, Response
 from pydantic import BaseModel
 
-from .. import backup, candidates, dashboard, db, enrich, levels, manual, queries, resumes, tracking
+from .. import backup, candidates, dashboard, db, enrich, levels, manual, queries, removal, resumes, tracking
 from ..apply.browser import playwright_ready
 from ..apply.greenhouse import ApplyError
 from ..apply.run import plan_application
@@ -71,6 +71,11 @@ class CompanyPatch(BaseModel):
     employee_count: int | None = None
     canadian: bool | None = None
     careers_url: str | None = None
+
+
+class CompaniesRemove(BaseModel):
+    ids: list[int]
+    include_tracked: bool = False
 
 
 class BoardIn(BaseModel):
@@ -497,6 +502,12 @@ def create_app(settings: Settings, db_path: Path | None = None,
         if body.board:
             db.upsert_board(conn, company_id, body.board.system, slug, confirmed=True)
         return _company(queries.list_companies(conn, company_id=company_id)[0])
+
+    @app.post("/api/companies/remove")
+    def remove_companies(body: CompaniesRemove, conn: sqlite3.Connection = Conn):
+        if not body.ids:
+            raise HTTPException(422, "no companies given")
+        return removal.remove_companies(conn, body.ids, db_path.parent, include_tracked=body.include_tracked)
 
     @app.patch("/api/companies/{company_id}")
     def patch_company(company_id: int, body: CompanyPatch, conn: sqlite3.Connection = Conn):

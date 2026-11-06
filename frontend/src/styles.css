@@ -1050,6 +1050,78 @@ table.scan-results {
   max-width: 40rem;
 }
 
+/* Removing companies: tick boxes, the bulk bar, and one confirm panel. */
+th.tick-col,
+td.tick-col {
+  width: 2.5rem;
+  padding-right: 0;
+}
+
+td.tick-col input,
+th.tick-col input {
+  margin: 0;
+}
+
+table.companies tr.ticked td {
+  background: color-mix(in srgb, var(--ink) 7%, transparent);
+}
+
+.companies-bulk {
+  margin-bottom: 0.75rem;
+  border-radius: var(--radius);
+}
+
+.remove-panel {
+  margin: 0 0 1rem;
+  padding: 0.9rem 1.1rem;
+  max-width: 52rem;
+  border: 1px solid color-mix(in srgb, var(--danger) 55%, var(--line));
+  border-radius: var(--radius);
+  background: color-mix(in srgb, var(--danger) 7%, var(--surface));
+}
+
+.remove-panel p {
+  margin: 0;
+}
+
+.remove-panel code {
+  font-size: 0.9em;
+}
+
+.remove-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+button.danger {
+  background: var(--danger);
+  border-color: var(--danger);
+  color: var(--surface);
+  font-weight: 700;
+}
+
+button.danger:hover:not(:disabled) {
+  border-color: var(--danger);
+  background: color-mix(in srgb, var(--danger) 85%, var(--ink));
+}
+
+.removed-note {
+  margin: 0 0 1rem;
+  max-width: 52rem;
+  background: var(--lake-soft);
+}
+
+.company-page .job-head {
+  position: relative;
+}
+
+.remove-company {
+  margin-top: 0.75rem;
+  color: var(--danger);
+}
+
 /* --- saved searches and scans --------------------------------------------- */
 
 .saved-list {

@@ -1,7 +1,8 @@
 import { useEffect, useState, type FormEvent } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { api } from "../api";
 import BarChart from "../components/BarChart";
+import RemoveCompanies, { removedText } from "../components/RemoveCompanies";
 import {
   COMPANY_STATUS_LABEL,
   SIZE_LABEL,
@@ -20,6 +21,8 @@ export default function CompanyPage() {
   const { meta, scan, startScan, dataVersion } = useApp();
   const company = useLoad(() => api.company(id), `${id}|${dataVersion}`);
   const [error, setError] = useState<string | null>(null);
+  const [removing, setRemoving] = useState(false);
+  const navigate = useNavigate();
 
   if (company.error) return <p className="error" role="alert">{company.error}</p>;
   if (!company.data) return <p className="loading">Loading…</p>;
@@ -57,7 +60,21 @@ export default function CompanyPage() {
           </Link>
           {c.total_open !== null && <span>{formatCount(c.total_open)} worldwide</span>}
         </p>
+        {!removing && (
+          <button type="button" className="quiet remove-company" onClick={() => setRemoving(true)}>
+            Remove from list
+          </button>
+        )}
       </header>
+      {removing && (
+        <RemoveCompanies
+          companies={[c]}
+          onRemoved={(result) => {
+            if (result.removed.length) navigate("/companies", { state: { removed: removedText(result) } });
+          }}
+          onClose={() => setRemoving(false)}
+        />
+      )}
       {error && <p className="error" role="alert">{error}</p>}
 
       <div className="job-columns">

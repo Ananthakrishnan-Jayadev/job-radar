@@ -22,6 +22,7 @@ import type {
   ScanResultRow,
   ScanState,
   TaskState,
+  RemoveResult,
 } from "./types";
 
 export class ApiError extends Error {
@@ -100,6 +101,8 @@ export const api = {
   addCompany: (body: { name: string; canadian: boolean; careers_url?: string | null; board?: NewBoard }) =>
     request<Company>("POST", "/api/companies", body),
   patchCompany: (id: number, patch: CompanyPatch) => request<Company>("PATCH", `/api/companies/${id}`, patch),
+  removeCompanies: (ids: number[], includeTracked = false) =>
+    request<RemoveResult>("POST", "/api/companies/remove", { ids, include_tracked: includeTracked }),
   addBoard: (companyId: number, board: NewBoard) =>
     request<Company>("POST", `/api/companies/${companyId}/boards`, board),
   patchBoard: (id: number, patch: { enabled?: boolean; confirmed?: boolean }) =>

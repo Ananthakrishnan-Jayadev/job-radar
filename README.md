@@ -95,12 +95,16 @@ or use `.venv/bin/jobradar serve --dev`, which rebuilds the UI on every save
 - **Companies:** roles matching yours, open roles in Canada and worldwide,
   size, job boards, your status. Buttons to fill in company sizes and to find job boards for
   companies that have none. Add a company (paste its careers link and let the
-  app find its job board).
+  app find its job board). Tick companies (or tick all shown) and **Remove**
+  them: their boards and jobs go too and scans stop checking them. A copy is
+  saved first (see "Your data"). Companies with jobs you've saved, applied to
+  or written notes on are kept unless you confirm those as well.
 - **Company page:** boards (switch on or off, confirm a board matched by name,
   add one by pasting its link), size (type your own, or accept a Wikidata
   suggestion), notes, "scan this company now", and open roles in Canada over
   time (each day's last scan; a failed scan keeps the previous number). A
-  board that failed 3 scans in a row says so.
+  board that failed 3 scans in a row says so. "Remove from list" removes
+  the company the same way.
 - **Candidates:** companies listed on stillhiring.today; add the ones worth
   scanning.
 - **Saved searches:** your saved views; mark the ones whose keywords big
@@ -288,7 +292,9 @@ Companies without a readable job board were moved out on 2026-10-27, to keep
 the list to the ~215 that can be scanned. They're kept, with their boards,
 jobs and research notes, in `data/removed-companies-*.db` (same format as the
 main database) and `data/removed-companies-*.csv`. Re-importing `joblst.xlsx`
-would bring some back.
+would bring some back. Companies you remove on the Companies page are kept
+the same way, in a new `data/removed-companies-<date>.db` each time.
+`jobradar seed` or an import can add a removed company back.
 
 To restore one, stop the server and copy it over the database:
 
@@ -325,6 +331,7 @@ jobradar/            the package
   profile.py         your details for applications, from profile.local.toml
   resumes.py         résumés kept in data/resumes/
   backup.py          dated, checked copies of the database; the reminder
+  removal.py         removing companies (archived to data/removed-companies-*.db first)
   dashboard.py       the Applications page: stages, weekly counts, follow-ups
   enrich.py          company sizes: precedence, Wikidata, estimates
   detect.py          finds a company's job board (link, careers page, name)
