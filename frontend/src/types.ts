@@ -348,3 +348,11 @@ export interface ApplyState {
   filled?: { label: string; check: boolean }[];
   todo?: { label: string; required: boolean; why: string }[];
 }
+
+/** What removing companies did: removed, kept (they have tracked jobs), and the copy saved first. */
+export interface RemoveResult {
+  removed: { id: number; name: string }[];
+  kept: { id: number; name: string; tracked: number }[];
+  jobs: number;
+  archive: string | null;
+}

@@ -1,7 +1,8 @@
 import { useState, type FormEvent } from "react";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { api } from "../api";
 import Chips from "../components/Chips";
+import RemoveCompanies, { removedText } from "../components/RemoveCompanies";
 import TaskStatus from "../components/TaskStatus";
 import { COMPANY_STATUS_LABEL, CONFIDENCE_LABEL, SIZE_LABEL, SYSTEM_LABEL, boardLabel, formatCount } from "../format";
 import { getList, toggleInList, withParam } from "../params";
@@ -15,6 +16,13 @@ export default function CompaniesPage() {
   const companies = useLoad(() => api.companies(params), `${params}|${dataVersion}`);
   const [query, setQuery] = useState(params.get("q") ?? "");
   const [sortByRoles, setSortByRoles] = useState(true);
+  const [ticked, setTicked] = useState<Set<number>>(new Set());
+  const [removing, setRemoving] = useState(false);
+  // What the last removal did (also set when a company page removed one).
+  const location = useLocation();
+  const [removedNote, setRemovedNote] = useState<string | null>(
+    (location.state as { removed?: string } | null)?.removed ?? null,
+  );
 
   const rows = [...(companies.data ?? [])].sort((a, b) =>
     sortByRoles
@@ -38,6 +46,19 @@ export default function CompaniesPage() {
     } catch (err) {
       setTaskError(err instanceof Error ? err.message : String(err));
     }
+  }
+
+  // Only ticks on companies still listed count (a filter may hide some).
+  const tickedRows = rows.filter((c) => ticked.has(c.id));
+  const allTicked = rows.length > 0 && tickedRows.length === rows.length;
+
+  function tick(id: number) {
+    setTicked((was) => {
+      const next = new Set(was);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
   }
 
   const withoutBoard = (companies.data ?? []).filter((c) => c.boards.every((b) => b.system === "manual")).length;
@@ -104,11 +125,55 @@ export default function CompaniesPage() {
       {companies.data && rows.length === 0 && (
         <p className="empty">No companies match. Clear the filters, or add one above.</p>
       )}
+      {removedNote && (
+        <p className="notice removed-note" role="status">
+          {removedNote}
+        </p>
+      )}
+
+      {tickedRows.length > 0 && !removing && (
+        <div className="bulk-bar companies-bulk" role="group" aria-label="Ticked companies">
+          <span>{tickedRows.length} ticked</span>
+          <button type="button" onClick={() => setRemoving(true)}>
+            Remove {tickedRows.length === 1 ? "company" : `${tickedRows.length} companies`}
+          </button>
+          <button type="button" className="link" onClick={() => setTicked(new Set())}>
+            Untick all
+          </button>
+        </div>
+      )}
+      {removing && tickedRows.length > 0 && (
+        <RemoveCompanies
+          companies={tickedRows}
+          onRemoved={(result) => {
+            const gone = new Set(result.removed.map((c) => c.id));
+            companies.setData((list) => list?.filter((c) => !gone.has(c.id)));
+            setTicked((was) => new Set([...was].filter((id) => !gone.has(id))));
+            setRemovedNote(removedText(result) || null);
+          }}
+          onClose={() => {
+            setRemoving(false);
+            setTicked(new Set());
+          }}
+        />
+      )}
+
       {rows.length > 0 && (
         <div className="table-wrap">
           <table className="companies">
             <thead>
               <tr>
+                <th scope="col" className="tick-col">
+                  <input
+                    type="checkbox"
+                    aria-label={allTicked ? "Untick all companies" : "Tick all companies shown"}
+                    checked={allTicked}
+                    ref={(el) => {
+                      if (el) el.indeterminate = tickedRows.length > 0 && !allTicked;
+                    }}
+                    onChange={() => setTicked(allTicked ? new Set() : new Set(rows.map((c) => c.id)))}
+                  />
+                </th>
                 <th scope="col">Company</th>
                 <th scope="col" className="num" title="Open jobs in Canada in your role groups (roles.toml)">
                   Matching roles
@@ -122,7 +187,15 @@ export default function CompaniesPage() {
             </thead>
             <tbody>
               {rows.map((c) => (
-                <tr key={c.id} className={c.status === "ignored" ? "is-closed" : ""}>
+                <tr key={c.id} className={`${c.status === "ignored" ? "is-closed" : ""}${ticked.has(c.id) ? " ticked" : ""}`}>
+                  <td className="tick-col">
+                    <input
+                      type="checkbox"
+                      aria-label={`Tick ${c.name}`}
+                      checked={ticked.has(c.id)}
+                      onChange={() => tick(c.id)}
+                    />
+                  </td>
                   <td>
                     <Link to={`/companies/${c.id}`} className="job-title">
                       {c.name}
