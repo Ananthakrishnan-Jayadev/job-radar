@@ -18,3 +18,8 @@ jobradar/web/static/
 
 # Product notes for design tools: personal details, kept local.
 PRODUCT.md
+
+# AI tool folders (skills, design-tool state, local settings): kept local.
+.claude/
+.impeccable/
+.opencode/
