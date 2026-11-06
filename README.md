@@ -84,7 +84,8 @@ or use `.venv/bin/jobradar serve --dev`, which rebuilds the UI on every save
   that status), how many applications heard back, applications per week for
   the last 12 weeks, the ones with no news for 14 days or more (time to follow
   up), tables of applications in progress and saved jobs not applied to yet
-  (flagged when the posting has closed), and recent status changes.
+  (flagged when the posting has closed), and recent status changes. Click a
+  table's column heading to sort it; each table remembers its own sort.
   **Add a job by link** for a posting the app can't scan (Taleo, iCIMS,
   Oracle, a job site, LinkedIn): the details are read from the page (the
   schema.org job data most job sites embed for Google, or the page title)
