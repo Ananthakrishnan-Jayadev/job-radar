@@ -1050,6 +1050,49 @@ table.scan-results {
   max-width: 40rem;
 }
 
+/* Column heads you click to sort by. */
+th.sortable {
+  padding: 0;
+}
+
+th.sortable button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  width: 100%;
+  padding: 0.6rem 0.75rem 0.5rem;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  color: inherit;
+}
+
+th.sortable.num button {
+  justify-content: flex-end;
+}
+
+th.sortable button svg {
+  flex: none;
+  opacity: 0.45;
+}
+
+th.sortable button:hover,
+th.sortable.sorted button {
+  color: var(--signal);
+}
+
+th.sortable.sorted button svg,
+th.sortable button:hover svg {
+  opacity: 1;
+}
+
+th.sortable button:focus-visible {
+  outline-offset: -2px;
+}
+
 /* Removing companies: tick boxes, the bulk bar, and one confirm panel. */
 th.tick-col,
 td.tick-col {

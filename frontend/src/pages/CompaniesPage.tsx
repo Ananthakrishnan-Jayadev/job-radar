@@ -3,11 +3,44 @@ import { Link, useLocation, useNavigate, useSearchParams } from "react-router-do
 import { api } from "../api";
 import Chips from "../components/Chips";
 import RemoveCompanies, { removedText } from "../components/RemoveCompanies";
+import SortHeader, { useSort, type Sort } from "../components/SortHeader";
 import TaskStatus from "../components/TaskStatus";
 import { COMPANY_STATUS_LABEL, CONFIDENCE_LABEL, SIZE_LABEL, SYSTEM_LABEL, boardLabel, formatCount } from "../format";
 import { getList, toggleInList, withParam } from "../params";
 import { useApp, useLoad } from "../state";
 import type { Company, CompanyStatus, DetectedBoard } from "../types";
+
+const SORT_KEYS = ["name", "wanted", "canada", "total", "size", "boards", "status"] as const;
+type SortKey = (typeof SORT_KEYS)[number];
+
+// Size: the head count when known, else the middle of its band; unknown sorts last.
+const BAND_SIZE: Record<string, number> = { "<50": 25, "50-199": 125, "200-999": 600, "1000-4999": 3000, "5000+": 10000 };
+const sizeOf = (c: Company) => c.employee_count ?? BAND_SIZE[c.size_band] ?? -1;
+// Status: the ones you care about first.
+const STATUS_ORDER: Record<CompanyStatus, number> = { target: 0, watching: 1, none: 2, ignored: 3 };
+// Job boards: by the first board's system name, so companies on the same
+// system sit together; companies with no board of their own come first.
+const boardsOf = (c: Company) =>
+  c.boards
+    .filter((b) => b.system !== "manual" && (b.enabled || b.system !== "adzuna"))
+    .map((b) => SYSTEM_LABEL[b.system] ?? b.system)
+    .sort()
+    .join(" ");
+
+function compare(a: Company, b: Company, { key, dir }: Sort<SortKey>): number {
+  const by: Record<SortKey, number> = {
+    name: a.name.localeCompare(b.name, "en-CA", { sensitivity: "base" }),
+    wanted: a.wanted_open - b.wanted_open,
+    canada: a.canada_open - b.canada_open,
+    total: (a.total_open ?? -1) - (b.total_open ?? -1),
+    size: sizeOf(a) - sizeOf(b),
+    boards: boardsOf(a).localeCompare(boardsOf(b)),
+    status: STATUS_ORDER[a.status] - STATUS_ORDER[b.status],
+  };
+  const order = dir === "asc" ? by[key] : -by[key];
+  // Ties: more matching roles first, then by name.
+  return order || b.wanted_open - a.wanted_open || a.name.localeCompare(b.name);
+}
 
 export default function CompaniesPage() {
   const { meta, dataVersion, task, watchTask } = useApp();
@@ -15,7 +48,7 @@ export default function CompaniesPage() {
   const [params, setParams] = useSearchParams();
   const companies = useLoad(() => api.companies(params), `${params}|${dataVersion}`);
   const [query, setQuery] = useState(params.get("q") ?? "");
-  const [sortByRoles, setSortByRoles] = useState(true);
+  const [sort, sortBy] = useSort<SortKey>("jobradar-companies-sort", { key: "wanted", dir: "desc" }, SORT_KEYS);
   const [ticked, setTicked] = useState<Set<number>>(new Set());
   const [removing, setRemoving] = useState(false);
   // What the last removal did (also set when a company page removed one).
@@ -24,11 +57,7 @@ export default function CompaniesPage() {
     (location.state as { removed?: string } | null)?.removed ?? null,
   );
 
-  const rows = [...(companies.data ?? [])].sort((a, b) =>
-    sortByRoles
-      ? b.wanted_open - a.wanted_open || b.canada_open - a.canada_open || a.name.localeCompare(b.name)
-      : a.name.localeCompare(b.name),
-  );
+  const rows = [...(companies.data ?? [])].sort((a, b) => compare(a, b, sort));
 
   async function fillSizes() {
     setTaskError(null);
@@ -82,13 +111,6 @@ export default function CompaniesPage() {
         >
           <input type="search" value={query} placeholder="Find a company" onChange={(e) => setQuery(e.target.value)} />
         </form>
-        <label className="sort">
-          Sort
-          <select value={sortByRoles ? "roles" : "name"} onChange={(e) => setSortByRoles(e.target.value === "roles")}>
-            <option value="roles">Most matching roles</option>
-            <option value="name">Name A–Z</option>
-          </select>
-        </label>
         <button type="button" disabled={task?.running} onClick={fillSizes}>
           Fill in company sizes
         </button>
@@ -174,15 +196,34 @@ export default function CompaniesPage() {
                     onChange={() => setTicked(allTicked ? new Set() : new Set(rows.map((c) => c.id)))}
                   />
                 </th>
-                <th scope="col">Company</th>
-                <th scope="col" className="num" title="Open jobs in Canada in your role groups (roles.toml)">
+                <SortHeader sortKey="name" first="asc" sort={sort} onSort={sortBy}>
+                  Company
+                </SortHeader>
+                <SortHeader
+                  sortKey="wanted"
+                  first="desc"
+                  sort={sort}
+                  onSort={sortBy}
+                  className="num"
+                  title="Open jobs in Canada in your role groups (roles.toml)"
+                >
                   Matching roles
-                </th>
-                <th scope="col" className="num">Open in Canada</th>
-                <th scope="col" className="num">Open worldwide</th>
-                <th scope="col">Size</th>
-                <th scope="col">Job boards</th>
-                <th scope="col">Status</th>
+                </SortHeader>
+                <SortHeader sortKey="canada" first="desc" sort={sort} onSort={sortBy} className="num">
+                  Open in Canada
+                </SortHeader>
+                <SortHeader sortKey="total" first="desc" sort={sort} onSort={sortBy} className="num">
+                  Open worldwide
+                </SortHeader>
+                <SortHeader sortKey="size" first="desc" sort={sort} onSort={sortBy}>
+                  Size
+                </SortHeader>
+                <SortHeader sortKey="boards" first="asc" sort={sort} onSort={sortBy}>
+                  Job boards
+                </SortHeader>
+                <SortHeader sortKey="status" first="asc" sort={sort} onSort={sortBy}>
+                  Status
+                </SortHeader>
               </tr>
             </thead>
             <tbody>
