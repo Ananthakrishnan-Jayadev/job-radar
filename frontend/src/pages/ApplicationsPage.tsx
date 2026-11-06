@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { api } from "../api";
 import AddJobByLink from "../components/AddJobByLink";
 import BarChart from "../components/BarChart";
+import SortHeader, { useSort, type Sort } from "../components/SortHeader";
 import StatusSelect from "../components/StatusSelect";
 import { JOB_STATUS_LABEL, LEVEL_LABEL, formatDate, formatDateTime, plural } from "../format";
 import { useApp, useLoad } from "../state";
@@ -153,6 +154,29 @@ function FollowUps({ d }: { d: Applications }) {
   );
 }
 
+const TABLE_SORTS = ["job", "level", "date", "changed", "status"] as const;
+type TableSort = (typeof TABLE_SORTS)[number];
+
+// Levels junior to senior, then not stated; statuses in the order an application moves.
+const LEVEL_ORDER = ["intern", "entry", "mid", "senior", "lead"];
+const levelRank = (j: TrackedJob) => (j.level && LEVEL_ORDER.includes(j.level) ? LEVEL_ORDER.indexOf(j.level) : LEVEL_ORDER.length);
+const STATUS_ORDER: JobStatus[] = ["new", "saved", "applied", "interviewing", "offer", "rejected", "not_interested"];
+
+function compareTracked(a: TrackedJob, b: TrackedJob, { key, dir }: Sort<TableSort>, saved: boolean): number {
+  const date = (j: TrackedJob) => (saved ? j.status_changed_at : j.applied_at) ?? "";
+  const by: Record<TableSort, number> = {
+    job: a.title.localeCompare(b.title, "en-CA", { sensitivity: "base" }),
+    level: levelRank(a) - levelRank(b),
+    date: date(a).localeCompare(date(b)),
+    // Days since the last change: fewest days is the most recent.
+    changed: (a.days_since_change ?? Infinity) - (b.days_since_change ?? Infinity),
+    status: STATUS_ORDER.indexOf(a.status) - STATUS_ORDER.indexOf(b.status),
+  };
+  const order = dir === "asc" ? by[key] : -by[key];
+  // Ties: most recently changed first, then by title.
+  return order || (a.days_since_change ?? Infinity) - (b.days_since_change ?? Infinity) || a.title.localeCompare(b.title);
+}
+
 function TrackedTable(props: {
   title: string;
   empty: string;
@@ -162,6 +186,13 @@ function TrackedTable(props: {
 }) {
   const { title, empty, jobs, onChange, dateLabel } = props;
   const saved = dateLabel === "Saved";
+  // Each table keeps its own sort; the default is the server's order, most recent change first.
+  const [sort, sortBy] = useSort<TableSort>(
+    `jobradar-applications-sort-${saved ? "saved" : "active"}`,
+    { key: "changed", dir: "asc" },
+    TABLE_SORTS,
+  );
+  const rows = [...jobs].sort((a, b) => compareTracked(a, b, sort, saved));
   return (
     <section className="panel tracked">
       <h2>
@@ -174,15 +205,25 @@ function TrackedTable(props: {
           <table className="jobs">
             <thead>
               <tr>
-                <th scope="col">Job</th>
-                <th scope="col">Level</th>
-                <th scope="col">{dateLabel}</th>
-                <th scope="col">Last change</th>
-                <th scope="col">Status</th>
+                <SortHeader sortKey="job" first="asc" sort={sort} onSort={sortBy}>
+                  Job
+                </SortHeader>
+                <SortHeader sortKey="level" first="asc" sort={sort} onSort={sortBy}>
+                  Level
+                </SortHeader>
+                <SortHeader sortKey="date" first="desc" sort={sort} onSort={sortBy} className="num">
+                  {dateLabel}
+                </SortHeader>
+                <SortHeader sortKey="changed" first="asc" sort={sort} onSort={sortBy} className="num">
+                  Last change
+                </SortHeader>
+                <SortHeader sortKey="status" first="asc" sort={sort} onSort={sortBy}>
+                  Status
+                </SortHeader>
               </tr>
             </thead>
             <tbody>
-              {jobs.map((j) => (
+              {rows.map((j) => (
                 <tr key={j.id} className={j.closed_at ? "is-closed" : ""}>
                   <td className="job-cell">
                     <Link to={`/jobs/${j.id}`} className="job-title">
