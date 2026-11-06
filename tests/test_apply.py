@@ -480,3 +480,9 @@ def test_api_apply_without_profile(conn, tmp_path, settings):
     resumes.save_resume(tmp_path, "cv.pdf", b"%PDF")
     refused = client.post(f"/api/jobs/{job_id}/apply", json={"resume": "cv.pdf"})
     assert refused.status_code == 400 and "profile.local.toml" in refused.json()["detail"]
+
+
+def test_apply_is_off_on_a_server_without_a_screen(monkeypatch):
+    from jobradar.apply.browser import playwright_ready
+    monkeypatch.setenv("JOBRADAR_NO_APPLY", "1")
+    assert "no screen" in playwright_ready()

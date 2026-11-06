@@ -38,6 +38,10 @@ class BrowserError(Exception):
 
 def playwright_ready() -> str | None:
     """None when Playwright and its Firefox are installed, else how to install them."""
+    if os.environ.get("JOBRADAR_NO_APPLY"):
+        # A server with no screen (the Docker image) can't show the form to check.
+        return ("Applying needs a browser window on the computer running Job Radar, and this one has no "
+                "screen. Open the posting and apply there.")
     os.environ.setdefault("PLAYWRIGHT_BROWSERS_PATH", str(BROWSERS))
     try:
         import playwright  # noqa: F401

@@ -289,3 +289,14 @@ def test_cli_levels(tmp_path, capsys):
     assert "senior 1" in out and "mid 1" in out and "unknown 2" in out
     assert "No years of experience found: 2." in out
     assert "1 with a description miss a level or years" in out
+
+
+def test_ask_ollama_sends_an_api_key_when_set(conn, tmp_path, settings, monkeypatch):
+    _setup(conn, tmp_path)
+    sources = FakeSources({("POST", CHAT): _reply("mid", 3)})
+    levels.run_ask_ollama(conn, settings, transport=sources.transport(), dry_run=True)
+    assert "authorization" not in sources.requests[0].headers  # local Ollama: no key
+    monkeypatch.setenv("OLLAMA_API_KEY", "secret-key")
+    sources = FakeSources({("POST", CHAT): _reply("mid", 3)})
+    levels.run_ask_ollama(conn, settings, transport=sources.transport(), dry_run=True)
+    assert sources.requests[0].headers["authorization"] == "Bearer secret-key"
