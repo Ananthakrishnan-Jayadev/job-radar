@@ -67,13 +67,22 @@ or use `.venv/bin/jobradar serve --dev`, which rebuilds the UI on every save
     status. Deciding stamps SAVED, APPLIED or NOT INTERESTED into the status
     column without moving the row; closed jobs read CLOSED in red. On a
     narrow window, place and level move under the company name.
+  - **One job posted for several places shows once:** when a company lists
+    the same title in several cities, it's one row with "+6 places" (hover
+    for all of them; the job panel lists each, linked to its own posting).
+    Save, Not interested or Applied decides every copy at once, and undo
+    takes them all back. Province counts count it once per province.
+  - **Your search words are marked** in titles and in the job description.
+  - **Back where you were:** coming back from a job's full page selects the
+    row you were on, scrolled into view.
   - **Side by side** on a wide screen: the list on the left, the selected
     posting on the right, with **Save**, **Not interested** and **Applied**
     at its top. Deciding moves on to the next job; every decision can be
     undone.
   - **Keys:** `J`/`K` next and previous job (on to the next page at the end), `S` save, `X` not interested,
     `A` applied (press again to take it back), `U` undo, `O` open the full
-    page, `/` search, `T` or Space to tick (Shift-click ticks a range). With
+    page, `/` search, `T` or Space to tick (Shift-click ticks a range), `?`
+    the list of all keys. With
     jobs ticked, `S`/`X`/`A` act on all of them. A count beside the job count
     shows how many you've decided this session.
   - A small mint dot marks jobs new since your last visit. The filter column
@@ -96,7 +105,7 @@ or use `.venv/bin/jobradar serve --dev`, which rebuilds the UI on every save
 - **Companies:** roles matching yours, open roles in Canada and worldwide,
   size, job boards, your status. Click a column heading to sort by it (names
   A to Z, counts and sizes highest first); click again to reverse. The sort
-  is remembered. Buttons to fill in company sizes and to find job boards for
+  is remembered. Tick companies to set one status on all of them. Buttons to fill in company sizes and to find job boards for
   companies that have none. Add a company (paste its careers link and let the
   app find its job board). Tick companies (or tick all shown) and **Remove**
   them: their boards and jobs go too and scans stop checking them. A copy is
@@ -112,6 +121,8 @@ or use `.venv/bin/jobradar serve --dev`, which rebuilds the UI on every save
   scanning.
 - **Saved searches:** your saved views; mark the ones whose keywords big
   Workday sites (TD, RBC, BMO, CIBC) should be searched for.
+- **After a scan**, a line under the top bar says how many new jobs it found
+  for you (with your default filters), with **Show them** to open just those.
 - **Scans:** "Scan now", progress, and every past scan with per-board results.
   Boards that failed their last 3 scans or more are listed, with a button to
   switch each off (or fix it on its company page). Backups: when the newest

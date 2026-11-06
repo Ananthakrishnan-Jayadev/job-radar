@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from "motion/react";
 import { NavLink, Route, Routes, useLocation } from "react-router-dom";
 import ScanButton from "./components/ScanButton";
+import ScanSummary from "./components/ScanSummary";
 import ApplicationsPage from "./pages/ApplicationsPage";
 import CandidatesPage from "./pages/CandidatesPage";
 import CompaniesPage from "./pages/CompaniesPage";
@@ -53,6 +54,7 @@ export default function App() {
           <ThemeToggle />
         </div>
       </header>
+      <ScanSummary />
       {/* The Jobs page is the board: its panels run edge to edge. */}
       <main className={location.pathname === "/" ? "board-main" : undefined}>
         {/* Pages cross-fade; filter changes (same path, new query) don't. */}

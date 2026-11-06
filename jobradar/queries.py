@@ -149,6 +149,10 @@ _JOB_COLUMNS = """
 """
 
 
+# One job posted for several places: the same company and the same title.
+GROUP_KEY = "(c.id || char(31) || lower(trim(j.title)))"
+
+
 def search_jobs(
     conn: sqlite3.Connection,
     f: JobFilter,
@@ -157,10 +161,13 @@ def search_jobs(
     descending: bool = True,
     limit: int | None = None,
     offset: int = 0,
+    group: bool = False,
 ) -> tuple[int, list[dict]]:
     """(total matching, one page of jobs with their locations).
 
-    Default order: relevance with a query, newest first without.
+    Default order: relevance with a query, newest first without. With *group*,
+    a job a company posted under the same title for several places is one
+    row (see _grouped); the total counts rows.
     """
     where, params, joined_fts = _where(f)
     base = ["FROM jobs j JOIN boards b ON b.id = j.board_id JOIN companies c ON c.id = b.company_id"]
@@ -169,14 +176,17 @@ def search_jobs(
     base.append("WHERE " + " AND ".join(where))
     base_sql = "\n".join(base)
 
-    total = conn.execute(f"SELECT COUNT(*) {base_sql}", params).fetchone()[0]
-
     if sort in SORTS:
-        order = f"{SORTS[sort]} {'DESC' if descending else 'ASC'}, j.id DESC"
+        key, direction = SORTS[sort], "DESC" if descending else "ASC"
     elif joined_fts:
-        order = "jobs_fts.rank"
+        key, direction = "jobs_fts.rank", "ASC"
     else:
-        order = f"{SORTS['posted']} DESC, j.id DESC"
+        key, direction = SORTS["posted"], "DESC"
+    if group:
+        return _grouped(conn, base_sql, params, key, direction, limit, offset)
+
+    total = conn.execute(f"SELECT COUNT(*) {base_sql}", params).fetchone()[0]
+    order = f"{key} {direction}, j.id DESC"
     sql = f"SELECT {_JOB_COLUMNS} {base_sql} ORDER BY {order}"
     page_params = list(params)
     if limit is not None:
@@ -187,10 +197,64 @@ def search_jobs(
     return total, rows
 
 
+def _grouped(conn: sqlite3.Connection, base_sql: str, params: list, key: str, direction: str,
+             limit: int | None, offset: int) -> tuple[int, list[dict]]:
+    """One row per group, placed where its first job would be.
+
+    The row shows a job you've already decided on if the group has one (so a
+    status you set shows), else the group's first job; "group" lists every
+    job in it, with its places and status, when there is more than one.
+    """
+    total = conn.execute(f"SELECT COUNT(DISTINCT {GROUP_KEY}) {base_sql}", params).fetchone()[0]
+    # Each group's place in the list: its best sort value.
+    best = "MIN" if direction == "ASC" else "MAX"
+    sql = f"""
+        SELECT id, gkey FROM (
+            SELECT j.id, {GROUP_KEY} AS gkey,
+                   ROW_NUMBER() OVER (PARTITION BY {GROUP_KEY}
+                                      ORDER BY (j.status != 'new') DESC, {key} {direction}, j.id DESC) AS pick,
+                   {best}({key}) OVER (PARTITION BY {GROUP_KEY}) AS place,
+                   MAX(j.id) OVER (PARTITION BY {GROUP_KEY}) AS tie
+            {base_sql}
+        ) WHERE pick = 1 ORDER BY place {direction}, tie DESC
+    """
+    page_params = list(params)
+    if limit is not None:
+        sql += " LIMIT ? OFFSET ?"
+        page_params += [limit, offset]
+    picked = conn.execute(sql, page_params).fetchall()
+    if not picked:
+        return total, []
+    ids = [r["id"] for r in picked]
+    by_id = {r["id"]: dict(r) for r in conn.execute(
+        f"SELECT {_JOB_COLUMNS} FROM jobs j JOIN boards b ON b.id = j.board_id "
+        f"JOIN companies c ON c.id = b.company_id WHERE j.id IN ({_marks(ids)})", ids)}
+    rows = [by_id[i] for i in ids]
+    attach_locations(conn, rows)
+
+    # Every job in these groups that matches the same filter.
+    keys = [r["gkey"] for r in picked]
+    members: dict[str, list[dict]] = {}
+    for m in conn.execute(
+        f"SELECT j.id, j.status, j.applied_at, j.closed_at, j.url, {GROUP_KEY} AS gkey {base_sql} "
+        f"AND {GROUP_KEY} IN ({_marks(keys)}) ORDER BY j.id",
+        [*params, *keys],
+    ):
+        members.setdefault(m["gkey"], []).append(dict(m))
+    everyone = [m for group in members.values() for m in group if len(group) > 1]
+    attach_locations(conn, everyone)
+    for row, pick in zip(rows, picked):
+        group = members.get(pick["gkey"], [])
+        row["group"] = group if len(group) > 1 else None
+    return total, rows
+
+
 def province_counts(conn: sqlite3.Connection, f: JobFilter) -> dict[str, int]:
     """Open jobs per province (and REMOTE_CANADA) for a filter, ignoring its own province choice.
 
-    A job listed in two provinces counts in both.
+    A job listed in two provinces counts in both. A job posted for several
+    places (same company, same title) counts once per province, as the
+    grouped list shows it once.
     """
     from dataclasses import replace
 
@@ -201,7 +265,7 @@ def province_counts(conn: sqlite3.Connection, f: JobFilter) -> dict[str, int]:
     conditions = " AND ".join(where)
     counts = {row[0]: row[1] for row in conn.execute(
         f"""
-        SELECT place.province, COUNT(DISTINCT j.id)
+        SELECT place.province, COUNT(DISTINCT {GROUP_KEY})
         FROM jobs j {joins} JOIN job_locations place ON place.job_id = j.id
         WHERE {conditions} AND place.country = 'CA' AND place.province IS NOT NULL
         GROUP BY place.province
@@ -210,7 +274,7 @@ def province_counts(conn: sqlite3.Connection, f: JobFilter) -> dict[str, int]:
     )}
     counts[REMOTE_CANADA] = conn.execute(
         f"""
-        SELECT COUNT(*) FROM jobs j {joins}
+        SELECT COUNT(DISTINCT {GROUP_KEY}) FROM jobs j {joins}
         WHERE {conditions} AND EXISTS (
             SELECT 1 FROM job_locations l WHERE l.job_id = j.id AND l.remote = 1 AND l.province IS NULL
             AND l.city IS NULL AND COALESCE(l.country, 'CA') = 'CA')

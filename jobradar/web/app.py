@@ -175,6 +175,11 @@ def _job_summary(row: dict) -> dict:
         "roles": [c for c in (row.get("role_categories") or "").split(",") if c],
         "level": row.get("experience_level"), "min_years": row.get("min_years"),
         "level_source": row.get("level_source"),
+        # The same job posted for other places, this one included (None when it's the only one).
+        "group": [{
+            "id": m["id"], "url": m["url"], "status": m["status"], "applied_at": m["applied_at"],
+            "closed_at": m["closed_at"], "location": queries.location_label(m["locations"]),
+        } for m in row["group"]] if row.get("group") else None,
     }
 
 
@@ -356,6 +361,8 @@ def create_app(settings: Settings, db_path: Path | None = None,
                 conn, f, sort=request.query_params.get("sort") or None,
                 descending=request.query_params.get("order", "desc") != "asc",
                 limit=page_size, offset=(page - 1) * page_size,
+                # One row per job posted for several places, unless group=0.
+                group=request.query_params.get("group") != "0",
             )
         except sqlite3.OperationalError as exc:
             raise HTTPException(400, f"search syntax: {exc}") from exc

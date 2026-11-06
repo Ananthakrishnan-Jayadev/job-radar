@@ -9,8 +9,10 @@ import { DECISIONS } from "../components/DecisionBar";
 import EmptyResults from "../components/EmptyResults";
 import JobFilters from "../components/JobFilters";
 import JobPreview from "../components/JobPreview";
+import KeyHelp from "../components/KeyHelp";
 import Pagination from "../components/Pagination";
-import { JOB_STATUS_LABEL, LEVEL_LABEL, SIZE_LABEL, formatDate, levelSourceText, shortLocation } from "../format";
+import { JOB_STATUS_LABEL, LEVEL_LABEL, SIZE_LABEL, formatDate, groupPlaces, levelSourceText, shortLocation } from "../format";
+import { Highlight, searchPattern } from "../highlight";
 import { normalizeParams } from "../jobFilters";
 import { rememberResults, savedFilters, startSearch, withParam } from "../params";
 import { useApp, useLoad } from "../state";
@@ -85,6 +87,26 @@ function readDecided(): number {
   }
 }
 
+// The row you were on, per search, so coming back from a job's page lands on it.
+const SPOT_KEY = "jobradar-spot";
+
+function readSpot(search: string): number | null {
+  try {
+    const spot = JSON.parse(sessionStorage.getItem(SPOT_KEY) ?? "null");
+    return spot && spot.search === search && typeof spot.id === "number" ? spot.id : null;
+  } catch {
+    return null;
+  }
+}
+
+function saveSpot(search: string, id: number | null) {
+  try {
+    if (id !== null) sessionStorage.setItem(SPOT_KEY, JSON.stringify({ search, id }));
+  } catch {
+    // Storage refused: you start at the top instead.
+  }
+}
+
 // Typing in a box keeps its keys; a tick box or button doesn't take letters.
 const isTyping = (target: EventTarget | null) =>
   target instanceof HTMLElement &&
@@ -111,6 +133,7 @@ export default function JobsPage() {
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState<Notice | null>(null);
   const [decided, setDecided] = useState(readDecided);
+  const [helpOpen, setHelpOpen] = useState(false);
   const rows = useRef(new Map<number, HTMLLIElement>());
   const lastTicked = useRef<number | null>(null);
   // Moving past the end of a page with J/K opens the next one: which end to land on.
@@ -171,8 +194,16 @@ export default function JobsPage() {
       window.requestAnimationFrame(() => rows.current.get(id)?.scrollIntoView({ block: "nearest" }));
       return;
     }
+    // Back from a job's page: the row you were on, scrolled into view.
+    const spot = readSpot(params.toString());
+    if (spot !== null && items.some((j) => j.id === spot)) {
+      setSelectedId(spot);
+      window.requestAnimationFrame(() => rows.current.get(spot)?.scrollIntoView({ block: "center" }));
+      return;
+    }
     setSelectedId((id) => (id !== null && items.some((j) => j.id === id) ? id : split ? items[0]?.id ?? null : null));
   }, [data?.page, data?.total, params.toString()]); // a new page or search, not each status change
+  useEffect(() => saveSpot(params.toString(), selectedId), [selectedId]); // the search is saved with it
   useEffect(() => {
     if (split && selectedId === null && items.length) setSelectedId(items[0].id);
   }, [split]); // entering the split view picks a job to show
@@ -186,9 +217,17 @@ export default function JobsPage() {
 
   function patchItems(changes: Before[]) {
     const byId = new Map(changes.map((c) => [c.id, c]));
+    const patch = <T extends { id: number }>(j: T): T => (byId.has(j.id) ? { ...j, ...byId.get(j.id) } : j);
     jobs.setData((page) =>
-      page ? { ...page, items: page.items.map((j) => (byId.has(j.id) ? { ...j, ...byId.get(j.id) } : j)) } : page,
+      page ? { ...page, items: page.items.map((j) => ({ ...patch(j), group: j.group?.map(patch) ?? null })) } : page,
     );
+  }
+
+  /** Every posting a row stands for: the job, or each place it was posted for. */
+  function postings(rowIds: number[]): Before[] {
+    return items
+      .filter((j) => rowIds.includes(j.id))
+      .flatMap((j) => (j.group ?? [j]).map(({ id, status, applied_at }) => ({ id, status, applied_at })));
   }
 
   function select(id: number | null, scroll = false) {
@@ -217,18 +256,23 @@ export default function JobsPage() {
 
   /** Set a status on some jobs; one job decided from the selection moves on to the next. */
   async function decide(ids: number[], status: JobStatus, advance = false) {
-    const before = items.filter((j) => ids.includes(j.id)).map(({ id, status, applied_at }) => ({ id, status, applied_at }));
+    // A row posted for several places decides every one of them.
+    const before = postings(ids);
     if (!before.length) return;
+    const rowsBefore = items.filter((j) => ids.includes(j.id));
     setBusy(true);
     try {
-      const done = await Promise.all(ids.map((id) => api.patchJob(id, { status })));
+      const done = await Promise.all(before.map((b) => api.patchJob(b.id, { status })));
       patchItems(done.map(({ id, status, applied_at }) => ({ id, status, applied_at })));
-      const what = ids.length === 1 ? items.find((j) => j.id === ids[0])?.title ?? "1 job" : `${ids.length} jobs`;
-      // Reviewed for the first time counts up; taken back to "Not reviewed" counts down.
+      const one = ids.length === 1 ? rowsBefore[0] : undefined;
+      const what = one
+        ? `${one.title}${one.group ? ` (${one.group.length} places)` : ""}`
+        : `${ids.length} jobs`;
+      // Reviewed for the first time counts up; taken back to "Not reviewed" counts down (one per row).
       const counted =
         status === "new"
-          ? -before.filter((b) => b.status !== "new").length
-          : before.filter((b) => b.status === "new").length;
+          ? -rowsBefore.filter((b) => b.status !== "new").length
+          : rowsBefore.filter((b) => b.status === "new").length;
       countDecided(counted);
       setNotice({ text: `${JOB_STATUS_LABEL[status]}: ${what}`, before, counted });
       if (ids.length > 1) setChecked(new Set());
@@ -263,6 +307,16 @@ export default function JobsPage() {
   const onKey = useRef<(e: KeyboardEvent) => void>(() => undefined);
   onKey.current = (e: KeyboardEvent) => {
     if (e.ctrlKey || e.metaKey || e.altKey || e.defaultPrevented || isTyping(e.target)) return;
+    // The key list: "?" opens and closes it; while it's open, Esc closes it and other keys wait.
+    if (e.key === "?") {
+      e.preventDefault();
+      setHelpOpen((open) => !open);
+      return;
+    }
+    if (helpOpen) {
+      if (e.key === "Escape") setHelpOpen(false);
+      return;
+    }
     const selected = items.find((j) => j.id === selectedId);
     const k = e.key.toLowerCase();
     if (k === "/") {
@@ -304,6 +358,7 @@ export default function JobsPage() {
   }
   // With no words to match, the default order is simply newest first.
   const hasQuery = Boolean(params.get("q"));
+  const pattern = searchPattern(params.get("q"));
   const sorts = hasQuery
     ? SORTS
     : [{ value: "", label: "Newest posted" }, ...SORTS.filter((s) => s.value !== "" && s.value !== "posted")];
@@ -457,6 +512,7 @@ export default function JobsPage() {
                   <JobRow
                     key={job.id}
                     job={job}
+                    pattern={pattern}
                     isNew={isNew(job)}
                     selected={job.id === selectedId}
                     checked={checked.has(job.id)}
@@ -490,6 +546,7 @@ export default function JobsPage() {
             {split && selected && (
               <JobPreview
                 job={selected}
+                pattern={pattern}
                 busy={busy}
                 onDecide={(status) => decide([selected.id], status, status !== "new")}
               />
@@ -497,6 +554,8 @@ export default function JobsPage() {
           </div>
         )}
       </section>
+
+      {helpOpen && <KeyHelp onClose={() => setHelpOpen(false)} />}
 
       <AnimatePresence>
         {notice && (
@@ -524,6 +583,8 @@ export default function JobsPage() {
 
 interface RowProps {
   job: JobSummary;
+  /** The search's words, to mark in the title. */
+  pattern: RegExp | null;
   isNew: boolean;
   selected: boolean;
   checked: boolean;
@@ -557,18 +618,33 @@ function BoardHead({ split }: { split: boolean }) {
 }
 
 /** One job as a line on the board: posted, job and company, place, level, size, status. */
-function JobRow({ job, isNew, selected, checked, split, busy, rowRef, onSelect, onCheck, onDecide }: RowProps) {
+function JobRow({ job, pattern, isNew, selected, checked, split, busy, rowRef, onSelect, onCheck, onDecide }: RowProps) {
   // Side by side, a plain click on the title shows the job beside the list;
   // a new-tab click (or any click in the single-column list) opens its page.
   function openTitle(e: MouseEvent) {
-    if (split && e.button === 0 && !e.ctrlKey && !e.metaKey && !e.shiftKey) {
-      e.preventDefault();
-      onSelect();
-    }
+    // Selected either way, so coming back to the list lands on this row.
+    onSelect();
+    if (split && e.button === 0 && !e.ctrlKey && !e.metaKey && !e.shiftKey) e.preventDefault();
   }
   const size = SIZE_LABEL[job.size_band] ?? job.size_band;
   const dot = SIZE_DOT[job.size_band];
   const level = job.level ? LEVEL_LABEL[job.level] : null;
+  // Posted for several places: the first, then how many more (all of them on hover).
+  const places = job.group ? groupPlaces(job.group) : [];
+  const more = Math.max(0, places.length - 1);
+  const placesTitle = job.group
+    ? `Posted ${job.group.length} times:\n${places.map((p) => (p.ids.length > 1 ? `${p.location} (${p.ids.length})` : p.location)).join("\n")}`
+    : job.location;
+  const place = (
+    <>
+      <span className="place-text">{shortLocation(job.location)}</span>
+      {job.group && (
+        <span className="more-places">
+          {more > 0 ? `+${more} ${more === 1 ? "place" : "places"}` : `×${job.group.length}`}
+        </span>
+      )}
+    </>
+  );
 
   return (
     <li
@@ -612,14 +688,14 @@ function JobRow({ job, isNew, selected, checked, split, busy, rowRef, onSelect, 
       )}
       <div className="cell-job">
         <Link to={`/jobs/${job.id}`} className="job-title" onClick={openTitle}>
-          {job.title}
+          <Highlight text={job.title} pattern={pattern} />
         </Link>
         <div className="row-meta">
           <Link to={`/companies/${job.company_id}`} className="row-company">
             {job.company}
           </Link>
-          <span className="inline-place" title={job.location}>
-            {shortLocation(job.location)}
+          <span className="inline-place" title={placesTitle}>
+            {place}
           </span>
           {level && (
             <span className="inline-level" title={levelTitle(job)}>
@@ -634,8 +710,8 @@ function JobRow({ job, isNew, selected, checked, split, busy, rowRef, onSelect, 
           )}
         </div>
       </div>
-      <span className="cell-place" title={job.location}>
-        {shortLocation(job.location)}
+      <span className="cell-place" title={placesTitle}>
+        {place}
       </span>
       <span className="cell-level" title={levelTitle(job)}>
         {level ?? <span className="muted">Not stated</span>}

@@ -408,10 +408,16 @@ def from_parts(
     Falls back to parsing *raw* (or the joined parts) when the fields don't say
     enough on their own.
     """
-    city = (city or "").strip() or None
+    # Boards send stray commas ("Mississauga,") and sometimes the province
+    # inside the city field ("Brampton, Ontario" with no region).
+    city = (city or "").strip(" ,") or None
+    region = (region or "").strip(" ,") or None
+    if city and "," in city and not region:
+        head, _, tail = city.rpartition(",")
+        if normalize_province(tail.strip()):
+            city, region = head.strip(" ,") or None, tail.strip()
     if city and city.isupper() and len(city) > 3:
         city = city.title()  # "TORONTO" -> "Toronto"
-    region = (region or "").strip() or None
     country_code = normalize_country(country)
     raw = raw.strip() or ", ".join(p for p in (city, region, (country or "").strip() or None) if p)
 

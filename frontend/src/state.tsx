@@ -17,6 +17,21 @@ interface AppState {
   /** The running background chore (filling sizes, finding boards), polled while it runs. */
   task: TaskState | null;
   watchTask: (state: TaskState) => void;
+  /** What the last scan found, until dismissed: jobs on your list and every new posting. */
+  scanDone: ScanDone | null;
+  dismissScanDone: () => void;
+  /** Reload every page's data and the counts (after a change made outside a page's own list). */
+  refresh: () => void;
+}
+
+export interface ScanDone {
+  /** New jobs that pass the default Jobs filters (Canada, your roles), one per job posted for several places. */
+  found: number;
+  /** Every new posting the scan stored. */
+  postings: number;
+  closed: number;
+  failed: number;
+  since: string;
 }
 
 const AppContext = createContext<AppState | null>(null);
@@ -29,6 +44,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [scanError, setScanError] = useState<string | null>(null);
   const wasRunning = useRef(false);
   const [task, setTask] = useState<TaskState | null>(null);
+  const [scanDone, setScanDone] = useState<ScanDone | null>(null);
   const taskWasRunning = useRef(false);
 
   useEffect(() => {
@@ -62,6 +78,22 @@ export function AppProvider({ children }: { children: ReactNode }) {
       if (wasRunning.current) {
         wasRunning.current = false;
         setDataVersion((v) => v + 1);
+        // Say what it found: how many new jobs the Jobs page would show.
+        const since = scan?.started_at;
+        if (since && !scan?.error) {
+          api
+            .jobs(new URLSearchParams({ new_since: since, page_size: "1" }))
+            .then((page) =>
+              setScanDone({
+                found: page.total,
+                postings: scan.jobs_new,
+                closed: scan.jobs_closed,
+                failed: scan.boards_failed,
+                since,
+              }),
+            )
+            .catch(() => undefined);
+        }
       }
       return;
     }
@@ -74,6 +106,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const startScan = useCallback(async (companyId?: number) => {
     setScanError(null);
+    setScanDone(null);
     try {
       setScan(await api.startScan(companyId));
     } catch (error) {
@@ -83,7 +116,19 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   return (
     <AppContext.Provider
-      value={{ meta, previousVisit, scan, dataVersion, startScan, scanError, task, watchTask: setTask }}
+      value={{
+        meta,
+        previousVisit,
+        scan,
+        dataVersion,
+        startScan,
+        scanError,
+        task,
+        watchTask: setTask,
+        scanDone,
+        dismissScanDone: () => setScanDone(null),
+        refresh: () => setDataVersion((v) => v + 1),
+      }}
     >
       {children}
     </AppContext.Provider>

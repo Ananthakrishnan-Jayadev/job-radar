@@ -43,7 +43,8 @@ function compare(a: Company, b: Company, { key, dir }: Sort<SortKey>): number {
 }
 
 export default function CompaniesPage() {
-  const { meta, dataVersion, task, watchTask } = useApp();
+  const { meta, dataVersion, task, watchTask, refresh } = useApp();
+  const [bulkBusy, setBulkBusy] = useState(false);
   const [taskError, setTaskError] = useState<string | null>(null);
   const [params, setParams] = useSearchParams();
   const companies = useLoad(() => api.companies(params), `${params}|${dataVersion}`);
@@ -88,6 +89,23 @@ export default function CompaniesPage() {
       else next.add(id);
       return next;
     });
+  }
+
+  /** Set one status on every ticked company. */
+  async function setStatusAll(status: CompanyStatus) {
+    setBulkBusy(true);
+    setTaskError(null);
+    try {
+      const done = await Promise.all(tickedRows.map((c) => api.patchCompany(c.id, { status })));
+      const byId = new Map(done.map((c) => [c.id, c]));
+      companies.setData((list) => list?.map((c) => byId.get(c.id) ?? c));
+      setRemovedNote(`${COMPANY_STATUS_LABEL[status]}: ${done.length === 1 ? done[0].name : `${done.length} companies`}.`);
+      setTicked(new Set());
+    } catch (err) {
+      setTaskError(err instanceof Error ? err.message : String(err));
+    } finally {
+      setBulkBusy(false);
+    }
   }
 
   const withoutBoard = (companies.data ?? []).filter((c) => c.boards.every((b) => b.system === "manual")).length;
@@ -156,7 +174,22 @@ export default function CompaniesPage() {
       {tickedRows.length > 0 && !removing && (
         <div className="bulk-bar companies-bulk" role="group" aria-label="Ticked companies">
           <span>{tickedRows.length} ticked</span>
-          <button type="button" onClick={() => setRemoving(true)}>
+          <label className="bulk-status">
+            <span className="sr-only">Set the status of the ticked companies</span>
+            <select
+              value=""
+              disabled={bulkBusy}
+              onChange={(e) => e.target.value && setStatusAll(e.target.value as CompanyStatus)}
+            >
+              <option value="">Set status…</option>
+              {(Object.keys(COMPANY_STATUS_LABEL) as CompanyStatus[]).map((s) => (
+                <option key={s} value={s}>
+                  {COMPANY_STATUS_LABEL[s]}
+                </option>
+              ))}
+            </select>
+          </label>
+          <button type="button" disabled={bulkBusy} onClick={() => setRemoving(true)}>
             Remove {tickedRows.length === 1 ? "company" : `${tickedRows.length} companies`}
           </button>
           <button type="button" className="link" onClick={() => setTicked(new Set())}>
@@ -172,6 +205,8 @@ export default function CompaniesPage() {
             companies.setData((list) => list?.filter((c) => !gone.has(c.id)));
             setTicked((was) => new Set([...was].filter((id) => !gone.has(id))));
             setRemovedNote(removedText(result) || null);
+            // The Jobs page and its counts lose those companies' jobs.
+            if (result.removed.length) refresh();
           }}
           onClose={() => {
             setRemoving(false);

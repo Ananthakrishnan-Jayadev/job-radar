@@ -1114,6 +1114,17 @@ table.companies tr.ticked td {
   border-radius: var(--radius);
 }
 
+.bulk-bar .bulk-status select {
+  background: transparent;
+  border-color: color-mix(in srgb, var(--bg) 40%, transparent);
+  color: var(--bg);
+}
+
+.bulk-bar .bulk-status option {
+  color: var(--ink);
+  background: var(--surface);
+}
+
 .remove-panel {
   margin: 0 0 1rem;
   padding: 0.9rem 1.1rem;
@@ -1417,8 +1428,10 @@ td.actions button + button {
 
 /* --- scans page: board health and backups ---------------------------------- */
 
+/* The backup reminder: an amber outline and wash, not a side stripe. */
 .backups.remind {
-  border-left: 3px solid var(--amber);
+  border-color: var(--amber);
+  background: color-mix(in srgb, var(--amber) 8%, var(--surface));
 }
 
 .backups p {
@@ -1453,7 +1466,6 @@ td.actions button + button {
   padding: 0.8rem 1rem 0.75rem;
   background: var(--surface);
   border: 1px solid var(--line);
-  border-top: 3px solid var(--dot);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   color: var(--ink);
@@ -1470,6 +1482,17 @@ td.actions button + button {
   font-weight: 650;
   line-height: 1.1;
   font-variant-numeric: tabular-nums;
+}
+
+/* Each stage's colour: a dot before its name, like the status dots. */
+.stage .label::before {
+  content: "";
+  display: inline-block;
+  width: 0.55rem;
+  height: 0.55rem;
+  margin-right: 0.4rem;
+  border-radius: 50%;
+  background: var(--dot);
 }
 
 .stage .label {
@@ -1964,6 +1987,48 @@ a.job-title:hover {
   white-space: nowrap;
 }
 
+/* Search words, marked where they matched. */
+mark {
+  padding: 0 0.1em;
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--signal) 55%, transparent);
+  color: inherit;
+}
+
+[data-theme="dim"] mark,
+:root:not([data-theme]) mark {
+  background: color-mix(in srgb, var(--signal) 70%, var(--surface));
+}
+
+/* "Toronto, ON +7 places": the place shortens, the count always shows. */
+.cell-place,
+.row-meta .inline-place {
+  min-width: 0;
+}
+
+.cell-place {
+  display: flex;
+  align-items: baseline;
+  gap: 0.35rem;
+}
+
+.place-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.more-places {
+  flex: none;
+  font-size: 0.76rem;
+  font-weight: 650;
+  color: var(--muted);
+}
+
+.inline-place .more-places {
+  margin-left: 0.3rem;
+}
+
 .cell-size {
   display: flex;
   align-items: center;
@@ -2235,6 +2300,30 @@ a.job-title:hover {
   border-bottom: 1px solid var(--line);
 }
 
+/* A job posted for several places: its places take the whole row. */
+.preview .facts .facts-wide {
+  grid-column: 1 / -1;
+}
+
+.group-places {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.15rem 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.group-places a {
+  color: var(--ink);
+  font-weight: 600;
+  text-decoration-color: var(--line);
+}
+
+.group-places [aria-current] {
+  font-weight: 700;
+}
+
 .preview .facts dt {
   font-size: 0.76rem;
   font-weight: 600;
@@ -2343,6 +2432,81 @@ kbd {
 
 .unblock button .muted {
   margin-left: 0.4rem;
+}
+
+/* After a scan: what it found. */
+.scan-summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.9rem;
+  padding: 0.55rem 1.25rem;
+  background: var(--lake-soft);
+  border-bottom: 1px solid var(--line);
+}
+
+.scan-summary p {
+  margin: 0 auto 0 0;
+}
+
+/* The key list ("?"). */
+.key-help-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgb(9 24 18 / 0.45);
+}
+
+.key-help {
+  width: min(30rem, 100%);
+  max-height: calc(100vh - 2rem);
+  overflow-y: auto;
+  padding: 1.1rem 1.3rem 1.2rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: 0 18px 50px -20px rgb(0 0 0 / 0.5);
+}
+
+.key-help:focus {
+  outline: none;
+}
+
+.key-help-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.6rem;
+}
+
+.key-help-head h2 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.key-help dl {
+  display: grid;
+  gap: 0.45rem;
+  margin: 0 0 0.9rem;
+}
+
+.key-help dl > div {
+  display: grid;
+  grid-template-columns: 8rem 1fr;
+  align-items: baseline;
+  gap: 0.75rem;
+}
+
+.key-help dt {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.key-help dd {
+  margin: 0;
 }
 
 /* Undo, after every decision. */

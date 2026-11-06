@@ -122,6 +122,13 @@ export function formatCount(n: number | null | undefined): string {
   return n === null || n === undefined ? "—" : n.toLocaleString("en-CA");
 }
 
+/** A group's places, each once, with how many of its postings name it, in first-seen order. */
+export function groupPlaces<T extends { id: number; location: string }>(group: T[]): { location: string; ids: number[] }[] {
+  const places = new Map<string, number[]>();
+  for (const m of group) places.set(m.location, [...(places.get(m.location) ?? []), m.id]);
+  return [...places].map(([location, ids]) => ({ location, ids }));
+}
+
 export function plural(n: number, one: string, many = `${one}s`): string {
   return `${formatCount(n)} ${n === 1 ? one : many}`;
 }
