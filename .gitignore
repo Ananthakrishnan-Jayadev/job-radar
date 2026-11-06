@@ -15,3 +15,6 @@ jobradar/web/static/
 # Your own company lists and exports in the project folder (personal data)
 /*.xlsx
 /*.csv
+
+# Product notes for design tools: personal details, kept local.
+PRODUCT.md
