@@ -106,7 +106,9 @@ or use `.venv/bin/jobradar serve --dev`, which rebuilds the UI on every save
 - **Companies:** roles matching yours, open roles in Canada and worldwide,
   size, job boards, your status. Click a column heading to sort by it (names
   A to Z, counts and sizes highest first); click again to reverse. The sort
-  is remembered. Tick companies to set one status on all of them. Buttons to fill in company sizes and to find job boards for
+  is remembered. Tick companies to set one status on all of them.
+  **Careers** beside each name opens its careers page in a new tab (or, when
+  none is known, its job board's public page). Buttons to fill in company sizes and to find job boards for
   companies that have none. Add a company (paste its careers link and let the
   app find its job board). Tick companies (or tick all shown) and **Remove**
   them: their boards and jobs go too and scans stop checking them. A copy is

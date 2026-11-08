@@ -59,6 +59,11 @@ export default function CompanyPage() {
             {formatCount(c.canada_open)} open {c.canada_open === 1 ? "job" : "jobs"} in Canada
           </Link>
           {c.total_open !== null && <span>{formatCount(c.total_open)} worldwide</span>}
+          {c.careers_page && (
+            <a href={c.careers_page} target="_blank" rel="noreferrer">
+              Careers page
+            </a>
+          )}
         </p>
         {!removing && (
           <button type="button" className="quiet remove-company" onClick={() => setRemoving(true)}>

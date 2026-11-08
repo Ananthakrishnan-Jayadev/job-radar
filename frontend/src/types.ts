@@ -146,6 +146,8 @@ export interface SizeSuggestion {
 
 export interface Company {
   id: number;
+  /** Where to see its jobs: its careers page, else its job board's public page; null if neither. */
+  careers_page: string | null;
   name: string;
   canadian: boolean;
   status: CompanyStatus;

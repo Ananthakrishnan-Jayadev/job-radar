@@ -79,3 +79,31 @@ def normalize_board(system: str, value: str) -> str:
     if not segments:
         raise BoardError(f"no board name in {value}")
     return segments[0]
+
+
+# The public page listing a board's jobs, for people (not the API the scan reads).
+_BOARD_PAGES = {
+    "greenhouse": "https://job-boards.greenhouse.io/{slug}",
+    "lever": "https://jobs.lever.co/{slug}",
+    "ashby": "https://jobs.ashbyhq.com/{slug}",
+    "smartrecruiters": "https://careers.smartrecruiters.com/{slug}",
+    "workable": "https://apply.workable.com/{slug}/",
+    "recruitee": "https://{slug}.recruitee.com/",
+    "breezy": "https://{slug}.breezy.hr/",
+    "rippling": "https://ats.rippling.com/{slug}/jobs",
+    "bamboohr": "https://{slug}.bamboohr.com/careers",
+    "jazzhr": "https://{slug}.applytojob.com/",
+    "pinpoint": "https://{slug}.pinpointhq.com/",
+    "humi": "https://{slug}.applytojobs.ca",
+    "hibob": "https://{slug}.careers.hibob.com/jobs",
+}
+
+
+def board_page(system: str, slug_or_url: str) -> str | None:
+    """The address where a person sees this board's jobs, or None (Adzuna, hand-added jobs)."""
+    if system == "teamtailor":
+        return slug_or_url.rstrip("/") + "/jobs"
+    if slug_or_url.startswith("http"):  # Workday, SuccessFactors: the site itself
+        return slug_or_url
+    template = _BOARD_PAGES.get(system)
+    return template.format(slug=slug_or_url) if template else None

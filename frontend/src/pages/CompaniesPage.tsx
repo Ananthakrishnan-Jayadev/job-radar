@@ -1,3 +1,4 @@
+import { ExternalLink } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useRef, useState, type FormEvent } from "react";
 import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
@@ -310,10 +311,25 @@ export default function CompaniesPage() {
                     />
                   </td>
                   <td>
-                    <Link to={`/companies/${c.id}`} className="job-title">
-                      {c.name}
-                    </Link>
-                    {!c.canadian && <span className="hint"> Global</span>}
+                    <div className="company-name">
+                      <Link to={`/companies/${c.id}`} className="job-title">
+                        {c.name}
+                      </Link>
+                      {c.careers_page && (
+                        <a
+                          className="careers-link"
+                          href={c.careers_page}
+                          target="_blank"
+                          rel="noreferrer"
+                          title={c.careers_page}
+                          aria-label={`${c.name} careers page (opens in a new tab)`}
+                        >
+                          Careers
+                          <ExternalLink size={12} aria-hidden="true" />
+                        </a>
+                      )}
+                    </div>
+                    {!c.canadian && <span className="hint">Global</span>}
                   </td>
                   <td className="num">
                     {c.wanted_open > 0 ? <Link to={`/?company=${c.id}&include_ignored=1`}>{formatCount(c.wanted_open)}</Link> : "0"}

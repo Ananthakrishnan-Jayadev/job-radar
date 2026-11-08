@@ -391,3 +391,23 @@ def test_normalize_board_errors(system, value):
 def test_serve_dev_needs_npm_packages(tmp_path, capsys):
     assert cli.main(["--root", str(tmp_path), "serve", "--dev"]) == 1
     assert "npm install" in capsys.readouterr().err
+
+
+def test_company_careers_page(settings, db_path):
+    conn = db.connect(db_path)
+    own = db.upsert_company(conn, "Own Site", canadian=True, careers_url="https://own.example/careers")
+    db.upsert_board(conn, own, "greenhouse", "own")
+    gh = db.upsert_company(conn, "Board Only", canadian=True)
+    db.upsert_board(conn, gh, "lever", "old", enabled=False)
+    db.upsert_board(conn, gh, "greenhouse", "boardonly")
+    wd = db.upsert_company(conn, "Workday Co", canadian=True)
+    db.upsert_board(conn, wd, "workday", "https://wd.wd3.myworkdayjobs.com/Careers")
+    db.upsert_company(conn, "Nothing", canadian=True)
+    conn.close()
+    pages = {c["name"]: c["careers_page"] for c in make_client(settings, db_path).get("/api/companies").json()}
+    assert pages == {
+        "Own Site": "https://own.example/careers",  # the company's own page wins
+        "Board Only": "https://job-boards.greenhouse.io/boardonly",  # the enabled board, not the old one
+        "Workday Co": "https://wd.wd3.myworkdayjobs.com/Careers",
+        "Nothing": None,
+    }

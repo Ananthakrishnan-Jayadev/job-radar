@@ -24,7 +24,7 @@ from ..apply.browser import playwright_ready
 from ..apply.greenhouse import ApplyError
 from ..apply.run import plan_application
 from ..profile import ProfileError, load_profile
-from ..boards import BoardError, normalize_board
+from ..boards import BoardError, board_page, normalize_board
 from ..detect import Detected, detect_company
 from ..http import FetchError, HttpClient
 from ..config import Settings
@@ -183,8 +183,18 @@ def _job_summary(row: dict) -> dict:
     }
 
 
+def _careers_page(row: dict) -> str | None:
+    """Where to see the company's jobs: its careers page if known, else its job board's public page
+    (an enabled, confirmed board first)."""
+    if row["careers_url"]:
+        return row["careers_url"]
+    boards = sorted(row["boards"], key=lambda b: (not b["enabled"], not b["confirmed"]))
+    return next((page for b in boards if (page := board_page(b["system"], b["slug_or_url"]))), None)
+
+
 def _company(row: dict) -> dict:
     return {
+        "careers_page": _careers_page(row),
         "id": row["id"], "name": row["name"], "canadian": bool(row["canadian"]), "status": row["status"],
         "notes": row["notes"], "careers_url": row["careers_url"], "employee_count": row["employee_count"],
         "size_band": size_band(row["employee_count"]), "size_source": row["size_source"],
