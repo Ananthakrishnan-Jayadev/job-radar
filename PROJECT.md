@@ -29,11 +29,15 @@ recorded in [`docs/decisions/`](docs/decisions/).
   fills in Greenhouse application forms for you to check and submit
   yourself; it never submits. Workday stays with `agentic_workday` (a
   hand-off may come later).
-- Multi-user use, login, hosting, deployment.
+- Multi-user use, login, hosting, deployment. *Changed 2026-11-07:* it also
+  runs in Docker on the owner's home server, on the home network only, still
+  one user and no login (`docs/decisions/2026-11-08-home-server.md`).
 - LinkedIn automation of any kind. Plain "open this search on LinkedIn" links
   are allowed.
 - Filtering by work authorization.
 - Scheduled scans. Scans run on demand (button or command) in version 1.
+  *Changed 2026-11-07:* on the home server, cron starts a scan every morning
+  and a backup every night (`deploy/crontab.example`).
 - Notifications, LLM summaries and fit scores (later phase, after v1). The one
   exception, added 2026-10-28: a local Ollama model can be asked, on request,
   for the experience level and years of postings the rules can't read

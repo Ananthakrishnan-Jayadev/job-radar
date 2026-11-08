@@ -305,7 +305,8 @@ a size without manual entry.
   listed on the Scans page and marked on the company page.
 - Task 5 (performance): not needed; you find search fast enough.
 - Task 6 (docs): kept up to date with each change.
-- Task 7 (version 2 plan): later, with scheduled scans.
+- Task 7 (version 2 plan): later. Scheduled scans arrived with the home
+  server (2026-11-07).
 - Also built: **add a job by its link** (was phase 4, task 5).
 See `docs/decisions/2026-10-28-backups-health-and-manual-jobs.md`.
 
@@ -389,3 +390,16 @@ Manual checks (both features):
 - Restore from a backup into a fresh folder and open it.
 
 **Commits:** `fix(web): ...`, `feat(backup): ...`, `docs: ...`
+
+**Added 2026-11-05 to 11-08** ✅ built and in use:
+- The Jobs page as a triage board: split view, keys, undo, bulk decisions,
+  then a new look (departures board, forest and mint). See
+  `docs/decisions/2026-11-05-jobs-triage.md` and
+  `docs/decisions/2026-11-05-departures-board.md`.
+- Day-to-day pass: one job posted for several places shown once, cleaner
+  places, search words marked, `?` key list, scan summary; on Companies,
+  remove (archived first), sort by any heading, bulk status; motion for
+  every action. See `docs/decisions/2026-11-06-ux-pass.md`.
+- Home server in Docker with scheduled scans and backups, Ollama's cloud by
+  API key, and a Careers link per company. See
+  `docs/decisions/2026-11-08-home-server.md` and `deploy/README.md`.

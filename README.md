@@ -311,6 +311,11 @@ companies, so a stopped run keeps what it found.
 Options for any command: `--db PATH` uses another database file,
 `--root PATH` reads `config.toml` from another folder.
 
+On the home server the real database is the server's (`~/job-radar/data`);
+the laptop works on copies of it ([deploy/README.md](deploy/README.md),
+step 7). Inside Docker, run any command as
+`docker compose exec jobradar jobradar <command>`.
+
 ## Your data
 
 Everything lives in `data/jobradar.db` (git-ignored). The database upgrades
