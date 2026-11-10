@@ -9,8 +9,6 @@ Applications dashboard. It runs on your own computer: no LinkedIn
 automation, no accounts.
 
 - [PROJECT.md](PROJECT.md): the specification
-- [docs/decisions/](docs/decisions/): why it works the way it does, dated
-- [docs/00-START-HERE.md](docs/00-START-HERE.md): the research behind it
 
 ## Setup
 
@@ -169,10 +167,9 @@ cv.pdf` does the same from the command line.
 `roles.toml` decides which job titles count: software development, data
 engineering & analysis, and AI development & implementation are on; an
 "adjacent" group (business/systems analysts, IT support, product owners, data
-governance...) is off. It was built from the real titles in the database
-(see `docs/decisions/2026-10-26-role-keywords.md`), and its header explains
-the rules. Every Canadian job is still stored; the rest are only hidden, and
-jobs you're tracking always show. Edit the file and the change applies on the
+governance...) is off. It was built from the real titles in the database,
+and its header explains the rules. Every Canadian job is still stored; the
+rest are only hidden, and jobs you're tracking always show. Edit the file and the change applies on the
 next page load, no rescan. `jobradar search` and `export` take `--all-roles`.
 
 ## Experience level
@@ -238,8 +235,7 @@ next scan.
 The jobs from the one-time Adzuna snapshot only have snippets. Once a
 company's confirmed board has been read in full, its Adzuna copies are
 replaced: matching jobs move your tracking over to the board's job, and the
-rest are closed. Details and quirks of each source:
-[docs/03-data-sources.md](docs/03-data-sources.md).
+rest are closed.
 
 ## Commands
 
@@ -391,7 +387,6 @@ frontend/            the React + TypeScript UI (Vite, Tailwind, Motion)
 roles.toml           which roles you want (edit freely)
 seeds/               starting company list
 tests/               pytest tests and recorded API responses
-docs/                research and decisions
 deploy/              running it on a home server: guide, deploy/backup/scan scripts
 Dockerfile, docker-compose.yml   the server image and service
 data/                the database and backups (git-ignored)
