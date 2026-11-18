@@ -143,3 +143,47 @@ def test_format_salary():
 ])
 def test_workplace(value, remote, expected):
     assert workplace(value, remote) == expected
+
+
+# --- Workday: one site for every company --------------------------------------------
+
+WD_A = "https://acme.wd3.myworkdayjobs.com/wday/cxs/acme/Careers/jobs"
+WD_B = "https://bank.wd5.myworkdayjobs.com/wday/cxs/bank/External/jobs"
+
+
+def test_workday_hosts_are_one_site():
+    from jobradar.http import site_of
+    assert site_of("acme.wd3.myworkdayjobs.com") == site_of("bank.wd5.myworkdayjobs.com") == "Workday"
+    assert site_of("api.lever.co") == "api.lever.co"
+
+
+def test_still_limited_workday_stops_the_rest_of_workday_this_scan(settings):
+    sources = FakeSources({("POST", WD_A): httpx.Response(429), ("POST", WD_B): {"total": 0},
+                           ("GET", URL): {"ok": True}})
+
+    async def go():
+        async with HttpClient(settings, transport=sources.transport()) as client:
+            with pytest.raises(FetchError, match="429"):
+                await client.post_json(WD_A, {})
+            with pytest.raises(FetchError, match="wait until the next scan"):
+                await client.post_json(WD_B, {})  # another company's Workday: not even asked
+            return await client.get_json(URL)  # other sites carry on
+
+    assert asyncio.run(go()) == {"ok": True}
+    assert [str(r.url) for r in sources.requests].count(WD_B) == 0
+    assert [str(r.url) for r in sources.requests].count(WD_A) == 4  # first try and three retries
+
+
+def test_workday_requests_are_spaced_out(settings):
+    import time
+    settings.workday.min_interval_seconds = 0.2
+    sources = FakeSources({("POST", WD_A): {"total": 0}, ("POST", WD_B): {"total": 0}})
+
+    async def go():
+        async with HttpClient(settings, transport=sources.transport()) as client:
+            started = time.monotonic()
+            await asyncio.gather(client.post_json(WD_A, {}), client.post_json(WD_B, {}),
+                                 client.post_json(WD_A, {}))
+            return time.monotonic() - started
+
+    assert asyncio.run(go()) >= 0.4  # three requests across two companies, one at a time, 0.2s apart

@@ -32,6 +32,10 @@ class WorkdaySettings:
     max_list: int = 400
     max_details_per_scan: int = 60
     delay_seconds: float = 1.0
+    # Every company's Workday site runs on Workday's own servers, which limit
+    # requests from one address across all of them: one request at a time, at
+    # least this far apart, for all Workday boards together.
+    min_interval_seconds: float = 1.5
     # Used for big Workday boards until saved searches exist (phase 3).
     search_terms: list[str] = field(default_factory=lambda: list(DEFAULT_SEARCH_TERMS))
 

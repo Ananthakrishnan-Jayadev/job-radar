@@ -144,6 +144,7 @@ async def _scan_board(conn, board: Board, client: HttpClient, settings: Settings
     started = time.monotonic()
     rules = rules_for(settings.root)
     ctx = FetchContext(settings=settings, search_terms=terms, known_ids=_known_ids(conn, board.id), today=today,
+                       oldest=age_cutoff(settings, today),
                        wants=rules.wanted if rules else None)
     try:
         result = await CONNECTORS[board.system](board, client, ctx)

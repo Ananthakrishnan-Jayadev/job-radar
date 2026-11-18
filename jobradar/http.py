@@ -7,6 +7,12 @@ retries, waiting as long as the source asks (Retry-After, up to a minute) or
 5, 15 then 30 seconds, and that host gets an extra pause before every later
 request in the same scan. Redirects are not followed: a job board that
 redirects (BambooHR sends unknown companies to its homepage) is "not found".
+
+Some hosts are one site: every company's Workday site (*.myworkdayjobs.com)
+runs on Workday's servers, which count requests from our address across all
+of them. They share one queue (one request at a time, `workday.min_interval_seconds`
+apart), and when Workday still says 429 after the retries, the rest of its
+boards are skipped until the next scan instead of asking again.
 """
 
 from __future__ import annotations
@@ -30,6 +36,18 @@ class NotFound(FetchError):
     """The board does not exist (404, or a redirect away from the feed)."""
 
 
+# Hosts that are really one site, so they share limits.
+_SITES = {".myworkdayjobs.com": "Workday", ".myworkdaysite.com": "Workday"}
+
+
+def site_of(host: str) -> str:
+    """The site a host belongs to: "Workday" for any company's Workday host, else the host."""
+    for suffix, site in _SITES.items():
+        if host.endswith(suffix):
+            return site
+    return host
+
+
 class HttpClient:
     def __init__(self, settings: Settings, transport: httpx.AsyncBaseTransport | None = None):
         self.settings = settings
@@ -41,7 +59,9 @@ class HttpClient:
         )
         self._host_limits: dict[str, asyncio.Semaphore] = {}
         self._fallback_hosts: set[str] = set()  # hosts that rejected our honest user agent
-        self._slow_hosts: set[str] = set()  # hosts that answered 429: pause before each request
+        self._slow_hosts: set[str] = set()  # sites that answered 429: pause before each request
+        self._blocked: set[str] = set()  # sites still at 429 after the retries: skipped this scan
+        self._next_at: dict[str, float] = {}  # sites with a minimum interval: earliest next request
 
     async def __aenter__(self) -> HttpClient:
         return self
@@ -62,15 +82,29 @@ class HttpClient:
 
     async def request(self, method: str, url: str, **kwargs) -> httpx.Response:
         host = urlsplit(url).netloc
-        limit = self._host_limits.setdefault(host, asyncio.Semaphore(self.settings.http.max_per_host))
+        site = site_of(host)
+        if site in self._blocked:
+            raise FetchError(f"rate limited (429): {site} asked us to slow down; "
+                             "its boards wait until the next scan")
+        interval = self.settings.workday.min_interval_seconds if site == "Workday" else 0
+        size = 1 if site == "Workday" else self.settings.http.max_per_host
+        limit = self._host_limits.setdefault(site, asyncio.Semaphore(size))
         async with limit:
-            if host in self._slow_hosts:
+            if interval:
+                wait = self._next_at.get(site, 0) - asyncio.get_running_loop().time()
+                if wait > 0:
+                    await asyncio.sleep(wait)
+            if site in self._slow_hosts:
                 await self.pause(self.settings.http.rate_limited_delay_seconds)
-            response = await self._send(method, url, host, **kwargs)
+            response = await self._send(method, url, host, site, **kwargs)
+            if interval:
+                self._next_at[site] = asyncio.get_running_loop().time() + interval
+            if response.status_code == 429:
+                self._blocked.add(site)  # still too many after the retries: stop asking this scan
             if response.status_code == 403 and host not in self._fallback_hosts:
                 # Some sources block unknown agents; try once with a browser one.
                 self._fallback_hosts.add(host)
-                response = await self._send(method, url, host, **kwargs)
+                response = await self._send(method, url, host, site, **kwargs)
                 if response.status_code == 403:
                     self._fallback_hosts.discard(host)
         return _check(response)
@@ -81,7 +115,7 @@ class HttpClient:
                                       follow_redirects=True)
         return response.text
 
-    async def _send(self, method: str, url: str, host: str, **kwargs) -> httpx.Response:
+    async def _send(self, method: str, url: str, host: str, site: str, **kwargs) -> httpx.Response:
         headers = dict(kwargs.pop("headers", None) or {})
         if host in self._fallback_hosts:
             headers["User-Agent"] = self.settings.http.fallback_user_agent
@@ -100,7 +134,7 @@ class HttpClient:
             else:
                 if response.status_code == 429:
                     # Too many requests: slow down for this host, wait, try again (3 times).
-                    self._slow_hosts.add(host)
+                    self._slow_hosts.add(site)
                     rate_limits += 1
                     if rate_limits > 3:
                         return response

@@ -76,3 +76,11 @@ def test_list_hides_undated_jobs_found_long_ago(conn):
 def test_workday_30_plus_days_is_old_not_undated():
     assert relative_date("Posted 30+ Days Ago", TODAY) == "2026-10-18"
     assert relative_date("Posted 3 Days Ago", TODAY) == "2026-11-15"
+
+
+def test_no_detail_pages_for_postings_too_old_to_keep(settings):
+    from jobradar.connectors import FetchContext
+    ctx = FetchContext(settings=settings, oldest="2026-10-19")
+    assert ctx.needs_detail(_raw("1", "Data Analyst", "2026-11-01"))
+    assert not ctx.needs_detail(_raw("2", "Data Analyst", "2026-09-01"))  # skipped by the scan anyway
+    assert ctx.needs_detail(_raw("3", "Data Analyst", None))  # no date: can't tell, so fetched

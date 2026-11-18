@@ -32,6 +32,10 @@ rate_limited_delay_seconds = 2.0
 max_list = 400
 max_details_per_scan = 60
 delay_seconds = 1.0
+# All companies' Workday sites share Workday's servers, which limit requests
+# from your address across all of them: one request at a time, at least this
+# many seconds apart, for every Workday board together.
+min_interval_seconds = 1.5
 # Searched on boards over max_list (TD, RBC, BMO...). Saved searches marked
 # "use for sources" replace this list once the web UI has them (phase 3).
 search_terms = ["data", "machine learning", "artificial intelligence", "analyst", "analytics"]

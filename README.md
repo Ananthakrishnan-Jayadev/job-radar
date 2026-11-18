@@ -227,6 +227,15 @@ list, or open the job, to see the years asked and where the level came from.
 | Humi | The careers page's HTML (no feed; the most fragile) | Ecopia.AI, Hypercare |
 | HiBob | The careers app's JSON (undocumented) | Xanadu |
 
+**Workday is scanned gently.** Every company's Workday site runs on Workday's
+own servers, which limit requests from your address across all of them, so
+Job Radar treats them as one site: one request at a time, at least 1.5
+seconds apart (`[workday] min_interval_seconds`). A "too many requests" (429)
+reply gets up to three patient retries; if Workday still refuses, the
+remaining Workday companies are skipped until the next scan rather than
+asked again. Job pages for postings older than the age limit are never
+opened.
+
 Not read (yet): iCIMS, Avature, Oracle Cloud, ADP, Taleo and Eploy (FDM
 Group's careers site, which pages its list with form posts). Adding such a
 company by link finds no board; track its jobs one at a time with **Add a

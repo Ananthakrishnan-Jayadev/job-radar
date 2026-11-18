@@ -26,9 +26,17 @@ class FetchContext:
     today: date | None = None  # for relative dates; tests pin it
     # Should this title get a detail page fetched? (roles.toml; None: every title)
     wants: Callable[[str], bool] | None = None
+    # The oldest posted date kept ([general] max_age_days); older postings are
+    # skipped by the scan, so their detail pages are never fetched.
+    oldest: str | None = None
 
     def wanted(self, title: str) -> bool:
         return self.wants is None or self.wants(title)
+
+    def needs_detail(self, job: RawJob) -> bool:
+        """Fetch this job's detail page? Only new to us, a wanted role, and not too old."""
+        too_old = bool(self.oldest and job.posted_at and job.posted_at[:10] < self.oldest)
+        return job.external_id not in self.known_ids and self.wanted(job.title) and not too_old
 
 
 @dataclass
@@ -102,8 +110,7 @@ async def fill_details(jobs: list[RawJob], ctx: FetchContext, client, fetch_one:
     pause between requests. A failed detail never fails the board.
     """
     limit = ctx.settings.details_per_board if limit is None else limit
-    todo = [j for j in jobs if j.external_id not in ctx.known_ids and ctx.wanted(j.title)
-            and is_canadian(j.locations, canadian_company)]
+    todo = [j for j in jobs if ctx.needs_detail(j) and is_canadian(j.locations, canadian_company)]
     warnings, failures = [], 0
     for job in todo[:limit]:
         try:
