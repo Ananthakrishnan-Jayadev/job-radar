@@ -17,6 +17,11 @@ class HttpSettings:
     timeout_seconds: float = 20
     max_per_host: int = 2
     page_delay_seconds: float = 0.5
+    # A source that answers 429 (too many requests): first wait before retrying
+    # (then 3x, 6x), unless it says how long in Retry-After; and the extra pause
+    # before each later request to it in the same scan.
+    rate_limit_wait_seconds: float = 5.0
+    rate_limited_delay_seconds: float = 2.0
 
 
 DEFAULT_SEARCH_TERMS = ["data", "machine learning", "artificial intelligence", "analyst", "analytics"]

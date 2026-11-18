@@ -2,13 +2,18 @@
 
 Keeps us gentle on sources: at most `max_per_host` requests at once per host,
 a pause between pages (connectors call `pause()`), a timeout, and one retry
-on network errors, 429 and 5xx. Redirects are not followed: a job board that
+on network errors and 5xx. A 429 (too many requests) gets up to three
+retries, waiting as long as the source asks (Retry-After, up to a minute) or
+5, 15 then 30 seconds, and that host gets an extra pause before every later
+request in the same scan. Redirects are not followed: a job board that
 redirects (BambooHR sends unknown companies to its homepage) is "not found".
 """
 
 from __future__ import annotations
 
 import asyncio
+from email.utils import parsedate_to_datetime
+from datetime import UTC, datetime
 from typing import Any
 from urllib.parse import urlsplit
 
@@ -36,6 +41,7 @@ class HttpClient:
         )
         self._host_limits: dict[str, asyncio.Semaphore] = {}
         self._fallback_hosts: set[str] = set()  # hosts that rejected our honest user agent
+        self._slow_hosts: set[str] = set()  # hosts that answered 429: pause before each request
 
     async def __aenter__(self) -> HttpClient:
         return self
@@ -58,6 +64,8 @@ class HttpClient:
         host = urlsplit(url).netloc
         limit = self._host_limits.setdefault(host, asyncio.Semaphore(self.settings.http.max_per_host))
         async with limit:
+            if host in self._slow_hosts:
+                await self.pause(self.settings.http.rate_limited_delay_seconds)
             response = await self._send(method, url, host, **kwargs)
             if response.status_code == 403 and host not in self._fallback_hosts:
                 # Some sources block unknown agents; try once with a browser one.
@@ -77,20 +85,49 @@ class HttpClient:
         headers = dict(kwargs.pop("headers", None) or {})
         if host in self._fallback_hosts:
             headers["User-Agent"] = self.settings.http.fallback_user_agent
-        for attempt in (1, 2):
+        failures = rate_limits = 0
+        while True:
             try:
                 response = await self._client.request(method, url, headers=headers, **kwargs)
             except httpx.TimeoutException as exc:
-                if attempt == 2:
+                failures += 1
+                if failures == 2:
                     raise FetchError(f"timed out after {self.settings.http.timeout_seconds}s") from exc
             except httpx.TransportError as exc:
-                if attempt == 2:
+                failures += 1
+                if failures == 2:
                     raise FetchError(f"network error: {exc}") from exc
             else:
-                if attempt == 2 or (response.status_code != 429 and response.status_code < 500):
+                if response.status_code == 429:
+                    # Too many requests: slow down for this host, wait, try again (3 times).
+                    self._slow_hosts.add(host)
+                    rate_limits += 1
+                    if rate_limits > 3:
+                        return response
+                    await self.pause(_retry_after(response) or
+                                     self.settings.http.rate_limit_wait_seconds * (1, 3, 6)[rate_limits - 1])
+                    continue
+                if response.status_code < 500:
+                    return response
+                failures += 1
+                if failures == 2:
                     return response
             await self.pause(max(self.settings.http.page_delay_seconds * 4, 0))
-        raise AssertionError("unreachable")
+
+
+def _retry_after(response: httpx.Response) -> float | None:
+    """How long a 429 asks us to wait (Retry-After: seconds or a date), at most a minute."""
+    value = response.headers.get("retry-after", "").strip()
+    if not value:
+        return None
+    try:
+        seconds = float(value)
+    except ValueError:
+        try:
+            seconds = (parsedate_to_datetime(value) - datetime.now(UTC)).total_seconds()
+        except (TypeError, ValueError):
+            return None
+    return min(max(seconds, 0), 60)
 
 
 def _check(response: httpx.Response) -> httpx.Response:

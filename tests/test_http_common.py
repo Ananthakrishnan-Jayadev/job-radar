@@ -51,10 +51,46 @@ def test_timeout_is_a_fetch_error(settings):
         get(settings, sources)
 
 
-def test_rate_limited(settings):
+def test_rate_limited_gives_up_after_three_retries(settings):
     sources = FakeSources({("GET", URL): httpx.Response(429)})
     with pytest.raises(FetchError, match="429"):
         get(settings, sources)
+    assert len(sources.requests) == 4
+
+
+def test_rate_limited_waits_and_gets_through(settings):
+    sources = FakeSources({("GET", URL): Seq([httpx.Response(429), httpx.Response(429), {"ok": True}])})
+    assert get(settings, sources) == {"ok": True}
+    assert len(sources.requests) == 3
+
+
+def test_rate_limited_waits_as_asked_then_slows_down_for_that_host(settings, monkeypatch):
+    waits = []
+
+    async def pause(self, seconds=None):
+        waits.append(seconds)
+
+    monkeypatch.setattr(HttpClient, "pause", pause)
+    settings.http.rate_limit_wait_seconds = 5
+    settings.http.rate_limited_delay_seconds = 2
+    sources = FakeSources({("GET", URL): Seq([httpx.Response(429, headers={"Retry-After": "7"}), {"ok": True}])})
+
+    async def go():
+        async with HttpClient(settings, transport=sources.transport()) as client:
+            await client.get_json(URL)
+            await client.get_json(URL)  # a later request to the same host
+            await client.get_json("https://other.example.org/feed")  # another host: no extra pause
+
+    sources.add("GET", "https://other.example.org/feed", {"ok": True})
+    asyncio.run(go())
+    assert waits == [7.0, 2]  # Retry-After honoured; then the slow-down pause, only for that host
+
+
+def test_retry_after_is_capped_at_a_minute():
+    from jobradar.http import _retry_after
+    assert _retry_after(httpx.Response(429, headers={"Retry-After": "600"})) == 60
+    assert _retry_after(httpx.Response(429)) is None
+    assert _retry_after(httpx.Response(429, headers={"Retry-After": "soon"})) is None
 
 
 def test_honest_user_agent_then_fallback_on_403(settings):

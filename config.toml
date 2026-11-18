@@ -15,6 +15,11 @@ fallback_user_agent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML
 timeout_seconds = 20
 max_per_host = 2
 page_delay_seconds = 0.5
+# A source answering 429 (too many requests): wait this long, then 3x and 6x,
+# before each of up to three retries (or as long as it asks, up to a minute),
+# and pause this much before every later request to it in the same scan.
+rate_limit_wait_seconds = 5.0
+rate_limited_delay_seconds = 2.0
 
 [workday]
 # List every Canadian job when a board has at most this many;
