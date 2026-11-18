@@ -94,3 +94,13 @@ def test_stored_places_are_tidied_once(tmp_path):
     conn = db.connect(path)
     assert conn.execute("SELECT city FROM job_locations").fetchone()[0] == "Mississauga"
     conn.close()
+
+
+def test_picking_a_company_shows_its_jobs_even_if_ignored(conn):
+    _setup(conn)
+    acme = conn.execute("SELECT id FROM companies WHERE name = 'Acme'").fetchone()[0]
+    tracking.update_company(conn, acme, status="ignored")
+    everyone = queries.search_jobs(conn, queries.JobFilter(all_roles=True), group=True)[1]
+    assert {r["company"] for r in everyone} == {"Other"}  # hidden from the general list
+    picked = queries.search_jobs(conn, queries.JobFilter(all_roles=True, company_ids=[acme]), group=True)[1]
+    assert {r["company"] for r in picked} == {"Acme"}  # but shown when picked

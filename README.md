@@ -54,7 +54,8 @@ or use `.venv/bin/jobradar serve --dev`, which rebuilds the UI on every save
 
 - **Jobs:** built for working through postings. Shows only the roles you
   want (software, data, AI; see "Which roles" below), with a "Show all roles"
-  switch. Search (words, `"exact phrases"`, `OR`, `analy*`), a heat map of the
+  switch. Search (words, `"exact phrases"`, `OR`, `analy*`), a **Company**
+  picker (one company's jobs only, even a company marked ignored), a heat map of the
   ten provinces to filter by (live counts) plus "Remote anywhere in Canada",
   and filters for date posted, experience level, years asked and your status;
   role, company size, workplace, job system and salary sit under "More
@@ -105,8 +106,9 @@ or use `.venv/bin/jobradar serve --dev`, which rebuilds the UI on every save
   size, job boards, your status. Click a column heading to sort by it (names
   A to Z, counts and sizes highest first); click again to reverse. The sort
   is remembered. Tick companies to set one status on all of them.
-  **Careers** beside each name opens its careers page in a new tab (or, when
-  none is known, its job board's public page). Buttons to fill in company sizes and to find job boards for
+  **Jobs** beside each name opens the Jobs page with only that company's
+  jobs; **Careers** opens its careers page in a new tab (or, when none is
+  known, its job board's public page). A company's own page has both too. Buttons to fill in company sizes and to find job boards for
   companies that have none. Add a company (paste its careers link and let the
   app find its job board). Tick companies (or tick all shown) and **Remove**
   them: their boards and jobs go too and scans stop checking them. A copy is

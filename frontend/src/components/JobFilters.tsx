@@ -6,7 +6,7 @@ import { JOB_STATUS_LABEL, LEVEL_LABEL, SIZE_LABEL, SYSTEM_LABEL, WORKPLACE_LABE
 import { POSTED, postedValue, withPosted } from "../jobFilters";
 import { getList, isOn, toggleInList, withParam } from "../params";
 import { useApp } from "../state";
-import type { Meta } from "../types";
+import type { Company, Meta } from "../types";
 import Chips from "./Chips";
 import ProvinceMap from "./ProvinceMap";
 import TaskStatus from "./TaskStatus";
@@ -17,9 +17,11 @@ interface Props {
   setParams: (next: URLSearchParams) => void;
   provinceCounts: Record<string, number> | undefined;
   previousVisit: string | null;
+  /** Every company, for the Company filter (still loading: undefined). */
+  companies: Company[] | undefined;
 }
 
-export default function JobFilters({ meta, params, setParams, provinceCounts, previousVisit }: Props) {
+export default function JobFilters({ meta, params, setParams, provinceCounts, previousVisit, companies }: Props) {
   const [query, setQuery] = useState(params.get("q") ?? "");
   // "More filters" starts open when one of its filters is on.
   const [moreOpen, setMoreOpen] = useState(
@@ -59,6 +61,25 @@ export default function JobFilters({ meta, params, setParams, provinceCounts, pr
         </label>
         <p className="hint">Use quotes for exact phrases, OR for either word, and * to match word starts (analy*).</p>
       </form>
+
+      <fieldset className="field">
+        <legend>Company</legend>
+        {/* One company's jobs only; the Companies page links here too. */}
+        <select
+          aria-label="Show jobs from one company"
+          value={params.get("company") ?? ""}
+          onChange={(e) => setParams(withParam(withParam(params, "company", e.target.value || null), "page", null))}
+        >
+          <option value="">All companies</option>
+          {[...(companies ?? [])]
+            .sort((a, b) => a.name.localeCompare(b.name, "en-CA", { sensitivity: "base" }))
+            .map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.name}
+              </option>
+            ))}
+        </select>
+      </fieldset>
 
       <ProvinceMap
         names={names}

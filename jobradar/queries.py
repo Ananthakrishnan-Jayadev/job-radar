@@ -96,7 +96,9 @@ def _where(f: JobFilter) -> tuple[list[str], list, bool]:
         if values:
             where.append(f"{column} IN ({_marks(values)})")
             params += list(values)
-    if not f.include_ignored and "ignored" not in f.company_statuses:
+    # Ignored companies' jobs stay hidden, unless asked for: by name (picking
+    # a company shows its jobs whatever its status) or with include_ignored.
+    if not f.include_ignored and not f.company_ids and "ignored" not in f.company_statuses:
         where.append("c.status != 'ignored'")
     if f.posted_within_days is not None:
         where.append(f"{SORTS['posted']} >= date('now', ?)")

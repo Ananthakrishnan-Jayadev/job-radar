@@ -315,6 +315,14 @@ export default function CompaniesPage() {
                       <Link to={`/companies/${c.id}`} className="job-title">
                         {c.name}
                       </Link>
+                      <Link
+                        to={`/?company=${c.id}`}
+                        className="careers-link"
+                        aria-label={`Jobs from ${c.name} on the Jobs page`}
+                        title="This company's jobs on the Jobs page"
+                      >
+                        Jobs
+                      </Link>
                       {c.careers_page && (
                         <a
                           className="careers-link"

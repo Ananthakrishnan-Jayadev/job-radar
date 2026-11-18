@@ -59,6 +59,7 @@ export default function CompanyPage() {
             {formatCount(c.canada_open)} open {c.canada_open === 1 ? "job" : "jobs"} in Canada
           </Link>
           {c.total_open !== null && <span>{formatCount(c.total_open)} worldwide</span>}
+          <Link to={`/?company=${c.id}`}>Show its jobs</Link>
           {c.careers_page && (
             <a href={c.careers_page} target="_blank" rel="noreferrer">
               Careers page

@@ -122,6 +122,10 @@ export default function JobsPage() {
 
   const jobs = useLoad(() => api.jobs(params), key);
   const counts = useLoad(() => api.provinceCounts(params), key);
+  // Every company, for the Company filter and the name on its chip.
+  const companies = useLoad(() => api.companies(new URLSearchParams()), `companies|${dataVersion}`);
+  const companyId = Number(params.get("company"));
+  const companyName = companies.data?.find((c) => c.id === companyId)?.name;
   const [filtersHidden, toggleFilters] = useFiltersHidden();
   // Side by side when there's room: the list, and the selected posting beside it.
   const wide = useMediaQuery("(min-width: 1440px)");
@@ -398,6 +402,7 @@ export default function JobsPage() {
           params={params}
           setParams={setParams}
           provinceCounts={counts.data}
+          companies={companies.data}
           previousVisit={previousVisit}
         />
       )}
@@ -456,7 +461,7 @@ export default function JobsPage() {
             meta={meta}
             params={params}
             setParams={setParams}
-            companyName={params.has("company") ? items[0]?.company : undefined}
+            companyName={params.has("company") ? companyName ?? items[0]?.company : undefined}
           />
         )}
 
