@@ -5,6 +5,11 @@
 [general]
 # SQLite file, relative to this folder.
 database = "data/jobradar.db"
+# Only jobs posted in the last this many days are kept: scans skip older
+# postings, older ones already stored are deleted after each scan (never jobs
+# you've saved, applied to or written notes on), and jobs with no posted date
+# are hidden once they were first found this long ago. 0 keeps everything.
+max_age_days = 30
 
 [http]
 # Sent with every request so sources can see who is calling.

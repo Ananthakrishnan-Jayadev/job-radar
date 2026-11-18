@@ -76,6 +76,7 @@ def settings(tmp_path):
     """Default settings with every pause set to zero so tests run fast."""
     s = load_settings(tmp_path)
     s.http.page_delay_seconds = 0
+    s.max_age_days = 0  # sample jobs have fixed dates; the age limit has its own tests
     s.http.rate_limit_wait_seconds = 0
     s.http.rate_limited_delay_seconds = 0
     s.workday.delay_seconds = 0

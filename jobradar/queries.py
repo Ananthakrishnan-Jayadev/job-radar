@@ -55,6 +55,10 @@ class JobFilter:
     role_categories: list[str] = field(default_factory=list)  # software / data / ai / adjacent
     levels: list[str] = field(default_factory=list)  # levels.LEVELS and/or "unknown"
     years: list[str] = field(default_factory=list)  # levels.YEAR_BANDS values and/or "none"
+    # Hide jobs older than this many days (posted, or first found when undated),
+    # except tracked ones; 0 shows every age. Asking for older jobs
+    # (posted_before_days) shows them anyway.
+    max_age_days: int = 0
 
 
 def _fts_query(f: JobFilter) -> str | None:
@@ -103,6 +107,10 @@ def _where(f: JobFilter) -> tuple[list[str], list, bool]:
     if f.posted_within_days is not None:
         where.append(f"{SORTS['posted']} >= date('now', ?)")
         params.append(f"-{int(f.posted_within_days)} days")
+    if f.max_age_days > 0 and f.posted_before_days is None:
+        where.append(f"({SORTS['posted']} >= date('now', ?) OR j.status != 'new' OR j.notes != '' "
+                     "OR j.applied_at IS NOT NULL)")
+        params.append(f"-{int(f.max_age_days)} days")
     if f.posted_before_days is not None:
         where.append(f"{SORTS['posted']} < date('now', ?)")
         params.append(f"-{int(f.posted_before_days)} days")

@@ -85,6 +85,9 @@ def cmd_scan(args) -> int:
     stored = conn.execute("SELECT COUNT(*) FROM jobs WHERE closed_at IS NULL").fetchone()[0]
     print(f"\nDone: {summary.boards_ok} boards ok, {summary.boards_failed} failed. "
           f"{summary.jobs_new} new jobs, {summary.jobs_closed} closed. {stored} open Canadian jobs stored.")
+    if summary.pruned:
+        print(f"{summary.pruned} jobs posted more than {settings.max_age_days} days ago deleted "
+              "(jobs you track are kept).")
     retired = summary.retired
     if retired.merged or retired.closed:
         print(f"Adzuna copies replaced by the company's own board: {retired.merged} merged "

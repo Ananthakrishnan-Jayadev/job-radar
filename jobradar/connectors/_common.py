@@ -131,13 +131,15 @@ def iso_date(value) -> str | None:
 
 
 def relative_date(text: str | None, today: date | None = None) -> str | None:
-    """Workday's "Posted Today" / "Posted 3 Days Ago". "30+ Days Ago" is unknown."""
+    """Workday's "Posted Today" / "Posted 3 Days Ago". "30+ Days Ago" becomes 31
+    days ago: the exact day isn't given, but it's older than a month."""
     if not text:
         return None
     today = today or date.today()
     lowered = text.lower()
     if "+" in lowered:
-        return None
+        match = re.search(r"(\d+)\+", lowered)
+        return (today - timedelta(days=int(match.group(1)) + 1)).isoformat() if match else None
     if "today" in lowered:
         return today.isoformat()
     if "yesterday" in lowered:

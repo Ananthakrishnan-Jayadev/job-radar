@@ -124,7 +124,7 @@ def test_iso_date(value, expected):
 
 @pytest.mark.parametrize("text,expected", [
     ("Posted Today", "2026-10-26"), ("Posted Yesterday", "2026-10-25"),
-    ("Posted 2 Days Ago", "2026-10-24"), ("Posted 30+ Days Ago", None), (None, None),
+    ("Posted 2 Days Ago", "2026-10-24"), ("Posted 30+ Days Ago", "2026-09-25"), (None, None),
 ])
 def test_relative_date(text, expected):
     assert relative_date(text, date(2026, 10, 26)) == expected

@@ -233,7 +233,13 @@ company by link finds no board; track its jobs one at a time with **Add a
 job by link** on the Applications page.
 
 Only jobs with a location in Canada are kept (or, for Canadian companies,
-postings that say nothing but "Remote"). Where a list has no job
+postings that say nothing but "Remote"), and only ones **posted in the last
+30 days** (`[general] max_age_days`, 0 keeps every age): scans skip older
+postings, older ones already stored are deleted after each scan, and jobs
+with no posted date (SAP SuccessFactors, some Workday) are hidden once they
+were first found more than 30 days ago. Jobs you've saved, applied to or
+written notes on are always kept, however old. Workday's "Posted 30+ Days
+Ago" counts as older than a month. Where a list has no job
 descriptions, each wanted role's own page is read during the scan, up to 60
 per board per scan (`[details]` in `config.toml`); the rest follow on the
 next scan.

@@ -72,6 +72,10 @@ class Settings:
     root: Path
     database: Path
     contact: str = ""
+    # Jobs posted longer ago than this aren't kept: scans skip them, old ones
+    # are deleted after each scan (never ones you track), and undated ones
+    # found that long ago are hidden. 0 keeps everything.
+    max_age_days: int = 30
     http: HttpSettings = field(default_factory=HttpSettings)
     workday: WorkdaySettings = field(default_factory=WorkdaySettings)
     smartrecruiters_max_age_days: int = 180
@@ -129,6 +133,7 @@ def load_settings(root: Path | str | None = None) -> Settings:
         root=root,
         database=database,
         contact=general.get("contact", ""),
+        max_age_days=int(general.get("max_age_days", 30)),
         http=_pick(HttpSettings, data.get("http", {})),
         workday=_pick(WorkdaySettings, data.get("workday", {})),
         smartrecruiters_max_age_days=data.get("smartrecruiters", {}).get("max_age_days", 180),

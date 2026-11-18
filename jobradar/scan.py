@@ -13,6 +13,7 @@ import json
 import re
 import sqlite3
 import time
+from datetime import date, timedelta
 from collections.abc import Callable
 from dataclasses import dataclass, field
 
@@ -50,6 +51,7 @@ class ScanSummary:
     scan_id: int
     outcomes: list[BoardOutcome]
     retired: Retired = field(default_factory=Retired)  # Adzuna snapshot copies settled
+    pruned: int = 0  # jobs posted too long ago, deleted (never tracked ones)
 
     @property
     def boards_ok(self) -> int:
@@ -105,6 +107,31 @@ def source_terms(conn: sqlite3.Connection, settings: Settings) -> list[str]:
     return list(dict.fromkeys(terms)) or list(settings.workday.search_terms)
 
 
+# A job you've touched: kept and updated however old it is.
+TRACKED = "(status != 'new' OR notes != '' OR applied_at IS NOT NULL)"
+
+
+def age_cutoff(settings: Settings, today=None) -> str | None:
+    """The oldest posted date kept (ISO), or None when every age is kept."""
+    if settings.max_age_days <= 0:
+        return None
+    return ((today or date.today()) - timedelta(days=settings.max_age_days)).isoformat()
+
+
+def prune_old(conn: sqlite3.Connection, settings: Settings, today=None) -> int:
+    """Delete jobs posted before the cutoff, except ones you track. Returns how many."""
+    cutoff = age_cutoff(settings, today)
+    if cutoff is None:
+        return 0
+    with conn:
+        cur = conn.execute(f"DELETE FROM jobs WHERE posted_at < ? AND NOT {TRACKED}", (cutoff,))
+    return cur.rowcount
+
+
+def _tracked_ids(conn: sqlite3.Connection, board_id: int) -> set[str]:
+    return {r[0] for r in conn.execute(f"SELECT external_id FROM jobs WHERE board_id = ? AND {TRACKED}", (board_id,))}
+
+
 def _known_ids(conn: sqlite3.Connection, board_id: int) -> set[str]:
     rows = conn.execute(
         "SELECT external_id FROM jobs WHERE board_id = ? AND description IS NOT NULL", (board_id,)
@@ -127,9 +154,13 @@ async def _scan_board(conn, board: Board, client: HttpClient, settings: Settings
     outcome = BoardOutcome(board=board, ok=True, jobs_seen=len(result.jobs), total_open=result.total,
                            complete=result.complete, warnings=list(result.warnings))
     seen_ids: list[int] = []
+    cutoff = age_cutoff(settings, today)
+    tracked = _tracked_ids(conn, board.id) if cutoff else set()
     for job in result.jobs:
         if not is_canadian(job.locations, board.company_canadian):
             continue
+        if cutoff and job.posted_at and job.posted_at[:10] < cutoff and job.external_id not in tracked:
+            continue  # posted too long ago (a stored copy is deleted after the scan)
         job_id, is_new = db.upsert_job(conn, board.id, job, seen_at)
         seen_ids.append(job_id)
         outcome.jobs_canada += 1
@@ -195,7 +226,8 @@ async def scan_async(
         await asyncio.gather(*(run(b) for b in boards))
 
     read_fully = [o.board.id for o in outcomes if o.ok and o.complete]
-    summary = ScanSummary(scan_id=scan_id, outcomes=outcomes, retired=retire_copies(conn, read_fully, seen_at))
+    summary = ScanSummary(scan_id=scan_id, outcomes=outcomes, retired=retire_copies(conn, read_fully, seen_at),
+                          pruned=prune_old(conn, settings, today))
     sync_roles(conn, settings.root)  # role categories for the new jobs
     with conn:
         conn.execute(

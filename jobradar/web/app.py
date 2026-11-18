@@ -248,8 +248,9 @@ def _int(request: Request, name: str, default: int | None = None) -> int | None:
         raise HTTPException(400, f"{name} must be a whole number") from None
 
 
-def job_filter(request: Request) -> queries.JobFilter:
+def job_filter(request: Request, max_age_days: int = 0) -> queries.JobFilter:
     return queries.JobFilter(
+        max_age_days=max_age_days,
         query=request.query_params.get("q") or None,
         title_only=_flag(request, "title_only"),
         provinces=_list(request, "provinces"),
@@ -335,7 +336,8 @@ def create_app(settings: Settings, db_path: Path | None = None,
     @app.get("/api/meta")
     def meta(conn: sqlite3.Connection = RolesConn):
         rules = rules_for(settings.root)
-        open_jobs = queries.search_jobs(conn, queries.JobFilter(include_ignored=True), limit=0)[0]
+        open_jobs = queries.search_jobs(conn, queries.JobFilter(include_ignored=True,
+                                                                max_age_days=settings.max_age_days), limit=0)[0]
         return {
             "provinces": [{"code": c, "name": n} for c, n in PROVINCES],
             "job_statuses": list(JOB_STATUSES),
@@ -364,7 +366,7 @@ def create_app(settings: Settings, db_path: Path | None = None,
 
     @app.get("/api/jobs")
     def list_jobs(request: Request, conn: sqlite3.Connection = RolesConn):
-        f = job_filter(request)
+        f = job_filter(request, settings.max_age_days)
         page = max(_int(request, "page", 1), 1)
         page_size = min(max(_int(request, "page_size", 50), 1), MAX_PAGE_SIZE)
         try:
@@ -382,14 +384,14 @@ def create_app(settings: Settings, db_path: Path | None = None,
     @app.get("/api/jobs/provinces")
     def province_counts(request: Request, conn: sqlite3.Connection = RolesConn):
         try:
-            return queries.province_counts(conn, job_filter(request))
+            return queries.province_counts(conn, job_filter(request, settings.max_age_days))
         except sqlite3.OperationalError as exc:
             raise HTTPException(400, f"search syntax: {exc}") from exc
 
     @app.get("/api/jobs.csv")
     def export_csv(request: Request, conn: sqlite3.Connection = RolesConn):
         try:
-            text = jobs_csv(conn, job_filter(request), sort=request.query_params.get("sort") or None)
+            text = jobs_csv(conn, job_filter(request, settings.max_age_days), sort=request.query_params.get("sort") or None)
         except sqlite3.OperationalError as exc:
             raise HTTPException(400, f"search syntax: {exc}") from exc
         name = f"jobradar-{date.today().isoformat()}.csv"
