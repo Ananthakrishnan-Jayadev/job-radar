@@ -44,3 +44,18 @@ url = "http://localhost:11434"
 model = "gemma4:31b-cloud"
 timeout_seconds = 180
 max_chars = 6000
+
+[ai]
+# Who "Ask AI" (and `jobradar levels --ai`) asks about job levels:
+# "ollama" (the [ollama] section) or "claude" (the [claude] section).
+provider = "ollama"
+
+[claude]
+# Claude through the Claude Code CLI (`claude -p`), counted against your
+# Claude subscription's usage, not billed per token. Sign in once by running
+# `claude` (laptop), or on a server set CLAUDE_CODE_OAUTH_TOKEN to the token
+# `claude setup-token` prints. Model: haiku, sonnet, opus, or a full name.
+command = "claude"
+model = "sonnet"
+timeout_seconds = 180
+max_chars = 6000

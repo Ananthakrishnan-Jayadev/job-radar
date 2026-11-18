@@ -271,13 +271,13 @@ def cmd_levels(args) -> int:
     conn, _ = _open_db(args)
     sync_roles(conn, settings.root)  # also works out levels with the rules
     if args.ai:
-        model = args.model or settings.ollama.model
+        model = args.model or (settings.claude.model if settings.ai_provider == "claude" else settings.ollama.model)
         todo = len(levels.jobs_to_ask(conn))
         count = min(todo, args.limit) if args.limit else todo
         print(f"Asking {model} about {count} jobs missing a level or years"
               + (" (dry run: nothing is saved)" if args.dry_run else "") + "...")
         try:
-            summary = levels.run_ask_ollama(conn, settings, model=model, limit=args.limit, dry_run=args.dry_run)
+            summary = levels.run_ask(conn, settings, model=model, limit=args.limit, dry_run=args.dry_run)
         except levels.LevelsError as exc:
             print(exc, file=sys.stderr)
             return 1
@@ -447,7 +447,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     lv = sub.add_parser("levels", help="experience levels of wanted jobs (rules, then Ollama with --ai)")
     lv.add_argument("--ai", action="store_true", help="ask Ollama about jobs the rules can't place")
-    lv.add_argument("--model", help="Ollama model (default: [ollama] model in config.toml)")
+    lv.add_argument("--model", help="model to ask (default: the [ollama] or [claude] model, per [ai] provider)")
     lv.add_argument("--limit", type=int, help="ask about at most this many jobs")
     lv.add_argument("--dry-run", action="store_true", help="print the answers without saving them")
     lv.set_defaults(func=cmd_levels)

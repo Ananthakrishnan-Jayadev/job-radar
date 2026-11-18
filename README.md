@@ -201,7 +201,11 @@ years only when the posting states a number. Each job is read once; a
 changed description is read again. Each job is asked about once; the answer is saved as
 it comes, so stopping keeps what it got. The model is set in `config.toml`
 (`[ollama] model`, default `gemma4:31b-cloud`); cloud models need
-`ollama signin` once. Without Ollama installed, use Ollama's cloud directly:
+`ollama signin` once. Or ask **Claude** instead, on your Claude subscription:
+set `[ai] provider = "claude"` in `config.local.toml`; Job Radar runs
+`claude -p` (Claude Code, signed in, or `CLAUDE_CODE_OAUTH_TOKEN` from
+`claude setup-token`) with tools off and a JSON schema, about 1,600 tokens a
+job (`[claude] model`, default `sonnet`). Without Ollama installed, use Ollama's cloud directly:
 set `[ollama] url = "https://ollama.com"` in `config.local.toml` and an API
 key in the `OLLAMA_API_KEY` environment variable. Hover over a level in the
 list, or open the job, to see the years asked and where the level came from.

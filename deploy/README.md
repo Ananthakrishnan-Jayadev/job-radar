@@ -76,6 +76,40 @@ curl -s https://ollama.com/api/tags -H "Authorization: Bearer $(grep OLLAMA_API_
 
 `.env` and `config.local.toml` are git-ignored: they never reach GitHub.
 
+### Or: Claude on your subscription, instead of Ollama
+
+"Ask AI" can use Claude through Claude Code (`claude -p`), counted against
+your Claude Pro/Max usage instead of an API bill. On the **laptop** (where
+you're signed in to Claude Code), make a long-lived token:
+
+```bash
+claude setup-token     # prints a token valid for a year; copy it
+```
+
+On the **server**:
+
+```bash
+cd ~/job-radar
+echo "CLAUDE_CODE_OAUTH_TOKEN=paste-the-token" >> .env
+chmod 600 .env
+```
+
+and in `~/job-radar/config.local.toml`:
+
+```toml
+[ai]
+provider = "claude"
+
+[claude]
+model = "sonnet"   # or haiku (lighter on your usage), opus
+```
+
+Then `./deploy/deploy.sh`. The **Ask** button on the Jobs page shows
+"Ask Claude (sonnet)". Each job is one short request (about 1,600 tokens);
+if your usage limit is reached, it stops and says so, keeping what it got.
+To go back to Ollama, set `provider = "ollama"` and restart
+(`docker compose restart jobradar`).
+
 ## 4. Start it
 
 On the **server**:

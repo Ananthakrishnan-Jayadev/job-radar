@@ -13,6 +13,7 @@ fi
 
 echo "Fetching the latest code..."
 git pull --ff-only
+mkdir -p data/.home   # Claude Code's home folder (Ask AI with Claude)
 
 echo "Building and restarting (the first build takes a few minutes)..."
 docker compose up -d --build

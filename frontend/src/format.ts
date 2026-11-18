@@ -49,6 +49,7 @@ export function levelSourceText(source: string | null): string {
   if (source === "title") return "from the job title";
   if (source === "years") return "from the years of experience asked";
   if (source?.startsWith("ollama:")) return `worked out by ${source.slice(7)}`;
+  if (source?.startsWith("claude:")) return `worked out by Claude (${source.slice(7)})`;
   return "";
 }
 

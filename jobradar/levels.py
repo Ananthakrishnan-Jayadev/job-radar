@@ -23,6 +23,8 @@ import json
 import os
 import re
 import sqlite3
+import subprocess
+import tempfile
 import unicodedata
 from collections.abc import Callable
 from dataclasses import dataclass, field
@@ -279,21 +281,27 @@ async def ask_ollama(conn: sqlite3.Connection, settings: Settings, *, model: str
             except ValueError:
                 summary.failed += 1
                 continue
-            had_level, had_years = conn.execute("SELECT experience_level IS NOT NULL, min_years IS NOT NULL "
-                                                "FROM jobs WHERE id = ?", (row["id"],)).fetchone()
-            summary.levels_found += not had_level and level is not None
-            summary.years_found += not had_years and years is not None
-            summary.answers.append((row["title"], level, years))
-            if not dry_run:
-                with conn:  # SET reads the old values, so only empty fields change
-                    conn.execute(
-                        "UPDATE jobs SET experience_level = COALESCE(experience_level, ?), "
-                        "level_source = CASE WHEN experience_level IS NULL AND ? IS NOT NULL THEN ? "
-                        "ELSE level_source END, min_years = COALESCE(min_years, ?), level_asked = ? WHERE id = ?",
-                        (level, level, f"ollama:{summary.model}", years, summary.model, row["id"]))
+            _save(conn, summary, row, level, years, f"ollama:{summary.model}", dry_run)
     if summary.stopped and summary.asked == 0:
         raise LevelsError(summary.stopped)
     return summary
+
+
+def _save(conn: sqlite3.Connection, summary: AskSummary, row, level: str | None, years: int | None,
+          source: str, dry_run: bool) -> None:
+    """Record one answer: count what it found, and fill in only the job's empty fields."""
+    had_level, had_years = conn.execute("SELECT experience_level IS NOT NULL, min_years IS NOT NULL "
+                                        "FROM jobs WHERE id = ?", (row["id"],)).fetchone()
+    summary.levels_found += not had_level and level is not None
+    summary.years_found += not had_years and years is not None
+    summary.answers.append((row["title"], level, years))
+    if not dry_run:
+        with conn:  # SET reads the old values, so only empty fields change
+            conn.execute(
+                "UPDATE jobs SET experience_level = COALESCE(experience_level, ?), "
+                "level_source = CASE WHEN experience_level IS NULL AND ? IS NOT NULL THEN ? "
+                "ELSE level_source END, min_years = COALESCE(min_years, ?), level_asked = ? WHERE id = ?",
+                (level, level, source, years, summary.model, row["id"]))
 
 
 def _stop_reason(response: httpx.Response, model: str) -> str:
@@ -312,3 +320,89 @@ def _stop_reason(response: httpx.Response, model: str) -> str:
 
 def run_ask_ollama(conn: sqlite3.Connection, settings: Settings, **kwargs) -> AskSummary:
     return asyncio.run(ask_ollama(conn, settings, **kwargs))
+
+
+# --- Claude, through the Claude Code CLI on your subscription ---------------------------
+
+_CLAUDE_SYSTEM = ("You read job postings and report their experience level and the years of "
+                  "experience they ask for.")
+
+def ask_claude(conn: sqlite3.Connection, settings: Settings, *, model: str | None = None,
+               limit: int | None = None, dry_run: bool = False, runner=subprocess.run,
+               progress: Callable[[int, int], None] | None = None) -> AskSummary:
+    """Ask Claude about each job missing a level or years, one `claude -p` run per job,
+    saving each answer as it comes (as ask_ollama does).
+
+    Runs with Claude Code's tools switched off, a short system prompt and a
+    JSON schema for the answer, in an
+    empty folder (so no project's CLAUDE.md or skills are loaded). An
+    ANTHROPIC_API_KEY in the environment is left out, so the subscription is
+    used, never per-token API billing.
+    runner: subprocess.run, or a fake in tests."""
+    c = settings.claude
+    summary = AskSummary(model=model or c.model)
+    rows = jobs_to_ask(conn)[:limit] if limit else jobs_to_ask(conn)
+    env = {k: v for k, v in os.environ.items() if k != "ANTHROPIC_API_KEY"}
+    # Always the same empty folder: Claude Code keeps per-folder history, so a
+    # new folder each run would leave a new one behind every time.
+    workdir = os.path.join(tempfile.gettempdir(), "jobradar-claude")
+    os.makedirs(workdir, exist_ok=True)
+    for i, row in enumerate(rows):
+        if progress:
+            progress(i, len(rows))
+        prompt = _PROMPT.format(title=row["title"], text=plain_text(row["description"])[:c.max_chars])
+        # --tools "" switches off Claude Code's tools (its JSON answer still works),
+        # and a one-line system prompt replaces its long default: about 1,600
+        # tokens a job instead of 18,000 of your usage.
+        command = [c.command, "-p", prompt, "--output-format", "json", "--json-schema", json.dumps(_SCHEMA),
+                   "--tools", "", "--system-prompt", _CLAUDE_SYSTEM, "--model", summary.model]
+        try:
+            done = runner(command, capture_output=True, text=True, timeout=c.timeout_seconds,
+                          cwd=workdir, env=env)
+        except FileNotFoundError as exc:
+            raise LevelsError(f"Claude Code isn't installed here (no `{c.command}` command). Install it, "
+                              "or set [ai] provider = \"ollama\".") from exc
+        except subprocess.TimeoutExpired:
+            summary.failed += 1
+            continue
+        try:
+            reply = json.loads(done.stdout)
+        except ValueError:
+            reply = {}
+        if done.returncode != 0 or reply.get("is_error") or not reply:
+            summary.stopped = _claude_stop_reason(done, reply)
+            break
+        summary.asked += 1
+        answer = reply.get("structured_output")
+        try:
+            if isinstance(answer, dict):
+                level, years = parse_answer(json.dumps(answer))
+            else:  # no schema output: read the text answer instead
+                level, years = parse_answer(str(reply.get("result", "")))
+        except ValueError:
+            summary.failed += 1
+            continue
+        _save(conn, summary, row, level, years, f"claude:{summary.model}", dry_run)
+    if summary.stopped and summary.asked == 0:
+        raise LevelsError(summary.stopped)
+    return summary
+
+
+def _claude_stop_reason(done: subprocess.CompletedProcess, reply: dict) -> str:
+    detail = str(reply.get("result") or done.stderr or done.stdout or "").strip()[:300]
+    text = detail.lower()
+    if "log in" in text or "login" in text or "auth" in text or "token" in text:
+        return ("Claude Code isn't signed in: run `claude` once and log in, or on a server set "
+                f"CLAUDE_CODE_OAUTH_TOKEN to the token `claude setup-token` prints. ({detail})")
+    if "limit" in text:
+        return f"Your Claude usage limit is reached; try again after it resets. ({detail})"
+    return f"Claude Code failed (exit {done.returncode}): {detail or 'no message'}"
+
+
+def run_ask(conn: sqlite3.Connection, settings: Settings, **kwargs) -> AskSummary:
+    """Ask whichever AI the settings name ([ai] provider)."""
+    if settings.ai_provider == "claude":
+        kwargs.pop("transport", None)
+        return ask_claude(conn, settings, **kwargs)
+    kwargs.pop("runner", None)
+    return run_ask_ollama(conn, settings, **kwargs)

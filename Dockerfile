@@ -11,12 +11,20 @@ COPY frontend/ ./
 # Vite writes the built UI to ../jobradar/web/static.
 RUN mkdir -p ../jobradar/web && npm run build
 
-# --- 2. the app -----------------------------------------------------------------
+# --- 2. Claude Code, for "Ask AI" with [ai] provider = "claude" -------------------
+FROM node:22-slim AS claude
+RUN npm install --prefix /opt/claude-code @anthropic-ai/claude-code
+
+# --- 3. the app -----------------------------------------------------------------
 FROM python:3.14-slim
 # tzdata: dates on the Applications page are counted in local time (TZ in compose).
+# libstdc++6: Node, which runs Claude Code.
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends tzdata \
+    && apt-get install -y --no-install-recommends tzdata libstdc++6 \
     && rm -rf /var/lib/apt/lists/*
+COPY --from=claude /usr/local/bin/node /usr/local/bin/node
+COPY --from=claude /opt/claude-code /opt/claude-code
+ENV PATH="/opt/claude-code/node_modules/.bin:${PATH}"
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     JOBRADAR_NO_APPLY=1

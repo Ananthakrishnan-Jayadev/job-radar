@@ -300,3 +300,69 @@ def test_ask_ollama_sends_an_api_key_when_set(conn, tmp_path, settings, monkeypa
     sources = FakeSources({("POST", CHAT): _reply("mid", 3)})
     levels.run_ask_ollama(conn, settings, transport=sources.transport(), dry_run=True)
     assert sources.requests[0].headers["authorization"] == "Bearer secret-key"
+
+
+# --- Claude (claude -p) -------------------------------------------------------------------
+
+class FakeClaude:
+    """Stands in for subprocess.run of `claude -p`: records each call, replies in turn."""
+
+    def __init__(self, *replies):
+        self.replies = list(replies)
+        self.calls = []
+
+    def __call__(self, command, **kwargs):
+        import subprocess
+        self.calls.append((command, kwargs))
+        reply = self.replies[min(len(self.calls), len(self.replies)) - 1]
+        if isinstance(reply, BaseException):
+            raise reply
+        code, out = reply if isinstance(reply, tuple) else (0, reply)
+        return subprocess.CompletedProcess(command, code, stdout=json.dumps(out) if isinstance(out, dict) else out,
+                                           stderr="")
+
+
+def _claude_settings(settings):
+    settings.ai_provider = "claude"
+    return settings
+
+
+def test_ask_claude_saves_structured_answers(conn, tmp_path, settings, monkeypatch):
+    _, ids = _setup(conn, tmp_path)
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "should-not-be-used")
+    fake = FakeClaude({"type": "result", "is_error": False, "result": "",
+                       "structured_output": {"level": "mid", "min_years": 3}})
+    summary = levels.run_ask(conn, _claude_settings(settings), runner=fake)
+    assert (summary.asked, summary.levels_found, summary.years_found) == (1, 1, 1)
+    assert _level(conn, ids["Backend Developer"]) == ("mid", 3, "claude:sonnet")
+    command, kwargs = fake.calls[0]
+    assert command[:2] == ["claude", "-p"] and "Backend Developer" in command[2]
+    assert command[command.index("--tools") + 1] == ""  # no tools
+    assert "--system-prompt" in command  # not Claude Code's long default
+    assert json.loads(command[command.index("--json-schema") + 1])["required"] == ["level", "min_years"]
+    assert command[command.index("--model") + 1] == "sonnet"
+    assert "ANTHROPIC_API_KEY" not in kwargs["env"]  # the subscription, never API billing
+    assert kwargs["cwd"] != str(tmp_path)  # an empty folder, not the project
+
+
+def test_ask_claude_reads_a_text_answer_without_schema_output(conn, tmp_path, settings):
+    _, ids = _setup(conn, tmp_path)
+    fake = FakeClaude({"type": "result", "is_error": False, "result": '{"level": "senior", "min_years": null}'})
+    levels.run_ask(conn, _claude_settings(settings), runner=fake)
+    assert _level(conn, ids["Backend Developer"])[0] == "senior"
+
+
+def test_ask_claude_not_signed_in_or_not_installed(conn, tmp_path, settings):
+    _setup(conn, tmp_path)
+    fake = FakeClaude((1, {"type": "result", "is_error": True, "result": "Not logged in · Please run /login"}))
+    with pytest.raises(levels.LevelsError, match="setup-token"):
+        levels.run_ask(conn, _claude_settings(settings), runner=fake)
+    with pytest.raises(levels.LevelsError, match="isn't installed"):
+        levels.run_ask(conn, settings, runner=FakeClaude(FileNotFoundError()))
+
+
+def test_ai_provider_setting(tmp_path):
+    from jobradar.config import load_settings
+    (tmp_path / "config.local.toml").write_text('[ai]\nprovider = "claude"\n[claude]\nmodel = "haiku"\n')
+    s = load_settings(tmp_path)
+    assert (s.ai_provider, s.claude.model, s.ai_name) == ("claude", "haiku", "Claude (haiku)")

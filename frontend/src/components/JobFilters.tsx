@@ -218,7 +218,7 @@ function LevelFilter({ meta, params, setParams }: Pick<Props, "meta" | "params" 
           </p>
           <button type="button" disabled={task?.running} onClick={ask}>
             <Sparkles size={15} aria-hidden="true" />
-            Ask {meta.ollama_model}
+            Ask {meta.ai_name}
           </button>
         </div>
       )}

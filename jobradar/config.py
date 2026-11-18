@@ -51,6 +51,18 @@ class OllamaSettings:
 
 
 @dataclass
+class ClaudeSettings:
+    """Claude through the Claude Code CLI (`claude -p`), on your Claude subscription.
+
+    Sign in once with `claude` (laptop), or set CLAUDE_CODE_OAUTH_TOKEN from
+    `claude setup-token` (a server without a browser)."""
+    command: str = "claude"
+    model: str = "sonnet"  # an alias (haiku, sonnet, opus) or a full model name
+    timeout_seconds: float = 180
+    max_chars: int = 6000  # of each description sent
+
+
+@dataclass
 class Settings:
     root: Path
     database: Path
@@ -61,6 +73,13 @@ class Settings:
     details_per_board: int = 60  # detail pages fetched per board per scan
     adzuna: AdzunaSettings = field(default_factory=AdzunaSettings)
     ollama: OllamaSettings = field(default_factory=OllamaSettings)
+    claude: ClaudeSettings = field(default_factory=ClaudeSettings)
+    ai_provider: str = "ollama"  # who "Ask AI" asks: "ollama" or "claude"
+
+    @property
+    def ai_name(self) -> str:
+        """The model "Ask AI" uses, as shown on the button."""
+        return f"Claude ({self.claude.model})" if self.ai_provider == "claude" else self.ollama.model
 
     @property
     def user_agent(self) -> str:
@@ -111,4 +130,6 @@ def load_settings(root: Path | str | None = None) -> Settings:
         details_per_board=data.get("details", {}).get("max_per_board", 60),
         adzuna=_pick(AdzunaSettings, data.get("adzuna", {})),
         ollama=_pick(OllamaSettings, data.get("ollama", {})),
+        claude=_pick(ClaudeSettings, data.get("claude", {})),
+        ai_provider=data.get("ai", {}).get("provider", "ollama"),
     )

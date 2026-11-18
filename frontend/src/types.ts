@@ -34,6 +34,8 @@ export interface Meta {
   /** Open wanted jobs missing a level or years, not yet asked about, which Ollama can read. */
   levels_to_ask: number;
   ollama_model: string;
+  /** The model "Ask AI" uses, as shown on the button (Ollama's model, or "Claude (sonnet)"). */
+  ai_name: string;
 }
 
 export interface JobSummary {
@@ -64,7 +66,7 @@ export interface JobSummary {
   level: string | null;
   /** The fewest years of experience the description asks for. */
   min_years: number | null;
-  /** "title", "years", "none" or "ollama:<model>"; null when not worked out. */
+  /** "title", "years", "none", "ollama:<model>" or "claude:<model>"; null when not worked out. */
   level_source: string | null;
   /** The same job posted for other places (same company, same title), this one
    * included; null when it's the only one. One decision covers them all. */

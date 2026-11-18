@@ -353,6 +353,7 @@ def create_app(settings: Settings, db_path: Path | None = None,
             "year_bands": [value for value, _, _ in levels.YEAR_BANDS] + [levels.NO_YEARS],
             "levels_to_ask": len(levels.jobs_to_ask(conn)),
             "ollama_model": settings.ollama.model,
+            "ai_name": settings.ai_name,
         }
 
     @app.post("/api/visit")
@@ -607,7 +608,7 @@ def create_app(settings: Settings, db_path: Path | None = None,
         def work(progress) -> str:
             own = db.connect(db_path)
             try:
-                s = levels.run_ask_ollama(own, settings, transport=transport, progress=progress)
+                s = levels.run_ask(own, settings, transport=transport, progress=progress)
             finally:
                 own.close()
             text = (f"Asked {s.model} about {s.asked} jobs: {s.levels_found} levels and "

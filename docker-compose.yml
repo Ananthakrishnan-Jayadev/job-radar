@@ -14,8 +14,12 @@ services:
       - "8000:8000"
     environment:
       TZ: America/Toronto
-      # Ollama's cloud, for "Ask AI" about job levels (set in .env).
+      # "Ask AI" about job levels (set in .env): Ollama's cloud key, or the
+      # token `claude setup-token` prints, for Claude on your subscription.
       OLLAMA_API_KEY: ${OLLAMA_API_KEY:-}
+      CLAUDE_CODE_OAUTH_TOKEN: ${CLAUDE_CODE_OAUTH_TOKEN:-}
+      # Claude Code keeps its settings in a home folder; this one is in data/.
+      HOME: /app/data/.home
     volumes:
       - ./data:/app/data
       - ./config.local.toml:/app/config.local.toml:ro
