@@ -187,3 +187,22 @@ def test_workday_requests_are_spaced_out(settings):
             return time.monotonic() - started
 
     assert asyncio.run(go()) >= 0.4  # three requests across two companies, one at a time, 0.2s apart
+
+
+def test_a_bot_challenge_is_respected_not_retried(settings):
+    challenge = httpx.Response(429, headers={"cf-mitigated": "challenge"})
+    sources = FakeSources({("POST", WD_A): challenge, ("POST", WD_B): {"total": 0},
+                           ("GET", URL): httpx.Response(403, headers={"cf-mitigated": "challenge"})})
+
+    async def go():
+        async with HttpClient(settings, transport=sources.transport()) as client:
+            with pytest.raises(FetchError, match="bot protection"):
+                await client.post_json(WD_A, {})
+            with pytest.raises(FetchError, match="bot protection"):
+                await client.post_json(WD_B, {})  # the rest of Workday: not asked
+            with pytest.raises(FetchError, match="bot protection"):
+                await client.get_json(URL)  # a 403 challenge: no browser-agent retry
+
+    asyncio.run(go())
+    sent = [str(r.url) for r in sources.requests]
+    assert sent.count(WD_A) == 1 and sent.count(WD_B) == 0 and sent.count(URL) == 1

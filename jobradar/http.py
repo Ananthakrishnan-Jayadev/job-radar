@@ -13,6 +13,11 @@ runs on Workday's servers, which count requests from our address across all
 of them. They share one queue (one request at a time, `workday.min_interval_seconds`
 apart), and when Workday still says 429 after the retries, the rest of its
 boards are skipped until the next scan instead of asking again.
+
+A bot-protection challenge (Cloudflare's `cf-mitigated: challenge`) means the
+site doesn't want this automated traffic: no retries, no other user agent, and
+that site's boards are skipped for the rest of the scan. We don't try to get
+past such checks.
 """
 
 from __future__ import annotations
@@ -48,6 +53,11 @@ def site_of(host: str) -> str:
     return host
 
 
+def _challenged(response: httpx.Response) -> bool:
+    """A bot-protection check rather than an answer (Cloudflare's managed challenge)."""
+    return response.headers.get("cf-mitigated", "").lower() == "challenge"
+
+
 class HttpClient:
     def __init__(self, settings: Settings, transport: httpx.AsyncBaseTransport | None = None):
         self.settings = settings
@@ -60,7 +70,7 @@ class HttpClient:
         self._host_limits: dict[str, asyncio.Semaphore] = {}
         self._fallback_hosts: set[str] = set()  # hosts that rejected our honest user agent
         self._slow_hosts: set[str] = set()  # sites that answered 429: pause before each request
-        self._blocked: set[str] = set()  # sites still at 429 after the retries: skipped this scan
+        self._blocked: dict[str, str] = {}  # sites skipped for the rest of the scan, and why
         self._next_at: dict[str, float] = {}  # sites with a minimum interval: earliest next request
 
     async def __aenter__(self) -> HttpClient:
@@ -84,8 +94,7 @@ class HttpClient:
         host = urlsplit(url).netloc
         site = site_of(host)
         if site in self._blocked:
-            raise FetchError(f"rate limited (429): {site} asked us to slow down; "
-                             "its boards wait until the next scan")
+            raise FetchError(self._blocked[site])
         interval = self.settings.workday.min_interval_seconds if site == "Workday" else 0
         size = 1 if site == "Workday" else self.settings.http.max_per_host
         limit = self._host_limits.setdefault(site, asyncio.Semaphore(size))
@@ -99,8 +108,13 @@ class HttpClient:
             response = await self._send(method, url, host, site, **kwargs)
             if interval:
                 self._next_at[site] = asyncio.get_running_loop().time() + interval
+            if _challenged(response):
+                self._blocked[site] = (f"blocked by {site}'s bot protection (Cloudflare challenge): "
+                                       "skipped until the next scan; it clears when we ask less often")
+                raise FetchError(self._blocked[site])
             if response.status_code == 429:
-                self._blocked.add(site)  # still too many after the retries: stop asking this scan
+                # Still too many after the retries: stop asking this scan.
+                self._blocked[site] = f"rate limited (429): {site} asked us to slow down; its boards wait until the next scan"
             if response.status_code == 403 and host not in self._fallback_hosts:
                 # Some sources block unknown agents; try once with a browser one.
                 self._fallback_hosts.add(host)
@@ -132,6 +146,8 @@ class HttpClient:
                 if failures == 2:
                     raise FetchError(f"network error: {exc}") from exc
             else:
+                if _challenged(response):
+                    return response  # a bot check, not a busy server: never retried
                 if response.status_code == 429:
                     # Too many requests: slow down for this host, wait, try again (3 times).
                     self._slow_hosts.add(site)

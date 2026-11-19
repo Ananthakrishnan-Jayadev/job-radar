@@ -30,12 +30,13 @@ rate_limited_delay_seconds = 2.0
 # List every Canadian job when a board has at most this many;
 # above it, search per saved search instead.
 max_list = 400
-max_details_per_scan = 60
+max_details_per_scan = 15
 delay_seconds = 1.0
 # All companies' Workday sites share Workday's servers, which limit requests
 # from your address across all of them: one request at a time, at least this
-# many seconds apart, for every Workday board together.
-min_interval_seconds = 1.5
+# many seconds apart, for every Workday board together. Workday's bot
+# protection flagged the scan at 1.5; keep it gentle.
+min_interval_seconds = 4.0
 # Searched on boards over max_list (TD, RBC, BMO...). Saved searches marked
 # "use for sources" replace this list once the web UI has them (phase 3).
 search_terms = ["data", "machine learning", "artificial intelligence", "analyst", "analytics"]

@@ -229,12 +229,15 @@ list, or open the job, to see the years asked and where the level came from.
 
 **Workday is scanned gently.** Every company's Workday site runs on Workday's
 own servers, which limit requests from your address across all of them, so
-Job Radar treats them as one site: one request at a time, at least 1.5
-seconds apart (`[workday] min_interval_seconds`). A "too many requests" (429)
+Job Radar treats them as one site: one request at a time, at least 4
+seconds apart (`[workday] min_interval_seconds`), and at most 15 job pages
+per company per scan (`max_details_per_scan`). A "too many requests" (429)
 reply gets up to three patient retries; if Workday still refuses, the
 remaining Workday companies are skipped until the next scan rather than
-asked again. Job pages for postings older than the age limit are never
-opened.
+asked again. If Workday's bot protection (Cloudflare) challenges a request,
+nothing is retried and the rest of Workday waits for the next scan: Job
+Radar doesn't try to get past such checks, it asks less often until they
+clear. Job pages for postings older than the age limit are never opened.
 
 Not read (yet): iCIMS, Avature, Oracle Cloud, ADP, Taleo and Eploy (FDM
 Group's careers site, which pages its list with form posts). Adding such a
